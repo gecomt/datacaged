@@ -1,0 +1,41 @@
+# R session artifacts
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+
+# R project file (gerado pelo RStudio)
+*.Rproj
+
+# Compiled objects
+*.o
+*.so
+*.dll
+/src/*.o
+/src/*.so
+
+# Built package tarballs
+*.tar.gz
+*.Rcheck/
+
+# Dados e cache baixados pelo datacaged
+*.duckdb
+*.7z
+caged_cache/
+
+# pkgdown output (gerado em CI, não versionar)
+/docs/
+
+# Vignettes pre-built (geradas em tempo de build)
+/doc/
+/Meta/
+
+# Cobertura de testes
+*.xml
+
+# Misc
+.DS_Store
+Thumbs.db
+.Rprofile
+.httr-oauth
+.quarto

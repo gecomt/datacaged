@@ -1,0 +1,246 @@
+---
+title: "Introdução ao datacaged"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introdução ao datacaged}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment  = "#>",
+  eval     = FALSE
+)
+```
+
+## Visão Geral
+
+O `datacaged` simplifica o acesso aos microdados do **CAGED** (Cadastro Geral de Empregados e Desempregados) diretamente do FTP do Ministério do Trabalho e Emprego (MTE), carregando os dados em um banco **DuckDB** local para análise eficiente.
+
+Ele suporta três séries:
+
+| Período              | Série           | Tabela no banco                         |
+|----------------------|-----------------|-----------------------------------------|
+| Jan/2020 – hoje      | Novo CAGED      | `caged_mov`, `caged_for`, `caged_exc`   |
+| Jan/1992 – Dez/2019  | CAGED antigo    | `caged_antigo`                          |
+| Jan/1992 – Dez/2019  | CAGED Ajustes   | `caged_ajustes`                         |
+
+## Instalação
+
+```{r install}
+# Via remotes
+remotes::install_github("gecomt/datacaged")
+```
+
+## Uso Básico: Pipeline Completo
+
+A função `caged_load()` faz tudo em um só comando: baixa os `.7z` do FTP, extrai, normaliza e grava no DuckDB.
+
+```{r load-basico}
+library(datacaged)
+
+# Baixa Novo CAGED de Jan–Dez/2023 para SP e RJ
+# Novo CAGED: arquivo nacional, `states` não filtra
+caged_load(
+  years    = 2023,
+  months   = seq_len(12L),
+  db_path = "caged.duckdb"
+)
+```
+
+O progresso é exibido no terminal com barra de andamento e resumo final.
+
+## Consulta dos Dados
+
+Após popular o banco, conecte e consulte com `dplyr` ou SQL puro:
+
+```{r consulta-dplyr}
+library(dplyr)
+
+con <- caged_connect("caged.duckdb")
+
+# Saldo de empregos por mês em 2023
+saldo_mensal <- tbl(con, "caged_mov") |>
+  group_by(competenciamov) |>
+  summarise(saldo = sum(saldomovimentacao, na.rm = TRUE)) |>
+  arrange(competenciamov) |>
+  collect()
+
+saldo_mensal
+```
+
+```{r consulta-sql}
+# Ou com SQL direto
+DBI::dbGetQuery(con, "
+  SELECT
+    competenciamov,
+    uf,
+    SUM(saldomovimentacao) AS saldo,
+    AVG(salario)           AS salario_medio,
+    COUNT(*)               AS movimentacoes
+  FROM caged_mov
+  WHERE uf = 35          -- Sao Paulo
+  GROUP BY competenciamov, uf
+  ORDER BY competenciamov
+")
+```
+
+Sempre feche a conexão ao terminar:
+
+```{r desconectar}
+DBI::dbDisconnect(con, shutdown = TRUE)
+```
+
+## Funções Granulares
+
+Para mais controle, use as funções individualmente:
+
+### 1. Só baixar os arquivos
+
+```{r download}
+# Baixa e salva em cache local (~/.local/share/R/datacaged por padrão)
+manifest <- caged_download(
+  years    = 2023,
+  months   = c(1L, 2L, 3L),
+  destdir = "~/meus_dados/caged_cache"
+)
+
+# manifest é um data.frame com status de cada arquivo
+dplyr::count(manifest, status)
+```
+
+### 2. Parsear arquivos manualmente
+
+```{r parse}
+# Um arquivo por vez
+df <- caged_parse("~/meus_dados/caged_cache/caged_mov/2023/CAGEDMOV202301.7z")
+glimpse(df)
+
+# Vários de uma vez
+arquivos <- list.files(
+  "~/meus_dados/caged_cache/caged_novo/2023",
+  pattern    = "CAGEDMOV",
+  full.names = TRUE
+)
+df_todos <- caged_parse_batch(arquivos)
+```
+
+### 3. Gravar no banco
+
+```{r gravar}
+caged_to_duckdb(df_todos, db_path = "caged.duckdb")
+```
+
+## Ver o que está no banco
+
+```{r info}
+caged_info("caged.duckdb")
+#> ── caged.duckdb ────────────────────────────────────────
+#> Tamanho do arquivo: 142.3 MB
+#> ── Tabelas ──────────────────────────────────────────────
+#> * "caged_mov"   Registros: 3,665,155
+#> * "caged_for"      Registros:    91,098
+#> * "caged_exc"       Registros:     7,900
+#>   Registros   : 4.823.901
+#>   Competências: 202301 – 202312
+```
+
+## Exemplo: Série Histórica com CAGED Antigo
+
+```{r historico}
+# Baixa CAGED antigo para Nordeste (2015–2019)
+nordeste <- c("MA", "PI", "CE", "RN", "PB", "PE", "AL", "SE", "BA")
+
+caged_load(
+  years    = 2015:2019,
+  db_path = "caged_historico.duckdb"
+)
+
+con <- caged_connect("caged_historico.duckdb")
+
+# Evolução anual do saldo formal no Nordeste
+tbl(con, "caged_antigo") |>
+  mutate(ano = as.integer(substr(as.character(competencia), 1, 4))) |>
+  group_by(ano, uf) |>
+  summarise(saldo = sum(saldomovimentacao, na.rm = TRUE)) |>
+  collect() |>
+  tidyr::pivot_wider(names_from = uf, values_from = saldo)
+
+DBI::dbDisconnect(con, shutdown = TRUE)
+```
+
+
+## CAGED Ajustes
+
+O CAGED Ajustes contém correções retroativas do CAGED antigo (até 2019).
+Use `caged_adjustments_load()` para baixar e gravar na tabela `caged_ajustes`.
+
+```{r ajustes}
+# Baixar ajustes de 2019
+caged_adjustments_load(years = 2019, months = seq_len(12L), db_path = "caged.duckdb")
+
+# Listar o que está disponível no FTP
+caged_ftp_files(type = "ajustes")
+
+# Comparar saldo original vs ajustado
+con <- caged_connect("caged.duckdb")
+
+antigo  <- dplyr::tbl(con, "caged_antigo")  |>
+  dplyr::group_by(competencia) |>
+  dplyr::summarise(saldo_original = sum(saldomovimentacao, na.rm = TRUE))
+
+ajustes <- dplyr::tbl(con, "caged_ajustes") |>
+  dplyr::group_by(competencia) |>
+  dplyr::summarise(saldo_ajuste = sum(saldomovimentacao, na.rm = TRUE))
+
+dplyr::full_join(antigo, ajustes, by = "competencia") |>
+  dplyr::mutate(saldo_final = saldo_original + saldo_ajuste) |>
+  dplyr::collect()
+
+DBI::dbDisconnect(con, shutdown = TRUE)
+```
+
+## Dicas de Performance
+
+- **DuckDB é colunar**: prefira `select()` antes de `collect()` para trazer apenas as colunas necessárias.
+- **Re-runs são seguros**: `caged_load()` pula competências já no banco por padrão. Use `overwrite_competencies = TRUE` para regravar.
+- **Cache de `.7z`**: os arquivos baixados ficam em `~/.local/share/R/datacaged`. Você pode reutilizá-los sem nova conexão ao FTP.
+- **Memória**: o pipeline processa uma competência por vez para evitar consumo excessivo de RAM com grandes períodos.
+
+
+## Utilitários
+
+```{r utilitarios}
+# Verificar se o FTP está online antes de baixar
+caged_status()
+
+# Listar competências disponíveis no FTP
+caged_ftp_files()                     # Novo CAGED (últimos 12 meses)
+caged_ftp_files(type = "antigo")      # CAGED antigo
+caged_ftp_files(type = "ajustes")     # CAGED Ajustes
+
+# Baixar automaticamente o mês mais recente
+disp <- caged_ftp_files(n = 1, verbose = FALSE)
+caged_load(years = disp$ano, months = disp$mes, db_path = "caged.duckdb")
+```
+
+## Variáveis principais
+
+| Coluna | Descrição |
+|---|---|
+| `competenciamov` | Competência no Novo CAGED, formato `AAAAMM` (ex: `202301`) |
+| `competencia` | Competência no CAGED antigo e Ajustes, formato `AAAAMM` |
+| `uf` | Código IBGE da UF (ex: `35` = SP) |
+| `municipio` | Código IBGE do município |
+| `saldomovimentacao` | `+1` admissão, `-1` desligamento |
+| `salario` | Salário contratual em R$ |
+| `sexo` | `1` masculino, `3` feminino |
+| `idade` | Idade em anos |
+| `escolaridade` | Código de grau de instrução (1–9) |
+| `racacor` | Código de raça/cor (1–5) |
+| `tipomovimentacao` | Código do motivo da movimentação |
+| `secao` | Seção da CNAE 2.0 (Novo CAGED) |
+| `fonte_tipo` | `MOV`, `FOR`, `EXC`, `ANTIGO` ou `AJUSTES` |
+
