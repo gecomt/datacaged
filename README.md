@@ -1,7 +1,12 @@
+datacaged
+================
+
 [![R-CMD-check](https://github.com/gecomt/datacaged/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/gecomt/datacaged/actions)
 [![codecov](https://codecov.io/gh/gecomt/datacaged/branch/main/graph/badge.svg)](https://app.codecov.io/gh/gecomt/datacaged)
 [![License:
 MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE.md)
+
+<img src="man/figures/logo.png" align="left" height="139" alt="datacaged hex sticker"/>
 
 > Microdados do CAGED direto no seu DuckDB, com pipeline completo e
 > pronto para análise.
@@ -16,22 +21,22 @@ escaláveis com `dplyr` ou SQL.
 
 ## ✨ Principais funcionalidades
 
--   📥 Download automatizado dos microdados diretamente do FTP do MTE
+- 📥 Download automatizado dos microdados diretamente do FTP do MTE
 
--   📦 Leitura e normalização de arquivos `.7z` (CAGED antigo e Novo
-    CAGED)
+- 📦 Leitura e normalização de arquivos `.7z` (CAGED antigo e Novo
+  CAGED)
 
--   🗄️ Armazenamento eficiente em banco **DuckDB**
+- 🗄️ Armazenamento eficiente em banco **DuckDB**
 
--   🔄 Pipeline completo em uma única função
+- 🔄 Pipeline completo em uma única função
 
--   📊 Integração com `dplyr` para análise de dados
+- 📊 Integração com `dplyr` para análise de dados
 
--   🧩 Suporte a múltiplas bases:
+- 🧩 Suporte a múltiplas bases:
 
-    -   Novo CAGED (2020+)
-    -   CAGED antigo (1992–2019)
-    -   CAGED Ajustes (correções históricas)
+  - Novo CAGED (2020+)
+  - CAGED antigo (1992–2019)
+  - CAGED Ajustes (correções históricas)
 
 ------------------------------------------------------------------------
 
@@ -39,47 +44,53 @@ escaláveis com `dplyr` ou SQL.
 
 ### Via GitHub
 
-    # install.packages("pak")
-    pak::pkg_install("gecomt/datacaged")
+``` r
+# install.packages("pak")
+pak::pkg_install("gecomt/datacaged")
+```
 
 ### Via remotes
 
-    # install.packages("remotes")
-    remotes::install_github("gecomt/datacaged")
+``` r
+# install.packages("remotes")
+remotes::install_github("gecomt/datacaged")
+```
 
 ------------------------------------------------------------------------
 
 ## ⚡ Uso rápido
 
-    library(datacaged)
+``` r
+library(datacaged)
 
-    # Pipeline completo
-    caged_load(
-      years   = 2022:2023,
-      months  = seq_len(12L),
-      db_path = "caged.duckdb"
-    )
+# Pipeline completo
+caged_load(
+  years  = 2022:2023,
+  months  = seq_len(12L),
+  db_path = "caged.duckdb"
+)
 
-    # Ajustes
-    caged_adjustments_load(
-      years = 2018:2019,
-      db_path = "caged.duckdb"
-    )
+# Ajustes
+caged_adjustments_load(
+  years = 2018:2019,
+  db_path = "caged.duckdb"
+)
 
-    # Baixar os layouts oficiais do CAGED
-    caged_download_layouts(type = "ambos")
+# Baixar os layouts oficiais do CAGED
+caged_download_layouts(type = "ambos")
 
-    # Conexão
-    con <- caged_connect("caged.duckdb")
+# Conexão
+con <- caged_connect("caged.duckdb")
 
-    # Análise
-    library(dplyr)
+# Análise
+library(dplyr)
 
-    dplyr::tbl(con, "caged_mov") |>
-      filter(uf == 35, competenciamov >= 202201L) |>
-      group_by(competencia) |>
-      summarise(saldo = sum(saldomovimentacao, na.rm = TRUE)) |>
-      collect()
+dplyr::tbl(con, "caged_mov") |>
+  filter(uf == 35, competenciamov >= 202201L) |>
+  group_by(competencia) |>
+  summarise(saldo = sum(saldomovimentacao, na.rm = TRUE)) |>
+  collect()
+```
 
 ------------------------------------------------------------------------
 
@@ -91,64 +102,19 @@ escaláveis com `dplyr` ou SQL.
 
 ## 📚 Funções principais
 
-<table>
-<colgroup>
-<col style="width: 37%" />
-<col style="width: 62%" />
-</colgroup>
-<thead>
-<tr>
-<th>Função</th>
-<th>Descrição</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>caged_load()</code></td>
-<td>Pipeline completo</td>
-</tr>
-<tr>
-<td><code>caged_adjustments_load()</code></td>
-<td>Pipeline de ajustes</td>
-</tr>
-<tr>
-<td><code>caged_download()</code></td>
-<td>Download dos arquivos</td>
-</tr>
-<tr>
-<td><code>caged_download_layouts()</code></td>
-<td>Download dos layouts oficiais</td>
-</tr>
-<tr>
-<td><code>caged_parse()</code></td>
-<td>Leitura de arquivos</td>
-</tr>
-<tr>
-<td><code>caged_parse_batch()</code></td>
-<td>Processamento em lote</td>
-</tr>
-<tr>
-<td><code>caged_to_duckdb()</code></td>
-<td>Persistência no banco</td>
-</tr>
-<tr>
-<td><code>caged_connect()</code></td>
-<td>Conexão</td>
-</tr>
-<tr>
-<td><code>caged_info()</code></td>
-<td>Metadados</td>
-</tr>
-<tr>
-<td><code>caged_status()</code></td>
-<td>Status do FTP</td>
-</tr>
-<tr>
-<td><code>caged_ftp_files()</code></td>
-<td>Lista arquivos</td>
-</tr>
-</tbody>
-</table>
+| Função                     | Descrição                     |
+|----------------------------|-------------------------------|
+| `caged_load()`             | Pipeline completo             |
+| `caged_adjustments_load()` | Pipeline de ajustes           |
+| `caged_download()`         | Download dos arquivos         |
+| `caged_download_layouts()` | Download dos layouts oficiais |
+| `caged_parse()`            | Leitura de arquivos           |
+| `caged_parse_batch()`      | Processamento em lote         |
+| `caged_to_duckdb()`        | Persistência no banco         |
+| `caged_connect()`          | Conexão                       |
+| `caged_info()`             | Metadados                     |
+| `caged_status()`           | Status do FTP                 |
+| `caged_ftp_files()`        | Lista arquivos                |
 
 ------------------------------------------------------------------------
 
@@ -158,79 +124,54 @@ O pacote também baixa os arquivos de layout oficiais do CAGED e Novo
 CAGED, úteis para conferência de estrutura, dicionários de variáveis e
 validação de colunas.
 
-    caged_download_layouts()
-    caged_download_layouts(type = "antigo")
-    caged_download_layouts(type = "novo")
-    caged_download_layouts(type = "ajustes")
+``` r
+caged_download_layouts()
+caged_download_layouts(type = "antigo")
+caged_download_layouts(type = "novo")
+caged_download_layouts(type = "ajustes")
+```
 
-A função salva os arquivos em cache local por padrão e retorna um tibble com o status de cada download.
+A função salva os arquivos em cache local por padrão e retorna um tibble
+com o status de cada download.
+
+------------------------------------------------------------------------
 
 ## 🗄️ Estrutura do banco
 
-<table>
-<thead>
-<tr>
-<th>Tabela</th>
-<th>Conteúdo</th>
-<th>Período</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>caged_mov</code></td>
-<td>Movimentações</td>
-<td>2020+</td>
-</tr>
-<tr>
-<td><code>caged_for</code></td>
-<td>Informações complementares</td>
-<td>2020+</td>
-</tr>
-<tr>
-<td><code>caged_exc</code></td>
-<td>Exclusões</td>
-<td>2020+</td>
-</tr>
-<tr>
-<td><code>caged_antigo</code></td>
-<td>Histórico</td>
-<td>1992–2019</td>
-</tr>
-<tr>
-<td><code>caged_ajustes</code></td>
-<td>Ajustes</td>
-<td>1992–2019</td>
-</tr>
-</tbody>
-</table>
+| Tabela          | Conteúdo                   | Período   |
+|-----------------|----------------------------|-----------|
+| `caged_mov`     | Movimentações              | 2020+     |
+| `caged_for`     | Informações complementares | 2020+     |
+| `caged_exc`     | Exclusões                  | 2020+     |
+| `caged_antigo`  | Histórico                  | 1992–2019 |
+| `caged_ajustes` | Ajustes                    | 1992–2019 |
 
 ------------------------------------------------------------------------
 
 ## 📊 Casos de uso
 
--   Análise do mercado de trabalho
--   Indicadores econômicos
--   Pesquisa acadêmica
--   Monitoramento de emprego formal
--   Modelagem econométrica
+- Análise do mercado de trabalho
+- Indicadores econômicos
+- Pesquisa acadêmica
+- Monitoramento de emprego formal
+- Modelagem econométrica
 
 ------------------------------------------------------------------------
 
 ## ⚙️ Dependências
 
--   `duckdb`
--   `dplyr`
--   `archive`
--   `readr`
--   `cli`
+- `duckdb`
+- `dplyr`
+- `archive`
+- `readr`
+- `cli`
 
 ------------------------------------------------------------------------
 
 ## 🧾 Requisitos
 
--   R ≥ 4.1.0
-
--   7-Zip (opcional)
+- R ≥ 4.1.0
+- 7-Zip (opcional, para arquivos PPMd do CAGED antigo)
 
 ------------------------------------------------------------------------
 
