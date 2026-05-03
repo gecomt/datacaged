@@ -90,16 +90,19 @@ de pastas por ano. Arquivos já baixados não são re-baixados (cache local).</p
 
 
 <dt id="arg-months">months<a class="anchor" aria-label="anchor" href="#arg-months"></a></dt>
-<dd><p>integer vector. Meses desejados (1–12). Default: <code>seq\_len(12L)</code> (todos os meses).</p></dd>
+<dd><p>integer vector. Meses desejados (1–12). Default: <code>seq_len(12L)</code> (todos os meses).</p></dd>
 
 
 <dt id="arg-states">states<a class="anchor" aria-label="anchor" href="#arg-states"></a></dt>
-<dd><p><strong>Ignorado</strong> — o parâmetro é validado mas não filtra downloads de nenhuma série (Novo CAGED, antigo ou Ajustes), pois todos os arquivos são de âmbito nacional. Mantido por compatibilidade.</p></dd>
+<dd><p>character vector ou NULL. <strong>Ignorado</strong> — o parâmetro é validado
+mas não filtra downloads de nenhuma série (Novo CAGED, antigo ou Ajustes),
+pois todos os arquivos são de âmbito nacional. Mantido por compatibilidade.</p></dd>
 
 
 <dt id="arg-destdir">destdir<a class="anchor" aria-label="anchor" href="#arg-destdir"></a></dt>
 <dd><p>character ou NULL. Diretório local para salvar os arquivos.
-Se NULL, usa o diretório padrão do sistema via <code>tools::R_user_dir("datacaged", "cache")</code> (localização varia por plataforma).</p></dd>
+Se NULL, usa o diretório padrão do sistema via
+<code>tools::R_user_dir("datacaged", "cache")</code> (localização varia por plataforma).</p></dd>
 
 
 <dt id="arg-force">force<a class="anchor" aria-label="anchor" href="#arg-force"></a></dt>
