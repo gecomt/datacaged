@@ -3,6 +3,7 @@
 [![License:
 MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE.md)
 
+<img src="man/figures/logo.svg" align="center" height="139" alt="datacaged logo" /> <img src="man/figures/logo.svg" align="right" height="139" alt="datacaged hex sticker"/>
 > Microdados do CAGED direto no seu DuckDB, com pipeline completo e
 > pronto para análise.
 
