@@ -6,6 +6,7 @@ output: github_document
 [![R-CMD-check](https://github.com/gecomt/datacaged/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/gecomt/datacaged/actions)
 [![codecov](https://codecov.io/gh/gecomt/datacaged/branch/main/graph/badge.svg)](https://app.codecov.io/gh/gecomt/datacaged)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE.md)
+[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 
 > Microdados do CAGED direto no seu DuckDB, com pipeline completo e pronto para análise.
 
