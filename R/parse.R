@@ -1,27 +1,27 @@
 # parse.R
-# Leitura e normalização dos microdados do CAGED (antigo e Novo CAGED)
+# Leitura e normaliza\u00E7\u00E3o dos microdados do CAGED (antigo e Novo CAGED)
 
-# ── Colunas numéricas conhecidas ───────────────────────────────────────────────
+# \u2500\u2500 Colunas num\u00E9ricas conhecidas \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 #' Colunas que devem ser numéricas no Novo CAGED
 #' Baseado no layout real dos arquivos do MTE (2023+).
 #' Inclui tanto nomes antigos ("competencia") quanto novos ("competenciamov").
 #' @noRd
 .cols_numericas_novo <- c(
-  # Competência — nome varia por período
+  # Compet\u00EAncia \u2014 nome varia por per\u00EDodo
   "competencia", "competenciamov", "competenciadec",
-  # Localização
+  # Localiza\u00E7\u00E3o
   "regiao", "uf", "municipio",
   # Estabelecimento
   "subclasse", "tipoempregador", "tipoestabelecimento",
   "tamestabjan", "indicadoraprendiz", "origemdainformacao",
-  # Movimentação
+  # Movimenta\u00E7\u00E3o
   "saldomovimentacao", "tipomovimentacao", "tipodedeficiencia",
   "indtrabintermitente", "indtrabparcial", "indicadordeforadoprazo",
   # Trabalhador
   "categoria", "graudeinstrucao", "idade", "horascontratuais",
   "racacor", "sexo", "cbo2002ocupacao", "unidadesalariocodigo",
-  # Salário
+  # Sal\u00E1rio
   "salario", "valorsalariofixo",
   # Nomes antigos (compatibilidade)
   "naturezajuridica", "subatividade", "escolaridade",
@@ -61,7 +61,7 @@
   df
 }
 
-# ── Leitura de arquivo individual ─────────────────────────────────────────────
+# \u2500\u2500 Leitura de arquivo individual \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 #' Detecta o tipo de arquivo a partir do nome
 #' @return "MOV", "FOR", "EXC" ou "ANTIGO"
@@ -107,15 +107,22 @@
 
   if (is.null(df) || nrow(df) == 0) return(NULL)
 
-  # Remove BOM UTF-8 (﻿) e espaços do primeiro nome de coluna
+  # Remove BOM UTF-8 (\uFEFF) e espa\u00E7os do primeiro nome de coluna
   # O MTE frequentemente inclui BOM nos arquivos, o que gruda no header
   names(df)[1] <- gsub("^\uFEFF", "", names(df)[1])
   names(df)[1] <- trimws(names(df)[1])
 
-  # Padroniza nomes (minúsculo sem acentos)
+  # Padroniza nomes (min\u00FAsculo sem acentos)
   names(df) <- .normalize_names(names(df))
 
-  # Coerce colunas numéricas conhecidas
+  # Remove colunas geradas por semicolons finais no cabe\u00E7alho do MTE:
+  # readr name_repair cria "...N" para campos vazios (ex: "col1;col2;").
+  # .normalize_names() pode gerar "" para colunas com apenas chars especiais.
+  # Ambos os casos causariam falha em DBI::dbAppendTable.
+  df <- df[, nchar(names(df)) > 0L & !grepl("^\\.\\.\\.\\d+$", names(df)),
+           drop = FALSE]
+
+  # Coerce colunas num\u00E9ricas conhecidas
   cols_num <- if (eh_novo) .cols_numericas_novo else .cols_numericas_antigo  # ajustes usa mesmo schema do antigo
   df <- .coerce_numeric_columns(df, cols_num)
 
@@ -130,18 +137,18 @@
 .normalize_names <- function(nomes) {
   nomes |>
     tolower() |>
-    stringr::str_replace_all("[áàãâä]", "a") |>
-    stringr::str_replace_all("[éèêë]",  "e") |>
-    stringr::str_replace_all("[íìîï]",  "i") |>
-    stringr::str_replace_all("[óòõôö]", "o") |>
-    stringr::str_replace_all("[úùûü]",  "u") |>
-    stringr::str_replace_all("[ç]",     "c") |>
+    stringr::str_replace_all("[\u00E1\u00E0\u00E3\u00E2\u00E4]", "a") |>
+    stringr::str_replace_all("[\u00E9\u00E8\u00EA\u00EB]",  "e") |>
+    stringr::str_replace_all("[\u00ED\u00EC\u00EE\u00EF]",  "i") |>
+    stringr::str_replace_all("[\u00F3\u00F2\u00F5\u00F4\u00F6]", "o") |>
+    stringr::str_replace_all("[\u00FA\u00F9\u00FB\u00FC]",  "u") |>
+    stringr::str_replace_all("[\u00E7]",     "c") |>
     stringr::str_replace_all("[^a-z0-9_]", "_") |>
     stringr::str_replace_all("_+", "_") |>
     stringr::str_remove("^_|_$")
 }
 
-# ── Parse de arquivo .7z (extrai + lê) ───────────────────────────────────────
+# \u2500\u2500 Parse de arquivo .7z (extrai + l\u00EA) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 #' Lê microdados de um arquivo .7z do CAGED (extrai em temp e lê)
 #'
@@ -175,7 +182,7 @@
 #' @export
 caged_parse <- function(path, type = NULL) {
   if (!file.exists(path)) {
-    cli::cli_abort("Arquivo não encontrado: {.path {path}}")
+    cli::cli_abort("Arquivo n\u00E3o encontrado: {.path {path}}")
   }
 
   type <- type %||% .detect_type(path)
@@ -199,7 +206,7 @@ caged_parse <- function(path, type = NULL) {
     return(invisible(NULL))
   }
 
-  # Lê e empilha (normalmente 1 txt por .7z, mas generaliza)
+  # L\u00EA e empilha (normalmente 1 txt por .7z, mas generaliza)
   dfs <- purrr::map(txts, \(f) .read_text_file(f, type = type))
   dfs <- purrr::compact(dfs)
 
@@ -208,7 +215,7 @@ caged_parse <- function(path, type = NULL) {
   dplyr::bind_rows(dfs)
 }
 
-# ── Função pública: parse em lote ─────────────────────────────────────────────
+# \u2500\u2500 Fun\u00E7\u00E3o p\u00FAblica: parse em lote \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 #' Lê e normaliza múltiplos arquivos .7z do CAGED
 #'
@@ -247,7 +254,7 @@ caged_parse_batch <- function(paths, .progress = TRUE) {
   paths <- paths[file.exists(paths) & file.size(paths) > 0]
 
   if (length(paths) == 0) {
-    cli::cli_inform("Nenhum arquivo válido para parsear.")
+    cli::cli_inform("Nenhum arquivo v\u00E1lido para parsear.")
     return(invisible(NULL))
   }
 
@@ -274,11 +281,11 @@ caged_parse_batch <- function(paths, .progress = TRUE) {
     return(invisible(NULL))
   }
 
-  # Valida que todos os arquivos são do mesmo type
+  # Valida que todos os arquivos s\u00E3o do mesmo type
   tipos <- unique(vapply(dfs, \(d) unique(d$fonte_tipo)[1L], character(1L)))
   if (length(tipos) > 1) {
     cli::cli_abort(c(
-      "Os arquivos são de tipos diferentes: {.val {tipos}}.",
+      "Os arquivos s\u00E3o de tipos diferentes: {.val {tipos}}.",
       "i" = "Use `caged_parse()` individualmente para cada type."
     ))
   }

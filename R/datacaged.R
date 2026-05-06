@@ -62,16 +62,9 @@
 #' @name datacaged-package
 #' @aliases datacaged
 #'
-#' @importFrom cli cli_abort cli_inform cli_warn cli_h1 cli_h2
-#'   cli_progress_bar cli_progress_done cli_progress_update
-#'   col_blue col_cyan col_green col_red col_silver col_yellow
-#'   pb_bar pb_current pb_elapsed pb_eta_str pb_total
-#'   style_bold num_ansi_colors
-#' @importFrom DBI dbConnect dbDisconnect dbGetQuery dbExecute
-#'   dbListTables dbListFields dbExistsTable dbWriteTable dbAppendTable
-#'   dbSendQuery dbSendStatement dbBind dbFetch dbClearResult
-#' @importFrom dplyr bind_rows filter pull count arrange collect
-#'   group_by summarise mutate full_join left_join desc tbl
+#' @importFrom cli cli_abort cli_inform cli_warn cli_h1 cli_h2 cli_progress_bar cli_progress_done cli_progress_update col_blue col_cyan col_green col_red col_silver col_yellow pb_bar pb_current pb_elapsed pb_eta_str pb_total style_bold num_ansi_colors
+#' @importFrom DBI dbConnect dbDisconnect dbGetQuery dbExecute dbListTables dbListFields dbExistsTable dbWriteTable dbAppendTable dbSendQuery dbSendStatement dbBind dbFetch dbClearResult
+#' @importFrom dplyr bind_rows filter pull count arrange collect group_by summarise mutate full_join left_join desc tbl
 #' @importFrom glue glue
 #' @importFrom purrr map walk2 compact
 #' @importFrom readr read_delim cols col_character locale
@@ -83,7 +76,7 @@
 #' @importFrom duckdb duckdb
 "_PACKAGE"
 
-# ── Constantes internas ────────────────────────────────────────────────────────
+# \u2500\u2500 Constantes internas \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 #' URLs base do FTP do MTE — protocolo FTP puro (porta 21)
 #' @noRd
@@ -104,7 +97,7 @@
   SC = 42, RS = 43, MS = 50, MT = 51, GO = 52, DF = 53
 )
 
-# ── Utilitários internos ───────────────────────────────────────────────────────
+# \u2500\u2500 Utilit\u00E1rios internos \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 #' Valida e normaliza vetor de UFs
 #' @param states character ou NULL
@@ -116,8 +109,8 @@
   invalidas <- setdiff(states, names(.UF_CODIGOS))
   if (length(invalidas) > 0) {
     cli::cli_abort(
-      c("UF{?s} inválida{?s}: {.val {invalidas}}",
-        "i" = "Use siglas válidas: {.val {names(.UF_CODIGOS)}}")
+      c("UF{?s} inv\u00E1lida{?s}: {.val {invalidas}}",
+        "i" = "Use siglas v\u00E1lidas: {.val {names(.UF_CODIGOS)}}")
     )
   }
   states
@@ -126,10 +119,20 @@
 #' Valida anos
 #' @noRd
 .validate_years <- function(years) {
-  if (!is.numeric(years) || any(years < 1992) || any(years > as.integer(format(Sys.Date(), "%Y")))) {
+  if (!is.numeric(years) || length(years) == 0L) {
     cli::cli_abort(
-      c("Anos inválidos: {.val {years}}",
-        "i" = "Informe anos entre 1992 e {format(Sys.Date(), '%Y')}.")
+      c("Argumento {.arg years} inv\u00E1lido.",
+        "i" = "Informe um vetor num\u00E9rico de anos entre 1992 e {format(Sys.Date(), '%Y')}.")
+    )
+  }
+  if (anyNA(years)) {
+    cli::cli_abort("{.arg years} cont\u00E9m valores NA.")
+  }
+  ano_max <- as.integer(format(Sys.Date(), "%Y"))
+  if (any(years < 1992L) || any(years > ano_max)) {
+    cli::cli_abort(
+      c("Anos inv\u00E1lidos: {.val {years[years < 1992L | years > ano_max]}}",
+        "i" = "Informe anos entre 1992 e {ano_max}.")
     )
   }
   as.integer(years)
@@ -138,8 +141,17 @@
 #' Valida meses
 #' @noRd
 .validate_months <- function(months) {
-  if (!is.numeric(months) || any(months < 1) || any(months > 12)) {
-    cli::cli_abort("Meses inválidos. Informe inteiros entre 1 e 12.")
+  if (!is.numeric(months) || length(months) == 0L) {
+    cli::cli_abort("Argumento {.arg months} inv\u00E1lido. Informe inteiros entre 1 e 12.")
+  }
+  if (anyNA(months)) {
+    cli::cli_abort("{.arg months} cont\u00E9m valores NA.")
+  }
+  if (any(months < 1L) || any(months > 12L)) {
+    cli::cli_abort(
+      c("Meses inv\u00E1lidos: {.val {months[months < 1L | months > 12L]}}",
+        "i" = "Informe inteiros entre 1 e 12.")
+    )
   }
   as.integer(months)
 }
@@ -157,14 +169,14 @@
   year >= .ANO_CORTE
 }
 
-# ── Suprimir warnings de "no visible binding" do R CMD check ──────────────────
-# Variáveis usadas em contexto dplyr (non-standard evaluation)
+# \u2500\u2500 Suprimir warnings de "no visible binding" do R CMD check \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+# Vari\u00E1veis usadas em contexto dplyr (non-standard evaluation)
 utils::globalVariables(c(
   # download.R / database.R / adjustments.R
   "status",       # manifest |> dplyr::filter(status %in% ...)
   "arquivo",      # manifest_ok |> dplyr::pull(arquivo)
   "competencia",  # dplyr::filter(df, competencia %in% novas)
-  # database.R — caged_info()
+  # database.R \u2014 caged_info()
   "competencia_declarada",
   # adjustments.R / availability.R
   "type",

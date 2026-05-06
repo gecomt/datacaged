@@ -37,6 +37,3 @@ caged_cache/
 .DS_Store
 Thumbs.db
 .Rprofile
-.httr-oauth
-.quarto
-.positai

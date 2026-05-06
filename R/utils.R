@@ -1,5 +1,5 @@
 # utils.R
-# Utilitários internos compartilhados pelo pacote
+# Utilit\u00E1rios internos compartilhados pelo pacote
 
 #' Operador "null coalescing"
 #' Retorna `x` se não for NULL, senão `y`.

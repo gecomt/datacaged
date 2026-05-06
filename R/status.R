@@ -1,7 +1,7 @@
 # status.R
 # Verifica disponibilidade do FTP do MTE e exibe mensagem de boas-vindas
 
-# ── Verificação do FTP ────────────────────────────────────────────────────────
+# \u2500\u2500 Verifica\u00E7\u00E3o do FTP \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 #' Verifica se o servidor FTP do MTE está acessível
 #'
@@ -46,7 +46,7 @@ caged_status <- function(timeout = 10, verbose = TRUE) {
         "--max-time",        as.character(timeout),
         "--ftp-pasv",
         "--silent",
-        "--list-only"       # só lista o diretório, não baixa dados
+        "--list-only"       # s\u00F3 lista o diret\u00F3rio, n\u00E3o baixa dados
       )
     )
     code == 0L
@@ -65,7 +65,7 @@ caged_status <- function(timeout = 10, verbose = TRUE) {
     mensagem    = if (ok) {
       paste0("FTP do MTE online (", latencia_ms, " ms)")
     } else {
-      "FTP do MTE inacessível"
+      "FTP do MTE inacess\u00EDvel"
     }
   )
 
@@ -74,15 +74,15 @@ caged_status <- function(timeout = 10, verbose = TRUE) {
     if (ok) {
       cli::cli_inform(c(
         "v" = "FTP do MTE {cli::col_green('online')}",
-        "i" = "Latência: {latencia_ms} ms",
+        "i" = "Lat\u00EAncia: {latencia_ms} ms",
         "i" = "URL: {.url {ftp_url}}"
       ))
     } else {
       cli::cli_inform(c(
-        "x" = "FTP do MTE {cli::col_red('inacessível')}",
+        "x" = "FTP do MTE {cli::col_red('inacess\u00EDvel')}",
         "i" = "URL testada: {.url {url_teste}}",
-        "i" = "Verifique sua conexão ou tente novamente mais tarde.",
-        "i" = "O FTP do MTE pode estar em manutenção (comum aos domingos)."
+        "i" = "Verifique sua conex\u00E3o ou tente novamente mais tarde.",
+        "i" = "O FTP do MTE pode estar em manuten\u00E7\u00E3o (comum aos domingos)."
       ))
     }
   }
@@ -90,30 +90,30 @@ caged_status <- function(timeout = 10, verbose = TRUE) {
   invisible(resultado)
 }
 
-# ── Mensagem de boas-vindas ───────────────────────────────────────────────────
+# \u2500\u2500 Mensagem de boas-vindas \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 #' Exibida automaticamente ao carregar o pacote com library(datacaged)
 #' @noRd
 .onAttach <- function(libname, pkgname) {
   ver <- utils::packageVersion("datacaged")
 
-  # Usa formatação ANSI apenas quando o terminal suporta cores;
-  # caso contrário exibe texto simples (redirecionamento, Rscript, CI sem TTY).
+  # Usa formata\u00E7\u00E3o ANSI apenas quando o terminal suporta cores;
+  # caso contr\u00E1rio exibe texto simples (redirecionamento, Rscript, CI sem TTY).
   if (cli::num_ansi_colors(stdout()) > 1L) {
     titulo <- paste0(cli::col_cyan(cli::style_bold("datacaged")), " ", ver,
-                     " — Microdados do CAGED em DuckDB")
+                     " \u2014 Microdados do CAGED em DuckDB")
     ftp    <- cli::col_silver("FTP: ftp://ftp.mtps.gov.br/pdet/microdados/")
     dicas  <- cli::col_silver(paste0(
       "  Verifique o FTP com: caged_status()\n",
-      "  Uso rápido: caged_load(years = 2023, months = 1, db_path = \"caged.duckdb\")\n",
+      "  Uso r\u00E1pido: caged_load(years = 2023, months = 1, db_path = \"caged.duckdb\")\n",
       "  Ajuda  : help(package = \"datacaged\") | ?caged_load"
     ))
   } else {
-    titulo <- paste0("datacaged ", ver, " — Microdados do CAGED em DuckDB")
+    titulo <- paste0("datacaged ", ver, " \u2014 Microdados do CAGED em DuckDB")
     ftp    <- "FTP: ftp://ftp.mtps.gov.br/pdet/microdados/"
     dicas  <- paste0(
       "  Verifique o FTP com: caged_status()\n",
-      "  Uso rápido: caged_load(years = 2023, months = 1, db_path = \"caged.duckdb\")\n",
+      "  Uso r\u00E1pido: caged_load(years = 2023, months = 1, db_path = \"caged.duckdb\")\n",
       "  Ajuda  : help(package = \"datacaged\") | ?caged_load"
     )
   }

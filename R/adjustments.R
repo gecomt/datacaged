@@ -81,7 +81,7 @@ caged_adjustments_load <- function(years,
   invalid_years <- years[years >= .ANO_CORTE]
   if (length(invalid_years) > 0) {
     cli::cli_warn(c(
-      "!" = "CAGED Ajustes só existe para anos até {.val {.ANO_CORTE - 1L}}.",
+      "!" = "CAGED Ajustes s\u00F3 existe para anos at\u00E9 {.val {.ANO_CORTE - 1L}}.",
       "i" = "Anos ignorados: {.val {invalid_years}}"
     ))
     years <- years[years < .ANO_CORTE]
@@ -89,7 +89,7 @@ caged_adjustments_load <- function(years,
 
   if (length(years) == 0) {
     cli::cli_abort(
-      "Nenhum ano válido. CAGED Ajustes cobre até {.val {.ANO_CORTE - 1L}}."
+      "Nenhum ano v\u00E1lido. CAGED Ajustes cobre at\u00E9 {.val {.ANO_CORTE - 1L}}."
     )
   }
 
@@ -97,8 +97,8 @@ caged_adjustments_load <- function(years,
 
   cli::cli_h1("caged_adjustments_load")
   cli::cli_inform(c(
-    "i" = "Anos  : {years[1]}–{years[length(years)]}",
-    "i" = "Meses : {months[1]}–{months[length(months)]}",
+    "i" = "Anos  : {years[1]}\u2013{years[length(years)]}",
+    "i" = "Meses : {months[1]}\u2013{months[length(months)]}",
     "i" = "Banco : {.path {db_path}}"
   ))
 
@@ -122,10 +122,10 @@ caged_adjustments_load <- function(years,
   cli::cli_h2("Resumo")
   purrr::walk2(resumo$status, resumo$n, function(s, cnt) {
     icon <- switch(s,
-      baixado        = cli::col_green("✓"),
-      cache          = cli::col_blue("○"),
+      baixado        = cli::col_green("\u2713"),
+      cache          = cli::col_blue("\u25CB"),
       nao_encontrado = cli::col_yellow("!"),
-      erro           = cli::col_red("✗"),
+      erro           = cli::col_red("\u2717"),
       "?"
     )
     cli::cli_inform("{icon} {s}: {cnt}")
@@ -134,7 +134,7 @@ caged_adjustments_load <- function(years,
   manifest_ok <- dplyr::filter(manifest, status %in% c("baixado", "cache"))
 
   if (nrow(manifest_ok) == 0) {
-    cli::cli_warn("Nenhum arquivo disponível para processar.")
+    cli::cli_warn("Nenhum arquivo dispon\u00EDvel para processar.")
     return(invisible(NULL))
   }
 
@@ -175,7 +175,7 @@ caged_adjustments_load <- function(years,
   cli::cli_progress_done()
 
   # 3. Resumo
-  cli::cli_h2("3/3  Concluído")
+  cli::cli_h2("3/3  Conclu\u00EDdo")
   cli::cli_inform(c(
     "v" = "Total inserido: {format(n_inserido_total, big.mark = ',')} registros"
   ))
@@ -183,7 +183,7 @@ caged_adjustments_load <- function(years,
   invisible(caged_info(db_path))
 }
 
-# ── Helper interno ────────────────────────────────────────────────────────────
+# \u2500\u2500 Helper interno \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 #' Monta tabela de tarefas de download para o CAGED Ajustes
 #' @noRd

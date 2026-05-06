@@ -1,7 +1,7 @@
 # download.R
-# Lógica de construção de URLs, download dos .7z e gestão de cache local
+# L\u00F3gica de constru\u00E7\u00E3o de URLs, download dos .7z e gest\u00E3o de cache local
 
-# ── URLs do FTP ───────────────────────────────────────────────────────────────
+# \u2500\u2500 URLs do FTP \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 #' Constrói a URL FTP do arquivo no servidor do MTE
 #' O servidor usa FTP puro (ftp://), não HTTPS.
@@ -11,7 +11,7 @@
   mm   <- sprintf("%02d", month)
 
   if (type == "ANTIGO") {
-    # Formato real: CAGEDEST_{MM}{AAAA}.7z (sem separação por UF)
+    # Formato real: CAGEDEST_{MM}{AAAA}.7z (sem separa\u00E7\u00E3o por UF)
     nome <- glue::glue("CAGEDEST_{mm}{year}.7z")
     glue::glue("{.FTP_ANTIGO}/{year}/{nome}")
   } else if (type == "AJUSTES") {
@@ -23,14 +23,14 @@
       MOV = "CAGEDMOV",
       FOR = "CAGEDFOR",
       EXC = "CAGEDEXC",
-      cli::cli_abort("Tipo inválido: {.val {type}}. Use MOV, FOR, EXC, ANTIGO ou AJUSTES.")
+      cli::cli_abort("Tipo inv\u00E1lido: {.val {type}}. Use MOV, FOR, EXC, ANTIGO ou AJUSTES.")
     )
     nome <- glue::glue("{prefixo}{competencia}.7z")
     glue::glue("{.FTP_NOVO}/{year}/{competencia}/{nome}")
   }
 }
 
-# ── Download individual ───────────────────────────────────────────────────────
+# \u2500\u2500 Download individual \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 #' Baixa um único arquivo .7z do FTP do MTE com retry
 #'
@@ -40,29 +40,29 @@
 #' @noRd
 .download_file <- function(url, destfile, timeout = 300,
                             sleep_fn = getOption("datacaged.sleep_fn", Sys.sleep)) {
-  # Tenta até 3 vezes com backoff exponencial (5 s, 10 s).
+  # Tenta at\u00E9 3 vezes com backoff exponencial (5 s, 10 s).
   # Em testes, defina options(datacaged.sleep_fn = function(x) invisible(NULL))
-  # para pular a espera sem modificar o código de produção.
+  # para pular a espera sem modificar o c\u00F3digo de produ\u00E7\u00E3o.
   for (tentativa in seq_len(3)) {
     resultado <- tryCatch({
       utils::download.file(
         url      = url,
         destfile = destfile,
-        mode     = "wb",       # binário — essencial para .7z
+        mode     = "wb",       # bin\u00E1rio \u2014 essencial para .7z
         quiet    = TRUE,
         method   = "curl",
         extra    = c(
           "--connect-timeout", as.character(timeout),
           "--max-time",        as.character(timeout * 2),
           "--retry",           "2",
-          "--ftp-pasv",        # modo passivo — necessário para FTP atrás de firewall
+          "--ftp-pasv",        # modo passivo \u2014 necess\u00E1rio para FTP atr\u00E1s de firewall
           "--silent"
         )
       )
     }, warning = function(w) {
-      # download.file emite warning para 404/erros FTP — captura e retorna código
+      # download.file emite warning para 404/erros FTP \u2014 captura e retorna c\u00F3digo
       msg <- conditionMessage(w)
-      if (grepl("404|550|cannot open|não foi poss", msg, ignore.case = TRUE)) {
+      if (grepl("404|550|cannot open|n\u00E3o foi poss", msg, ignore.case = TRUE)) {
         return(404L)
       }
       return(1L)
@@ -70,7 +70,7 @@
       return(1L)
     })
 
-    # Arquivo inexistente no FTP (código 550 = no such file)
+    # Arquivo inexistente no FTP (c\u00F3digo 550 = no such file)
     if (identical(resultado, 404L)) {
       if (file.exists(destfile)) unlink(destfile)
       return(invisible(NULL))
@@ -81,24 +81,24 @@
       return(invisible(destfile))
     }
 
-    # Falha — espera antes de tentar novamente
+    # Falha \u2014 espera antes de tentar novamente
     if (tentativa < 3) sleep_fn(5 * tentativa)
   }
 
   # Esgotou tentativas
   if (file.exists(destfile)) unlink(destfile)
-  cli::cli_warn("Falha ao baixar {.url {url}} após 3 tentativas. Pulando.")
+  cli::cli_warn("Falha ao baixar {.url {url}} ap\u00F3s 3 tentativas. Pulando.")
   invisible(NULL)
 }
 
-# ── Extração dos .7z ──────────────────────────────────────────────────────────
+# \u2500\u2500 Extra\u00E7\u00E3o dos .7z \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 #' Extrai um arquivo .7z para um diretório
 #' Extrai arquivo comprimido com múltiplos fallbacks
 #' Ordem: archive -> unzip -> 7-Zip (Rtools/PATH/Program Files)
 #' @noRd
 .extract_7z <- function(path, exdir) {
-  if (!file.exists(path)) cli::cli_abort("Arquivo não encontrado: {.path {path}}")
+  if (!file.exists(path)) cli::cli_abort("Arquivo n\u00E3o encontrado: {.path {path}}")
 
   # Tentativa 1: archive (libarchive) -- funciona para Novo CAGED (LZMA) e CAGED antigo (PPMd)
   ok <- tryCatch({
@@ -129,7 +129,7 @@
     exdir_norm <- normalizePath(exdir, winslash = "\\", mustWork = FALSE)
 
     # No Windows o 7-Zip exige: 7z.exe e "arquivo.7z" -o"destino" -y
-    # Sem espaço entre -o e o caminho, e sem shQuote que adiciona aspas simples
+    # Sem espa\u00E7o entre -o e o caminho, e sem shQuote que adiciona aspas simples
     if (.Platform$OS.type == "windows") {
       cmd <- paste0(
         '"', exe, '" e "', path_norm, '" "-o', exdir_norm, '" -y'
@@ -138,7 +138,7 @@
         shell(cmd, intern = TRUE, mustWork = FALSE),
         error = function(e) structure(character(0), status = 1L)
       )
-      # attr("status") é NULL quando o comando termina com código 0 (convenção de shell())
+      # attr("status") \u00E9 NULL quando o comando termina com c\u00F3digo 0 (conven\u00E7\u00E3o de shell())
       # %||% 0L captura exactamente esse caso.
       status <- attr(ret, "status") %||% 0L
       if (!is.integer(status)) status <- as.integer(status)
@@ -150,7 +150,7 @@
                 stdout = TRUE, stderr = TRUE),
         error = function(e) structure(character(0), status = 1L)
       )
-      # system2() também retorna NULL attr quando bem-sucedido
+      # system2() tamb\u00E9m retorna NULL attr quando bem-sucedido
       status <- attr(ret, "status") %||% 0L
       if (!is.integer(status)) status <- as.integer(status)
     }
@@ -163,9 +163,9 @@
 
   cli::cli_abort(c(
     "Falha ao extrair {.path {basename(path)}}.",
-    "i" = "O arquivo usa compressão PPMd (7-Zip avançado).",
+    "i" = "O arquivo usa compress\u00E3o PPMd (7-Zip avan\u00E7ado).",
     "i" = "Instale o 7-Zip: {.url https://www.7-zip.org/download.html}",
-    "i" = "O instalador padrão do Windows é suficiente (sem precisar adicionar ao PATH)."
+    "i" = "O instalador padr\u00E3o do Windows \u00E9 suficiente (sem precisar adicionar ao PATH)."
   ))
 }
 
@@ -201,7 +201,7 @@
   NULL
 }
 
-# ── Cache local ───────────────────────────────────────────────────────────────
+# \u2500\u2500 Cache local \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 #' Retorna o diretório de cache padrão do pacote
 #' @noRd
@@ -217,7 +217,7 @@
   file.exists(destfile) && file.size(destfile) > 0
 }
 
-# ── Função pública: caged_download ───────────────────────────────────────────
+# \u2500\u2500 Fun\u00E7\u00E3o p\u00FAblica: caged_download \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 #' Baixa microdados do CAGED do FTP do MTE
 #'
@@ -280,7 +280,7 @@ caged_download <- function(years,
   n <- nrow(tasks)
 
   if (n == 0) {
-    cli::cli_inform("Nenhuma competência válida para baixar.")
+    cli::cli_inform("Nenhuma compet\u00EAncia v\u00E1lida para baixar.")
     return(invisible(tibble::tibble()))
   }
 
@@ -337,10 +337,10 @@ caged_download <- function(years,
   cli::cli_h2("Resumo")
   purrr::walk2(resumo$status, resumo$n, function(s, cnt) {
     icon <- switch(s,
-      baixado        = cli::col_green("✓"),
-      cache          = cli::col_blue("○"),
+      baixado        = cli::col_green("\u2713"),
+      cache          = cli::col_blue("\u25CB"),
       nao_encontrado = cli::col_yellow("!"),
-      erro           = cli::col_red("✗"),
+      erro           = cli::col_red("\u2717"),
       "?"
     )
     cli::cli_inform("{icon} {s}: {cnt}")
@@ -397,7 +397,7 @@ caged_download <- function(years,
   dplyr::bind_rows(resultados)
 }
 
-## ── Montagem da tabela de tarefas ────────────────────────────────────────────
+## \u2500\u2500 Montagem da tabela de tarefas \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 #' Gera data.frame com todas as combinações de download a realizar
 #' @noRd
@@ -408,14 +408,14 @@ caged_download <- function(years,
   for (year in years) {
     for (month in months) {
 
-      # Ignora competências futuras
+      # Ignora compet\u00EAncias futuras
       if (as.Date(sprintf("%04d-%02d-01", year, month)) > today) next
 
       competencia <- .format_period(year, month)
 
       if (.is_new_caged(year, month)) {
 
-        # NOVO CAGED (2020+): 3 tipos por competência
+        # NOVO CAGED (2020+): 3 tipos por compet\u00EAncia
         for (type in c("MOV", "FOR", "EXC")) {
           url <- .ftp_url(year, month, type)
           rows[[length(rows) + 1L]] <- tibble::tibble(
@@ -432,7 +432,7 @@ caged_download <- function(years,
 
       } else {
 
-        # CAGED ANTIGO (<= 2019): 1 arquivo nacional por competência
+        # CAGED ANTIGO (<= 2019): 1 arquivo nacional por compet\u00EAncia
         url <- .ftp_url(year, month, type = "ANTIGO")
         rows[[length(rows) + 1L]] <- tibble::tibble(
           ano          = year,

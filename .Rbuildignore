@@ -19,5 +19,3 @@
 ^.*\.duckdb$
 ^datacaged\.Rproj$
 ^install\.R$
-^\.positai$
-^\.claude$

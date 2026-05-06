@@ -1,7 +1,7 @@
 # database.R
-# Gravação no DuckDB, conexão e utilitários de consulta
+# Grava\u00E7\u00E3o no DuckDB, conex\u00E3o e utilit\u00E1rios de consulta
 
-# ── Conexão ───────────────────────────────────────────────────────────────────
+# \u2500\u2500 Conex\u00E3o \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 #' Abre uma conexão com o banco DuckDB do CAGED
 #'
@@ -42,7 +42,7 @@ caged_connect <- function(db_path, read_only = FALSE, quiet = FALSE) {
   con
 }
 
-# ── Escrita no DuckDB ─────────────────────────────────────────────────────────
+# \u2500\u2500 Escrita no DuckDB \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 #' Grava um data.frame de microdados do CAGED em uma tabela DuckDB
 #'
@@ -84,7 +84,7 @@ caged_to_duckdb <- function(df,
                             table = NULL,
                             overwrite_competencies = FALSE) {
   if (is.null(df) || nrow(df) == 0) {
-    cli::cli_inform("data.frame vazio — nada a gravar.")
+    cli::cli_inform("data.frame vazio \u2014 nada a gravar.")
     return(invisible(0L))
   }
 
@@ -93,16 +93,16 @@ caged_to_duckdb <- function(df,
   con <- caged_connect(db_path, quiet = TRUE)
   on.exit(.disconnect(con), add = TRUE)
 
-  # Normaliza coluna de competência — o nome varia por período e formato:
+  # Normaliza coluna de compet\u00EAncia \u2014 o nome varia por per\u00EDodo e formato:
   # Novo CAGED: "competenciamov" ou "competenciadec"
   # CAGED antigo (CAGEDEST): "competencia_declarada" (formato AAAAMM)
-  # Versões antigas: "competencia"
+  # Vers\u00F5es antigas: "competencia"
   if (!"competencia" %in% names(df)) {
-    # Seleciona a coluna de competência com prioridade explícita:
-    # competenciamov é a chave correta para deduplicação (período de referência),
-    # mesmo em arquivos FOR/EXC que também têm competenciadec.
-    # intersect() preserva a ordem do df, não da lista — por isso iteramos
-    # na ordem de prioridade para garantir comportamento determinístico.
+    # Seleciona a coluna de compet\u00EAncia com prioridade expl\u00EDcita:
+    # competenciamov \u00E9 a chave correta para deduplica\u00E7\u00E3o (per\u00EDodo de refer\u00EAncia),
+    # mesmo em arquivos FOR/EXC que tamb\u00E9m t\u00EAm competenciadec.
+    # intersect() preserva a ordem do df, n\u00E3o da lista \u2014 por isso iteramos
+    # na ordem de prioridade para garantir comportamento determin\u00EDstico.
     priority <- c("competenciamov", "competenciadec", "competencia_declarada")
     col_comp  <- NA_character_
     for (nm in priority) {
@@ -112,7 +112,7 @@ caged_to_duckdb <- function(df,
       df$competencia <- df[[col_comp]]
     } else {
       cli::cli_abort(c(
-        "Nenhuma coluna de competência encontrada no data.frame.",
+        "Nenhuma coluna de compet\u00EAncia encontrada no data.frame.",
         "i" = "Colunas presentes: {.val {names(df)}}",
         "i" = "Esperado: {.col competencia}, {.col competenciamov},
                {.col competenciadec} ou {.col competencia_declarada}."
@@ -121,36 +121,37 @@ caged_to_duckdb <- function(df,
   }
   df$competencia <- suppressWarnings(as.numeric(df$competencia))
 
-  # Remove linhas com competencia NA (linhas de cabeçalho duplicadas, etc.)
+  # Remove linhas com competencia inv\u00E1lida: NA, NaN e Inf
+  # is.finite() retorna FALSE para NA, NaN e Inf \u2014 mais seguro que !is.na()
   n_antes <- nrow(df)
-  df <- df[!is.na(df$competencia), ]
+  df <- df[is.finite(df$competencia), ]
   if (nrow(df) < n_antes) {
-    cli::cli_warn("{n_antes - nrow(df)} linha{?s} removida{?s} com competencia NA.")
+    cli::cli_warn("{n_antes - nrow(df)} linha{?s} removida{?s} com competencia inv\u00E1lida (NA/Inf).")
   }
 
   if (nrow(df) == 0) {
-    cli::cli_inform("data.frame vazio após limpeza — nada a gravar.")
+    cli::cli_inform("data.frame vazio ap\u00F3s limpeza \u2014 nada a gravar.")
     return(invisible(0L))
   }
 
-  # Cria tabela se não existir
+  # Cria tabela se n\u00E3o existir
   .create_table_if_needed(con, table, df)
 
-  # Competências presentes no df
+  # Compet\u00EAncias presentes no df
   competencias <- unique(df$competencia)
 
   if (overwrite_competencies) {
     .delete_competencies(con, table, competencias)
     n_inserido <- .insert_rows(con, table, df)
   } else {
-    # Filtra competências já gravadas
+    # Filtra compet\u00EAncias j\u00E1 gravadas
     ja_gravadas <- .existing_competencies(con, table, competencias)
     novas       <- setdiff(competencias, ja_gravadas)
 
     if (length(ja_gravadas) > 0) {
       cli::cli_inform(c(
-        "i" = "{length(ja_gravadas)} competência{?s} já no banco — pulando.",
-        "i" = "Use {.code overwrite_competencies = TRUE} para forçar."
+        "i" = "{length(ja_gravadas)} compet\u00EAncia{?s} j\u00E1 no banco \u2014 pulando.",
+        "i" = "Use {.code overwrite_competencies = TRUE} para for\u00E7ar."
       ))
     }
 
@@ -170,7 +171,7 @@ caged_to_duckdb <- function(df,
   invisible(n_inserido)
 }
 
-# ── Informações do banco ──────────────────────────────────────────────────────
+# \u2500\u2500 Informa\u00E7\u00F5es do banco \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 #' Lista tabelas e estatísticas do banco DuckDB do CAGED
 #'
@@ -190,7 +191,7 @@ caged_to_duckdb <- function(df,
 #' @export
 caged_info <- function(db_path) {
   if (db_path != ":memory:" && !file.exists(db_path)) {
-    cli::cli_abort("Banco não encontrado: {.path {db_path}}")
+    cli::cli_abort("Banco n\u00E3o encontrado: {.path {db_path}}")
   }
 
   con <- caged_connect(db_path, read_only = TRUE, quiet = TRUE)
@@ -219,7 +220,7 @@ caged_info <- function(db_path) {
                    MAX(competencia) AS max_c FROM {tab}"
         )
       )
-      if (is.na(r$min_c)) "(vazia)" else glue::glue("{r$min_c} – {r$max_c}")
+      if (is.na(r$min_c)) "(vazia)" else glue::glue("{r$min_c} \u2013 {r$max_c}")
     }, error = function(e) NA_character_)
 
     tibble::tibble(
@@ -235,9 +236,9 @@ caged_info <- function(db_path) {
   } else {
     round(file.size(db_path) / 1024^2, 1)
   }
-  tamanho_str <- if (is.na(tamanho_mb)) "(em memória)" else paste0(tamanho_mb, " MB")
+  tamanho_str <- if (is.na(tamanho_mb)) "(em mem\u00F3ria)" else paste0(tamanho_mb, " MB")
 
-  cli::cli_h1("datacaged — {.path {db_path}}")
+  cli::cli_h1("datacaged \u2014 {.path {db_path}}")
   cli::cli_inform("Tamanho do arquivo: {tamanho_str}")
   cli::cli_h2("Tabelas")
 
@@ -246,14 +247,14 @@ caged_info <- function(db_path) {
     cli::cli_inform(c(
       "*" = "{.val {s$table}}",
       " " = "Registros   : {format(s$registros, big.mark = ',')}",
-      " " = "Competências: {s$competencias}"
+      " " = "Compet\u00EAncias: {s$competencias}"
     ))
   }
 
   invisible(stats)
 }
 
-# ── Pipeline principal: caged_load ────────────────────────────────────────────
+# \u2500\u2500 Pipeline principal: caged_load \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 #' Pipeline completo: download → parse → DuckDB
 #'
@@ -310,10 +311,14 @@ caged_load <- function(years,
                        overwrite_competencies    = FALSE,
                        timeout                   = 300) {
 
+  # Valida inputs antes de qualquer output \u2014 evita "Anos: NA\u2013NA" no console
+  years  <- .validate_years(years)
+  months <- .validate_months(months)
+
   cli::cli_h1("caged_load")
   cli::cli_inform(c(
-    "i" = "Anos  : {years[1]}–{years[length(years)]}",
-    "i" = "Meses : {months[1]}–{months[length(months)]}",
+    "i" = "Anos  : {years[1]}\u2013{years[length(years)]}",
+    "i" = "Meses : {months[1]}\u2013{months[length(months)]}",
     "i" = "Banco : {.path {db_path}}"
   ))
 
@@ -328,18 +333,18 @@ caged_load <- function(years,
     timeout = timeout
   )
 
-  # Arquivos disponíveis (baixados ou em cache)
+  # Arquivos dispon\u00EDveis (baixados ou em cache)
   arquivos_ok <- manifest |>
     dplyr::filter(status %in% c("baixado", "cache")) |>
     dplyr::pull(arquivo)
 
   if (length(arquivos_ok) == 0) {
-    cli::cli_warn("Nenhum arquivo disponível para processar.")
+    cli::cli_warn("Nenhum arquivo dispon\u00EDvel para processar.")
     return(invisible(NULL))
   }
 
-  # 2. Parse — processa cada arquivo individualmente (um tipo por vez)
-  # MOV, FOR e EXC vão para tabelas separadas: caged_mov, caged_for, caged_exc
+  # 2. Parse \u2014 processa cada arquivo individualmente (um tipo por vez)
+  # MOV, FOR e EXC v\u00E3o para tabelas separadas: caged_mov, caged_for, caged_exc
   cli::cli_h2("2/3  Parse e carga no DuckDB")
 
   manifest_ok <- dplyr::filter(manifest, status %in% c("baixado", "cache"))
@@ -379,7 +384,7 @@ caged_load <- function(years,
   cli::cli_progress_done()
 
   # 3. Resumo final
-  cli::cli_h2("3/3  Concluído")
+  cli::cli_h2("3/3  Conclu\u00EDdo")
   cli::cli_inform(c(
     "v" = "Total inserido: {format(n_inserido_total, big.mark = ',')} registros"
   ))
@@ -388,7 +393,7 @@ caged_load <- function(years,
   invisible(info)
 }
 
-# ── Helpers internos ──────────────────────────────────────────────────────────
+# \u2500\u2500 Helpers internos \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 #' Detecta o nome da tabela DuckDB pela coluna fonte_tipo do df
 #' Mapeamento:
@@ -401,7 +406,7 @@ caged_load <- function(years,
 .detect_table <- function(df) {
   if (!"fonte_tipo" %in% names(df)) {
     cli::cli_abort(
-      c("Coluna {.col fonte_tipo} não encontrada.",
+      c("Coluna {.col fonte_tipo} n\u00E3o encontrada.",
         "i" = "Informe {.arg table} manualmente.")
     )
   }
@@ -440,7 +445,7 @@ caged_load <- function(years,
   colunas <- DBI::dbListFields(con, table)
   if (!"competencia" %in% colunas) return(numeric(0))
 
-  # Guarda: IN () é SQL inválido — retorna vazio se não há competências
+  # Guarda: IN () \u00E9 SQL inv\u00E1lido \u2014 retorna vazio se n\u00E3o h\u00E1 compet\u00EAncias
   if (length(competencies) == 0L) return(numeric(0))
 
   # Query parametrizada com um placeholder por valor para evitar SQL bruto
@@ -463,7 +468,7 @@ caged_load <- function(years,
 .delete_competencies <- function(con, table, competencies) {
   if (length(competencies) == 0L) return(invisible(0L))
 
-  # Query parametrizada — evita IN () inválido e construção de SQL bruto
+  # Query parametrizada \u2014 evita IN () inv\u00E1lido e constru\u00E7\u00E3o de SQL bruto
   placeholders <- paste(rep("?", length(competencies)), collapse = ", ")
   sql <- sprintf(
     "DELETE FROM %s WHERE competencia IN (%s)",

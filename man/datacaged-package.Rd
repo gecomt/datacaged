@@ -88,4 +88,9 @@ Useful links:
 \author{
 \strong{Maintainer}: Alexsandro Prado \email{alexsandro.prado@ufersa.edu.br}
 
+Authors:
+\itemize{
+  \item Alexsandro Prado \email{alexsandro.prado@ufersa.edu.br}
+}
+
 }

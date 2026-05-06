@@ -142,11 +142,11 @@ caged_download_layouts <- function(type    = "ambos",
       function(s, cnt) {
         icon <- switch(
           s,
-          baixado       = cli::col_green("✔"),
-          cache         = cli::col_blue("ℹ"),
+          baixado       = cli::col_green("\u2714"),
+          cache         = cli::col_blue("\u2139"),
           naoencontrado = cli::col_yellow("!"),
-          erro          = cli::col_red("✖"),
-          "•"
+          erro          = cli::col_red("\u2716"),
+          "\u2022"
         )
         cli::cli_inform("{icon} {s}: {cnt}")
       }
@@ -157,7 +157,7 @@ caged_download_layouts <- function(type    = "ambos",
 }
 
 # Percent-encode byte a byte em Latin-1.
-# Necessário para nomes FTP com acentos no servidor do MTE.
+# Necess\u00E1rio para nomes FTP com acentos no servidor do MTE.
 # @param s character scalar em UTF-8.
 # @return character scalar percent-encoded.
 # @noRd
@@ -165,7 +165,7 @@ caged_download_layouts <- function(type    = "ambos",
   raw_vec <- iconv(s, from = "UTF-8", to = "latin1", toRaw = TRUE)[[1]]
 
   # Guard: iconv returns NA when the string contains chars not representable
-  # in Latin-1 (e.g. '€', '©'). FTP filenames from MTE are always Portuguese
+  # in Latin-1 (e.g. '\u20AC', '\u00A9'). FTP filenames from MTE are always Portuguese
   # (Latin-1 safe) but we protect against unexpected server behaviour.
   if (anyNA(raw_vec)) {
     return(utils::URLencode(s, repeated = TRUE))
@@ -186,9 +186,9 @@ caged_download_layouts <- function(type    = "ambos",
   )
 }
 
-# Lista um diretório FTP e retorna tibble com arquivos xls/xlsx
+# Lista um diret\u00F3rio FTP e retorna tibble com arquivos xls/xlsx
 # cujo nome contenha "layout" (case-insensitive).
-# @param url_dir character. URL do diretório FTP.
+# @param url_dir character. URL do diret\u00F3rio FTP.
 # @param timeout integer. Timeout em segundos.
 # @return tibble com colunas `arquivo` e `url_lista`.
 # @noRd
@@ -251,7 +251,7 @@ caged_download_layouts <- function(type    = "ambos",
 # @noRd
 .try_download <- function(urls, destfile, timeout = 120) {
   for (url in urls) {
-    # Tenta com curl externo diretamente (mais confiável para FTP binário)
+    # Tenta com curl externo diretamente (mais confi\u00E1vel para FTP bin\u00E1rio)
     ok <- tryCatch({
       curl_bin <- Sys.which("curl")
       if (nzchar(curl_bin)) {
@@ -278,7 +278,7 @@ caged_download_layouts <- function(type    = "ambos",
     if (isTRUE(ok)) return("baixado")
     if (file.exists(destfile)) unlink(destfile)
     
-    # Fallback: utils::download.file em modo binário
+    # Fallback: utils::download.file em modo bin\u00E1rio
     metodos <- if (.Platform$OS.type == "windows") {
       c("libcurl", "auto")
     } else {

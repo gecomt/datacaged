@@ -1,5 +1,5 @@
 # availability.R
-# Lista as competências disponíveis no FTP do MTE
+# Lista as compet\u00EAncias dispon\u00EDveis no FTP do MTE
 
 #' Lista as competências disponíveis no FTP do MTE
 #'
@@ -50,12 +50,12 @@ caged_ftp_files <- function(type    = "novo",
                                     verbose = TRUE) {
   type <- match.arg(type, c("novo", "antigo", "ajustes"))
 
-  # Valida n: deve ser numérico positivo ou Inf
-  # n=NA causa crash em is.infinite(NA) → if(NA) → erro sem contexto
+  # Valida n: deve ser num\u00E9rico positivo ou Inf
+  # n=NA causa crash em is.infinite(NA) \u2192 if(NA) \u2192 erro sem contexto
   # n<=0 produziria comportamento inesperado em head()
   if (!is.numeric(n) || length(n) != 1L || (!is.infinite(n) && (is.na(n) || n < 1L))) {
     cli::cli_abort(
-      "{.arg n} deve ser um inteiro positivo ou {.code Inf}, não {.val {n}}."
+      "{.arg n} deve ser um inteiro positivo ou {.code Inf}, n\u00E3o {.val {n}}."
     )
   }
   n <- if (is.infinite(n)) Inf else as.integer(n)
@@ -68,13 +68,13 @@ caged_ftp_files <- function(type    = "novo",
 
   cli::cli_inform("Consultando FTP do MTE...")
 
-  # Lista o diretório raiz do FTP para obter os years disponíveis
+  # Lista o diret\u00F3rio raiz do FTP para obter os years dispon\u00EDveis
   anos_raw <- .ftp_list(url_base, timeout)
 
   if (is.null(anos_raw)) {
     cli::cli_abort(c(
-      "Não foi possível acessar o FTP do MTE.",
-      "i" = "Verifique sua conexão com {.fn caged_status}."
+      "N\u00E3o foi poss\u00EDvel acessar o FTP do MTE.",
+      "i" = "Verifique sua conex\u00E3o com {.fn caged_status}."
     ))
   }
 
@@ -83,7 +83,7 @@ caged_ftp_files <- function(type    = "novo",
   anos_raw <- iconv(anos_raw, from = "", to = "ASCII", sub = "")
   anos_raw <- anos_raw[!is.na(anos_raw) & nchar(trimws(anos_raw)) > 0]
 
-  # Extrai apenas linhas que sejam exatamente um ano (4 dígitos)
+  # Extrai apenas linhas que sejam exatamente um ano (4 d\u00EDgitos)
   years <- suppressWarnings(as.integer(trimws(anos_raw)))
   ano_max <- as.integer(format(Sys.Date(), "%Y"))
   years   <- sort(unique(years[!is.na(years) &
@@ -95,8 +95,8 @@ caged_ftp_files <- function(type    = "novo",
     cli::cli_abort("Nenhum ano encontrado no FTP. Verifique a URL: {.url {url_base}}")
   }
 
-  # Competência máxima válida = próximo mês (dados podem já estar publicados).
-  # Calculado com aritmética explícita de ano/mês para evitar o "mês 13"
+  # Compet\u00EAncia m\u00E1xima v\u00E1lida = pr\u00F3ximo m\u00EAs (dados podem j\u00E1 estar publicados).
+  # Calculado com aritm\u00E9tica expl\u00EDcita de ano/m\u00EAs para evitar o "m\u00EAs 13"
   # que ocorreria ao fazer as.integer(format(hoje, "%Y%m")) + 1L em dezembro.
   hoje     <- Sys.Date()
   ano_hoje <- as.integer(format(hoje, "%Y"))
@@ -111,7 +111,7 @@ caged_ftp_files <- function(type    = "novo",
   competencias <- list()
 
   if (type == "novo") {
-    # ── Novo CAGED: estrutura /AAAA/AAAAMM/ ─────────────────────────────
+    # \u2500\u2500 Novo CAGED: estrutura /AAAA/AAAAMM/ \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
     for (ano in years) {
       url_ano <- paste0(url_base, "/", ano)
       linhas  <- .ftp_list(url_ano, timeout)
@@ -136,7 +136,7 @@ caged_ftp_files <- function(type    = "novo",
     }
 
   } else {
-    # ── CAGED antigo / Ajustes: estrutura /AAAA/ com arquivos por competência
+    # \u2500\u2500 CAGED antigo / Ajustes: estrutura /AAAA/ com arquivos por compet\u00EAncia
     # Antigo:  CAGEDEST_{MM}{AAAA}.7z
     # Ajustes: CAGEDAJUSTES_{MM}{AAAA}.7z
     padrao <- if (type == "ajustes") "CAGEDAJUSTES_\\d{6}\\.7z" else "CAGEDEST_\\d{6}\\.7z"
@@ -150,7 +150,7 @@ caged_ftp_files <- function(type    = "novo",
       todos <- unlist(regmatches(linhas, gregexpr(padrao, linhas, ignore.case = TRUE)))
       if (length(todos) == 0) next
 
-      # Extrai MM e AAAA pelas posições após o prefixo
+      # Extrai MM e AAAA pelas posi\u00E7\u00F5es ap\u00F3s o prefixo
       mm_vec   <- substr(todos, prefixo_len + 1L, prefixo_len + 2L)
       aaaa_vec <- substr(todos, prefixo_len + 3L, prefixo_len + 6L)
       comps    <- sort(unique(paste0(aaaa_vec, mm_vec)), decreasing = TRUE)
@@ -173,7 +173,7 @@ caged_ftp_files <- function(type    = "novo",
   }
 
   if (length(competencias) == 0) {
-    cli::cli_warn("Nenhuma competência encontrada no FTP.")
+    cli::cli_warn("Nenhuma compet\u00EAncia encontrada no FTP.")
     return(invisible(tibble::tibble()))
   }
 
@@ -187,10 +187,10 @@ caged_ftp_files <- function(type    = "novo",
   if (verbose && nrow(resultado) > 0L) {
     serie <- switch(type,
       novo    = "Novo CAGED (2020+)",
-      antigo  = "CAGED Antigo (até 2019)",
-      ajustes = "CAGED Ajustes (série histórica)"
+      antigo  = "CAGED Antigo (at\u00E9 2019)",
+      ajustes = "CAGED Ajustes (s\u00E9rie hist\u00F3rica)"
     )
-    cli::cli_h2("Competências disponíveis — {serie}")
+    cli::cli_h2("Compet\u00EAncias dispon\u00EDveis \u2014 {serie}")
 
     meses_fmt <- c("Jan","Fev","Mar","Abr","Mai","Jun",
                    "Jul","Ago","Set","Out","Nov","Dez")
@@ -208,7 +208,7 @@ caged_ftp_files <- function(type    = "novo",
     cmd <- paste0(fn, "(years = ", yr, ", months = ", mo, ")")
 
     cli::cli_inform(c(
-      "i" = "{nrow(resultado)} competência{?s} listada{?s}",
+      "i" = "{nrow(resultado)} compet\u00EAncia{?s} listada{?s}",
       "i" = "Use {.code {cmd}} para baixar a mais recente."
     ))
   }
@@ -216,7 +216,7 @@ caged_ftp_files <- function(type    = "novo",
   invisible(resultado)
 }
 
-# ── Utilitário interno: lista diretório FTP ───────────────────────────────────
+# \u2500\u2500 Utilit\u00E1rio interno: lista diret\u00F3rio FTP \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 #' Lista o conteúdo de um diretório FTP do MTE
 #' @param url URL do diretório FTP

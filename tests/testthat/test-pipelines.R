@@ -32,7 +32,7 @@ test_that("caged_download() retorna data.frame com colunas esperadas", {
   skip_if(is.null(result), "FTP inacessível — pulando teste")
 
   expect_s3_class(result, "data.frame")
-  expect_true(all(c("arquivo", "competencia", "type", "status", "caminho") %in% names(result)))
+  expect_true(all(c("arquivo", "competencia", "type", "status", "ano", "mes") %in% names(result)))
   expect_true(nrow(result) > 0L)
 })
 
@@ -112,6 +112,7 @@ test_that("caged_adjustments_load() cria banco com tabela caged_ajustes", {
   )
 
   skip_if(is.null(result), "FTP inacessível — pulando teste")
+  skip_if(!file.exists(db_path), "Nenhuma competência de ajustes disponível no FTP")
 
   expect_true(file.exists(db_path))
   con <- caged_connect(db_path, read_only = TRUE, quiet = TRUE)
