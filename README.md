@@ -7,6 +7,7 @@ datacaged
 MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE.md)
 [![Lifecycle:
 stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html)
+[![DOI](https://zenodo.org/badge/1227005418.svg)](https://doi.org/10.5281/zenodo.20058818)
 
 > Microdados do CAGED direto no seu DuckDB, com pipeline completo e
 > pronto para análise.
