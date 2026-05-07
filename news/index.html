@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">datacaged</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.1</span>
       </span>
     </div>
 
@@ -64,8 +64,13 @@
     </div>
 
     <div class="section level2">
+<h2 class="page-header" data-toc-text="0.1.1" id="datacaged-011">datacaged 0.1.1<a class="anchor" aria-label="anchor" href="#datacaged-011"></a></h2>
+<ul><li>
+<code>DESCRIPTION</code>: <code>'DuckDB'</code> entre aspas simples em <code>Title</code> e <code>Description</code> conforme política do CRAN.</li>
+</ul></div>
+    <div class="section level2">
 <h2 class="page-header" data-toc-text="0.1.0" id="datacaged-010">datacaged 0.1.0<a class="anchor" aria-label="anchor" href="#datacaged-010"></a></h2>
-<p>Primeira versão do pacote — preparado para submissão ao CRAN.</p>
+<p>Primeira versão do pacote — submetida ao CRAN.</p>
 <div class="section level3">
 <h3 id="funções-exportadas-0-1-0">Funções exportadas<a class="anchor" aria-label="anchor" href="#fun%C3%A7%C3%B5es-exportadas-0-1-0"></a></h3>
 <ul><li>
@@ -79,29 +84,18 @@
 <li>
 <code><a href="../reference/caged_to_duckdb.html">caged_to_duckdb()</a></code> — grava dados no DuckDB com controle de duplicatas por competência.</li>
 <li>
-<code><a href="../reference/caged_connect.html">caged_connect()</a></code> — abre conexão DBI com o banco DuckDB (aceita <code>quiet = TRUE</code>).</li>
+<code><a href="../reference/caged_connect.html">caged_connect()</a></code> — abre conexão DBI com o banco DuckDB.</li>
 <li>
-<code><a href="../reference/caged_info.html">caged_info()</a></code> — exibe estatísticas das tabelas no banco (registros, range de competências).</li>
+<code><a href="../reference/caged_info.html">caged_info()</a></code> — exibe estatísticas das tabelas no banco.</li>
 <li>
-<code><a href="../reference/caged_adjustments_load.html">caged_adjustments_load()</a></code> — pipeline completo para o CAGED Ajustes (série histórica até 2019).</li>
+<code><a href="../reference/caged_adjustments_load.html">caged_adjustments_load()</a></code> — pipeline completo para o CAGED Ajustes.</li>
 <li>
 <code><a href="../reference/caged_status.html">caged_status()</a></code> — verifica disponibilidade do servidor FTP do MTE.</li>
 <li>
-<code><a href="../reference/caged_ftp_files.html">caged_ftp_files()</a></code> — lista competências disponíveis no FTP (Novo CAGED, antigo e Ajustes).</li>
+<code><a href="../reference/caged_ftp_files.html">caged_ftp_files()</a></code> — lista competências disponíveis no FTP.</li>
 <li>
-<code><a href="../reference/caged_download_layouts.html">caged_download_layouts()</a></code> — baixa os layouts oficiais (dicionários) do MTE.</li>
+<code><a href="../reference/caged_download_layouts.html">caged_download_layouts()</a></code> — baixa os layouts oficiais do MTE.</li>
 <li>Dataset <code>uf_codigos</code> — tabela de UFs com códigos IBGE e regiões.</li>
-</ul></div>
-<div class="section level3">
-<h3 id="características-técnicas-0-1-0">Características técnicas<a class="anchor" aria-label="anchor" href="#caracter%C3%ADsticas-t%C3%A9cnicas-0-1-0"></a></h3>
-<ul><li>Suporte ao <strong>Novo CAGED</strong> (jan/2020 em diante): arquivos <code>CAGEDMOV</code>, <code>CAGEDFOR</code>, <code>CAGEDEXC</code>.</li>
-<li>Suporte ao <strong>CAGED antigo</strong> (até dez/2019): arquivos <code>CAGEDEST_*.7z</code> (arquivo nacional).</li>
-<li>Suporte ao <strong>CAGED Ajustes</strong>: arquivos <code>CAGEDAJUSTES_*.7z</code> (correções retroativas).</li>
-<li>Cache local em <code>tools::R_user_dir("datacaged", "cache")</code> com reúso automático entre sessões.</li>
-<li>Extração PPMd via 7-Zip (detectado via <code><a href="https://rdrr.io/r/base/Sys.which.html" class="external-link">Sys.which()</a></code> em Linux/macOS; Program Files + Rtools no Windows).</li>
-<li>Fallback para <code><a href="https://archive.r-lib.org/reference/archive_extract.html" class="external-link">archive::archive_extract()</a></code> quando 7-Zip não está disponível.</li>
-<li>Queries SQL parametrizadas via <code><a href="https://dbi.r-dbi.org/reference/dbBind.html" class="external-link">DBI::dbBind()</a></code> — sem risco de SQL injection.</li>
-<li>Cross-platform: Windows (R ≥ 4.2.0), macOS e Linux.</li>
 </ul></div>
 </div>
   </div>

@@ -34,7 +34,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">datacaged</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.1</span>
       </span>
     </div>
 
@@ -85,16 +85,15 @@
       </header><div class="row">
   <div class="contents col-md-9">
 <div class="section level1">
-<div class="page-header"><h1 id="datacaged">datacaged<a class="anchor" aria-label="anchor" href="#datacaged"></a>
+<div class="page-header"><h1 id="datacaged-">datacaged <a><img src="reference/figures/logo.png" align="right" height="138"></a>
+<a class="anchor" aria-label="anchor" href="#datacaged-"></a>
 </h1></div>
-<p><a href="https://github.com/gecomt/datacaged/actions" class="external-link"><img src="https://github.com/gecomt/datacaged/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a> <a href="https://app.codecov.io/gh/gecomt/datacaged" class="external-link"><img src="https://codecov.io/gh/gecomt/datacaged/branch/main/graph/badge.svg" alt="codecov"></a> <a href="LICENSE.html"><img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License: MIT"></a> <a href="https://lifecycle.r-lib.org/articles/stages.html" class="external-link"><img src="https://img.shields.io/badge/lifecycle-stable-brightgreen.svg" alt="Lifecycle: stable"></a> <a href="https://doi.org/10.5281/zenodo.20058818" class="external-link"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.20058818.svg" alt="DOI"></a></p>
-<blockquote>
-<p>Microdados do CAGED direto no seu DuckDB, com pipeline completo e pronto para análise.</p>
-</blockquote>
+<!-- badges: start -->
+
 <p>O <strong>datacaged</strong> é um pacote R que automatiza todo o fluxo de trabalho com os microdados do CAGED (Cadastro Geral de Empregados e Desempregados), desde o download até o armazenamento estruturado em banco analítico local (DuckDB), permitindo consultas rápidas e escaláveis com <code>dplyr</code> ou SQL.</p>
 <hr>
 <div class="section level2">
-<h2 id="sparkles-principais-funcionalidades">✨ Principais funcionalidades<a class="anchor" aria-label="anchor" href="#sparkles-principais-funcionalidades"></a>
+<h2 id="visão-geral">Visão geral<a class="anchor" aria-label="anchor" href="#vis%C3%A3o-geral"></a>
 </h2>
 <ul>
 <li><p>📥 Download automatizado dos microdados diretamente do FTP do MTE</p></li>
@@ -114,7 +113,7 @@
 <hr>
 </div>
 <div class="section level2">
-<h2 id="rocket-instalação">🚀 Instalação<a class="anchor" aria-label="anchor" href="#rocket-instala%C3%A7%C3%A3o"></a>
+<h2 id="instalação">Instalação<a class="anchor" aria-label="anchor" href="#instala%C3%A7%C3%A3o"></a>
 </h2>
 <div class="section level3">
 <h3 id="via-github">Via GitHub<a class="anchor" aria-label="anchor" href="#via-github"></a>
@@ -133,7 +132,7 @@
 </div>
 </div>
 <div class="section level2">
-<h2 id="zap-uso-rápido">⚡ Uso rápido<a class="anchor" aria-label="anchor" href="#zap-uso-r%C3%A1pido"></a>
+<h2 id="uso-rápido">Uso rápido<a class="anchor" aria-label="anchor" href="#uso-r%C3%A1pido"></a>
 </h2>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/gecomt/datacaged" class="external-link">datacaged</a></span><span class="op">)</span></span>
@@ -168,13 +167,13 @@
 <hr>
 </div>
 <div class="section level2">
-<h2 id="brain-pipeline">🧠 Pipeline<a class="anchor" aria-label="anchor" href="#brain-pipeline"></a>
+<h2 id="pipeline">Pipeline<a class="anchor" aria-label="anchor" href="#pipeline"></a>
 </h2>
 <div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>Download → Extração → Parsing → Normalização → DuckDB → Análise</span></code></pre></div>
 <hr>
 </div>
 <div class="section level2">
-<h2 id="books-funções-principais">📚 Funções principais<a class="anchor" aria-label="anchor" href="#books-fun%C3%A7%C3%B5es-principais"></a>
+<h2 id="funções-principais">Funções principais<a class="anchor" aria-label="anchor" href="#fun%C3%A7%C3%B5es-principais"></a>
 </h2>
 <table class="table">
 <thead><tr>
@@ -231,7 +230,7 @@
 <hr>
 </div>
 <div class="section level2">
-<h2 id="books-download-de-layouts">📚 Download de layouts<a class="anchor" aria-label="anchor" href="#books-download-de-layouts"></a>
+<h2 id="download-de-layouts">Download de layouts<a class="anchor" aria-label="anchor" href="#download-de-layouts"></a>
 </h2>
 <p>O pacote também baixa os arquivos de layout oficiais do CAGED e Novo CAGED, úteis para conferência de estrutura, dicionários de variáveis e validação de colunas.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
@@ -243,7 +242,7 @@
 <hr>
 </div>
 <div class="section level2">
-<h2 id="file_cabinet-estrutura-do-banco">🗄️ Estrutura do banco<a class="anchor" aria-label="anchor" href="#file_cabinet-estrutura-do-banco"></a>
+<h2 id="estrutura-do-banco">Estrutura do banco<a class="anchor" aria-label="anchor" href="#estrutura-do-banco"></a>
 </h2>
 <table class="table">
 <thead><tr>
@@ -282,7 +281,7 @@
 <hr>
 </div>
 <div class="section level2">
-<h2 id="bar_chart-casos-de-uso">📊 Casos de uso<a class="anchor" aria-label="anchor" href="#bar_chart-casos-de-uso"></a>
+<h2 id="casos-de-uso">Casos de uso<a class="anchor" aria-label="anchor" href="#casos-de-uso"></a>
 </h2>
 <ul>
 <li>Análise do mercado de trabalho</li>
@@ -294,7 +293,7 @@
 <hr>
 </div>
 <div class="section level2">
-<h2 id="gear-dependências">⚙️ Dependências<a class="anchor" aria-label="anchor" href="#gear-depend%C3%AAncias"></a>
+<h2 id="dependências">Dependências<a class="anchor" aria-label="anchor" href="#depend%C3%AAncias"></a>
 </h2>
 <ul>
 <li><code>duckdb</code></li>
@@ -306,7 +305,7 @@
 <hr>
 </div>
 <div class="section level2">
-<h2 id="receipt-requisitos">🧾 Requisitos<a class="anchor" aria-label="anchor" href="#receipt-requisitos"></a>
+<h2 id="requisitos">Requisitos<a class="anchor" aria-label="anchor" href="#requisitos"></a>
 </h2>
 <ul>
 <li>R ≥ 4.1.0</li>
@@ -315,19 +314,19 @@
 <hr>
 </div>
 <div class="section level2">
-<h2 id="page_facing_up-licença">📄 Licença<a class="anchor" aria-label="anchor" href="#page_facing_up-licen%C3%A7a"></a>
+<h2 id="licença">Licença<a class="anchor" aria-label="anchor" href="#licen%C3%A7a"></a>
 </h2>
 <p>MIT © Alexsandro Prado</p>
 <hr>
 </div>
 <div class="section level2">
-<h2 id="handshake-contribuições">🤝 Contribuições<a class="anchor" aria-label="anchor" href="#handshake-contribui%C3%A7%C3%B5es"></a>
+<h2 id="contribuições">Contribuições<a class="anchor" aria-label="anchor" href="#contribui%C3%A7%C3%B5es"></a>
 </h2>
 <p>Pull requests são bem-vindos. Para mudanças maiores, abra uma issue primeiro.</p>
 <hr>
 </div>
 <div class="section level2">
-<h2 id="mailbox_with_mail-contato">📬 Contato<a class="anchor" aria-label="anchor" href="#mailbox_with_mail-contato"></a>
+<h2 id="contato">Contato<a class="anchor" aria-label="anchor" href="#contato"></a>
 </h2>
 <p>Autor: Alexsandro Prado Email: <a href="mailto:alexsandro.prado@ufersa.edu.br" class="email">alexsandro.prado@ufersa.edu.br</a> GitHub: <a href="https://github.com/gecomt/datacaged" class="external-link uri">https://github.com/gecomt/datacaged</a></p>
 </div>
@@ -366,7 +365,16 @@
 </ul>
 </div>
 
-
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/gecomt/datacaged/actions" class="external-link"><img src="https://github.com/gecomt/datacaged/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://app.codecov.io/gh/gecomt/datacaged" class="external-link"><img src="https://codecov.io/gh/gecomt/datacaged/branch/main/graph/badge.svg" alt="codecov"></a></li>
+<li><a href="LICENSE.html"><img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License: MIT"></a></li>
+<li><a href="https://lifecycle.r-lib.org/articles/stages.html" class="external-link"><img src="https://img.shields.io/badge/lifecycle-stable-brightgreen.svg" alt="Lifecycle: stable"></a></li>
+<li><a href="https://doi.org/10.5281/zenodo.20058818" class="external-link"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.20058818.svg" alt="DOI"></a></li>
+</ul>
+</div>
 
   </div>
 </div>
