@@ -1,10 +1,10 @@
 Package: datacaged
-Title: CAGED Microdata Download and Storage in DuckDB
-Version: 0.1.0
+Title: CAGED Microdata Download and Storage in 'DuckDB'
+Version: 0.1.1
 Authors@R: 
     person("Alexsandro", "Prado", email = "alexsandro.prado@ufersa.edu.br", role = c("aut", "cre"))
 Description: Tools to download, parse, and store Brazilian CAGED 
-    (Cadastro Geral de Empregados e Desempregados) microdata using DuckDB. 
+    (Cadastro Geral de Empregados e Desempregados) microdata using 'DuckDB'. 
     Supports both legacy CAGED (pre-2020), Novo CAGED (2020+), and adjustment files, 
     enabling efficient local storage and analysis workflows.
 SystemRequirements: 7-Zip (optional, required for PPMd-compressed files from CAGED antigo and CAGED Ajustes)

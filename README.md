@@ -1,5 +1,7 @@
-datacaged
-================
+
+# datacaged <a><img src="man/figures/logo.png" align="right" height="138" /></a>
+
+<!-- badges: start -->
 
 [![R-CMD-check](https://github.com/gecomt/datacaged/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/gecomt/datacaged/actions)
 [![codecov](https://codecov.io/gh/gecomt/datacaged/branch/main/graph/badge.svg)](https://app.codecov.io/gh/gecomt/datacaged)
@@ -8,9 +10,7 @@ MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE.md)
 [![Lifecycle:
 stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20058818.svg)](https://doi.org/10.5281/zenodo.20058818)
-
-> Microdados do CAGED direto no seu DuckDB, com pipeline completo e
-> pronto para análise.
+<!-- badges: end -->
 
 O **datacaged** é um pacote R que automatiza todo o fluxo de trabalho
 com os microdados do CAGED (Cadastro Geral de Empregados e
@@ -20,7 +20,7 @@ escaláveis com `dplyr` ou SQL.
 
 ------------------------------------------------------------------------
 
-## ✨ Principais funcionalidades
+## Visão geral
 
 - 📥 Download automatizado dos microdados diretamente do FTP do MTE
 
@@ -41,7 +41,7 @@ escaláveis com `dplyr` ou SQL.
 
 ------------------------------------------------------------------------
 
-## 🚀 Instalação
+## Instalação
 
 ### Via GitHub
 
@@ -59,7 +59,7 @@ remotes::install_github("gecomt/datacaged")
 
 ------------------------------------------------------------------------
 
-## ⚡ Uso rápido
+## Uso rápido
 
 ``` r
 library(datacaged)
@@ -95,13 +95,13 @@ dplyr::tbl(con, "caged_mov") |>
 
 ------------------------------------------------------------------------
 
-## 🧠 Pipeline
+## Pipeline
 
     Download → Extração → Parsing → Normalização → DuckDB → Análise
 
 ------------------------------------------------------------------------
 
-## 📚 Funções principais
+## Funções principais
 
 | Função                     | Descrição                     |
 |----------------------------|-------------------------------|
@@ -119,7 +119,7 @@ dplyr::tbl(con, "caged_mov") |>
 
 ------------------------------------------------------------------------
 
-## 📚 Download de layouts
+## Download de layouts
 
 O pacote também baixa os arquivos de layout oficiais do CAGED e Novo
 CAGED, úteis para conferência de estrutura, dicionários de variáveis e
@@ -137,7 +137,7 @@ com o status de cada download.
 
 ------------------------------------------------------------------------
 
-## 🗄️ Estrutura do banco
+## Estrutura do banco
 
 | Tabela          | Conteúdo                   | Período   |
 |-----------------|----------------------------|-----------|
@@ -149,7 +149,7 @@ com o status de cada download.
 
 ------------------------------------------------------------------------
 
-## 📊 Casos de uso
+## Casos de uso
 
 - Análise do mercado de trabalho
 - Indicadores econômicos
@@ -159,7 +159,7 @@ com o status de cada download.
 
 ------------------------------------------------------------------------
 
-## ⚙️ Dependências
+## Dependências
 
 - `duckdb`
 - `dplyr`
@@ -169,27 +169,27 @@ com o status de cada download.
 
 ------------------------------------------------------------------------
 
-## 🧾 Requisitos
+## Requisitos
 
 - R ≥ 4.1.0
 - 7-Zip (opcional, para arquivos PPMd do CAGED antigo)
 
 ------------------------------------------------------------------------
 
-## 📄 Licença
+## Licença
 
 MIT © Alexsandro Prado
 
 ------------------------------------------------------------------------
 
-## 🤝 Contribuições
+## Contribuições
 
 Pull requests são bem-vindos. Para mudanças maiores, abra uma issue
 primeiro.
 
 ------------------------------------------------------------------------
 
-## 📬 Contato
+## Contato
 
 Autor: Alexsandro Prado Email: <alexsandro.prado@ufersa.edu.br> GitHub:
 <https://github.com/gecomt/datacaged>
