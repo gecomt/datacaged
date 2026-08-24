@@ -148,7 +148,8 @@
     ) |>
     stringr::str_replace_all("[^a-z0-9_]", "_") |>
     stringr::str_replace_all("_+", "_") |>
-    stringr::str_remove_all("^_+|_+$")
+    stringr::str_remove("^_+") |>
+    stringr::str_remove("_+$")
 }
 
 # -- Parse de arquivo .7z (extrai + le) ---------------------------------------

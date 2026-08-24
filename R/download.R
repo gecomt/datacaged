@@ -55,9 +55,10 @@
 
       status <- httr2::resp_status(resp)
 
-      # Arquivo não encontrado no repositório
+      # Arquivo não encontrado no repositório — retorna NULL
       if (status %in% c(404L, 403L)) {
-        return(404L)
+        if (file.exists(destfile)) unlink(destfile)
+        return(invisible(NULL))
       }
 
       # Qualquer outro erro HTTP

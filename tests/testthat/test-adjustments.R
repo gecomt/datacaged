@@ -59,6 +59,8 @@ test_that("caged_adjustments_load rejeita anos >= 2020 com aviso ou erro", {
 test_that("caged_hf_files type = 'ajustes' retorna tibble correto", {
   skip_on_cran()
   result <- caged_hf_files(type = "ajustes", n = 3, verbose = FALSE, timeout = 30)
+  # CAGED_AJUSTES pode nao existir no repositorio HF — pular se vazio
+  skip_if(nrow(result) == 0, "CAGED_AJUSTES nao disponivel no repositorio HF")
   expect_s3_class(result, "data.frame")
   expect_true(all(c("competencia", "ano", "mes", "url") %in% names(result)))
   expect_true(all(result$ano < 2020L))
