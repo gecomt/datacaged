@@ -1,0 +1,655 @@
+---
+title: "Use Cases: Labour Market Analysis"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Use Cases: Labour Market Analysis}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment  = "#>",
+  eval     = FALSE,
+  fig.width  = 7,
+  fig.height = 4.5
+)
+```
+
+```{r libraries}
+library(datacaged)
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+library(scales)
+```
+
+This vignette presents ready-to-use labour market analyses using
+`datacaged`. Each use case is independent — you can run just
+the section of interest.
+
+**Required data** (run once):
+
+```{r dados-necessarios}
+# Novo CAGED 2023
+caged_load(years = 2023, months = seq_len(12L), db_path = "caged.duckdb")
+
+# Para casos com série histórica, adicionar:
+caged_load(years = 2020:2022, months = seq_len(12L), db_path = "caged.duckdb")
+caged_load(years = 2015:2019, months = seq_len(12L), db_path = "caged.duckdb")
+caged_adjustments_load(years = 2015:2019, months = seq_len(12L), db_path = "caged.duckdb")
+```
+
+```{r conexao}
+con <- caged_connect("caged.duckdb")
+```
+
+---
+
+## Case 1 — Employment balance: hires vs dismissals
+
+Analysis of the monthly flow of entry and exit in the formal labour market.
+
+```{r caso1-dados}
+fluxo <- tbl(con, "caged_mov") |>
+  group_by(competenciamov) |>
+  summarise(
+    admissoes     = sum(saldomovimentacao ==  1, na.rm = TRUE),
+    desligamentos = sum(saldomovimentacao == -1, na.rm = TRUE),
+    saldo         = sum(saldomovimentacao,       na.rm = TRUE)
+  ) |>
+  collect() |>
+  mutate(
+    data = ym(as.character(competenciamov))
+  ) |>
+  arrange(data)
+```
+
+```{r caso1-grafico}
+ggplot(fluxo, aes(x = data)) +
+  geom_col(aes(y = admissoes),      fill = "#2196F3", alpha = 0.8) +
+  geom_col(aes(y = -desligamentos), fill = "#F44336", alpha = 0.8) +
+  geom_line(aes(y = saldo), color = "#212121", linewidth = 1.2) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "grey40") +
+  scale_y_continuous(labels = label_number(scale = 1e-6, suffix = "M")) +
+  scale_x_date(date_breaks = "2 months", date_labels = "%b/%y") +
+  labs(
+    title    = "Formal Employment Flow — Novo CAGED 2023",
+    subtitle = "Blue bars = hires | red bars = dismissals | line = balance",
+    x        = NULL,
+    y        = "Movements",
+    caption  = "Source: MTE/CAGED via datacaged"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+---
+
+## Case 2 — Balance by economic sector (CNAE)
+
+Identifies which sectors created and destroyed the most formal jobs in the period.
+
+```{r caso2-dados}
+# CNAE 2.0 section dictionary
+cnae_secoes <- tibble::tribble(
+  ~secao, ~descricao,
+  "A",  "Agriculture",
+  "B",  "Extractive Industries",
+  "C",  "Manufacturing",
+  "D",  "Electricity and Gas",
+  "E",  "Water and Sanitation",
+  "F",  "Construction",
+  "G",  "Trade",
+  "H",  "Transport",
+  "I",  "Accommodation and Food",
+  "J",  "Information and Communication",
+  "K",  "Financial Activities",
+  "L",  "Real Estate",
+  "M",  "Professional and Technical",
+  "N",  "Administrative Activities",
+  "O",  "Public Administration",
+  "P",  "Education",
+  "Q",  "Health",
+  "R",  "Arts and Culture",
+  "S",  "Other Activities",
+  "T",  "Domestic Services",
+  "U",  "International Organisations"
+)
+
+setor <- tbl(con, "caged_mov") |>
+  filter(!is.na(secao)) |>
+  group_by(secao) |>
+  summarise(saldo = sum(saldomovimentacao, na.rm = TRUE)) |>
+  collect() |>
+  left_join(cnae_secoes, by = "secao") |>
+  mutate(
+    descricao = coalesce(descricao, paste("Setor", secao)),
+    cor       = if_else(saldo >= 0, "#2196F3", "#F44336")
+  ) |>
+  arrange(saldo)
+```
+
+```{r caso2-grafico}
+ggplot(setor, aes(x = saldo, y = reorder(descricao, saldo), fill = cor)) +
+  geom_col(show.legend = FALSE) +
+  geom_vline(xintercept = 0, color = "grey30") +
+  scale_fill_identity() +
+  scale_x_continuous(labels = label_number(scale = 1e-3, suffix = "k")) +
+  labs(
+    title   = "Employment Balance by Economic Sector — 2023",
+    x       = "Balance (thousand jobs)",
+    y       = NULL,
+    caption = "Source: MTE/CAGED via datacaged"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(panel.grid.major.y = element_blank())
+```
+
+---
+
+## Case 3 — Heat map: balance by state and month
+
+Visualisation of which state and month had the strongest formal employment.
+
+```{r caso3-dados}
+# State dictionary (IBGE code -> abbreviation)
+data("uf_codigos")
+
+uf_mensal <- tbl(con, "caged_mov") |>
+  group_by(uf, competenciamov) |>
+  summarise(saldo = sum(saldomovimentacao, na.rm = TRUE)) |>
+  collect() |>
+  left_join(uf_codigos, by = c("uf" = "codigo")) |>
+  filter(!is.na(sigla)) |>
+  mutate(
+    data = ym(as.character(competenciamov)),
+    mes  = format(data, "%b")
+  )
+```
+
+```{r caso3-grafico}
+ggplot(uf_mensal, aes(x = mes, y = reorder(sigla, saldo), fill = saldo)) +
+  geom_tile(color = "white", linewidth = 0.3) +
+  scale_fill_gradient2(
+    low      = "#F44336",
+    mid      = "white",
+    high     = "#2196F3",
+    midpoint = 0,
+    labels   = label_number(scale = 1e-3, suffix = "k")
+  ) +
+  labs(
+    title   = "Employment Balance by State and Month — 2023",
+    x       = NULL,
+    y       = NULL,
+    fill    = "Saldo",
+    caption = "Source: MTE/CAGED via datacaged"
+  ) +
+  theme_minimal(base_size = 10) +
+  theme(
+    axis.text.x    = element_text(angle = 45, hjust = 1),
+    legend.position = "right"
+  )
+```
+
+---
+
+## Case 4 — Profile of newly hired workers
+
+Demographic profile of new formal employment by gender, education
+and race/colour.
+
+```{r caso4-dados}
+# Category dictionaries
+grau_instrucao <- tibble::tribble(
+  ~graudeinstrucao, ~escolaridade,
+  1L, "Illiterate",
+  2L, "Incomplete primary",
+  3L, "Complete primary",
+  4L, "Incomplete secondary",
+  5L, "Complete secondary",
+  6L, "Incomplete higher education",
+  7L, "Complete higher education",
+  8L, "Master's degree",
+  9L, "Doctorate"
+)
+
+raca_dic <- tibble::tribble(
+  ~racacor, ~raca,
+  1L, "Indigenous",
+  2L, "White",
+  4L, "Black",
+  6L, "Yellow",
+  8L, "Mixed",
+  9L, "Not declared"
+)
+
+# Hires by education level and gender
+perfil_escol <- tbl(con, "caged_mov") |>
+  filter(saldomovimentacao == 1, !is.na(graudeinstrucao)) |>
+  group_by(graudeinstrucao, sexo) |>
+  summarise(n = n()) |>
+  collect() |>
+  left_join(grau_instrucao, by = "graudeinstrucao") |>
+  mutate(
+    sexo_label = if_else(sexo == 1, "Male", "Female"),
+    escolaridade = factor(escolaridade, levels = grau_instrucao$escolaridade)
+  )
+```
+
+```{r caso4-grafico-escol}
+ggplot(perfil_escol, aes(x = escolaridade, y = n, fill = sexo_label)) +
+  geom_col(position = "dodge") +
+  scale_y_continuous(labels = label_number(scale = 1e-3, suffix = "k")) +
+  scale_fill_manual(values = c("Male" = "#1565C0", "Female" = "#AD1457")) +
+  labs(
+    title   = "Hires by Education Level and Gender — 2023",
+    x       = NULL,
+    y       = "Hires (thousand)",
+    fill    = NULL,
+    caption = "Source: MTE/CAGED via datacaged"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    axis.text.x    = element_text(angle = 40, hjust = 1),
+    legend.position = "top"
+  )
+```
+
+```{r caso4-dados-raca}
+# Hires by race/colour
+perfil_raca <- tbl(con, "caged_mov") |>
+  filter(saldomovimentacao == 1, !is.na(racacor)) |>
+  group_by(racacor) |>
+  summarise(n = n()) |>
+  collect() |>
+  left_join(raca_dic, by = "racacor") |>
+  mutate(pct = n / sum(n))
+```
+
+```{r caso4-grafico-raca}
+ggplot(perfil_raca, aes(x = reorder(raca, n), y = n, fill = raca)) +
+  geom_col(show.legend = FALSE) +
+  geom_text(aes(label = percent(pct, accuracy = 0.1)), hjust = -0.1, size = 3.5) +
+  coord_flip() +
+  scale_y_continuous(
+    labels = label_number(scale = 1e-6, suffix = "M"),
+    expand = expansion(mult = c(0, 0.15))
+  ) +
+  scale_fill_brewer(palette = "Set2") +
+  labs(
+    title   = "Distribution of Hires by Race/Colour — 2023",
+    x       = NULL,
+    y       = "Admissões",
+    caption = "Source: MTE/CAGED via datacaged"
+  ) +
+  theme_minimal(base_size = 11)
+```
+
+---
+
+## Case 5 — Wage distribution of new hires
+
+Analysis of wages declared for new hires.
+
+```{r caso5-dados}
+salarios <- tbl(con, "caged_mov") |>
+  filter(
+    saldomovimentacao == 1,
+    !is.na(salario),
+    salario > 0,
+    salario < 30000   # remove outliers extremos
+  ) |>
+  select(salario, sexo, graudeinstrucao) |>
+  collect() |>
+  mutate(
+    sexo_label = if_else(sexo == 1, "Male", "Female"),
+    log_salario = log10(salario)
+  )
+
+# Wage percentiles
+salarios |>
+  group_by(sexo_label) |>
+  summarise(
+    p10    = quantile(salario, 0.10),
+    mediana = median(salario),
+    media   = mean(salario),
+    p90    = quantile(salario, 0.90)
+  )
+```
+
+```{r caso5-grafico}
+ggplot(salarios, aes(x = salario, fill = sexo_label)) +
+  geom_histogram(
+    aes(y = after_stat(density)),
+    bins     = 60,
+    alpha    = 0.6,
+    position = "identity"
+  ) +
+  geom_vline(
+    data = salarios |>
+      group_by(sexo_label) |>
+      summarise(med = median(salario)),
+    aes(xintercept = med, color = sexo_label),
+    linewidth = 1.2, linetype = "dashed"
+  ) +
+  scale_x_continuous(
+    labels = label_dollar(prefix = "R$", big.mark = ".", decimal.mark = ","),
+    limits = c(0, 10000)
+  ) +
+  scale_fill_manual(values  = c("Male" = "#1565C0", "Female" = "#AD1457")) +
+  scale_color_manual(values = c("Male" = "#0D47A1", "Female" = "#880E4F")) +
+  labs(
+    title    = "Wage Distribution of New Hires by Gender — 2023",
+    subtitle = "Dashed lines indicate the median wage for each group",
+    x        = "Starting wage (BRL)",
+    y        = "Density",
+    fill     = NULL,
+    color    = NULL,
+    caption  = "Source: MTE/CAGED via datacaged"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(legend.position = "top")
+```
+
+---
+
+## Case 6 — Formal employment trends: 2015-2023 series
+
+Construction of a long historical series joining legacy CAGED (up to 2019) and
+Novo CAGED (from 2020 onwards).
+
+```{r caso6-dados}
+# Legacy CAGED: competencia + saldomovimentacao
+antigo <- tbl(con, "caged_antigo") |>
+  filter(!is.na(competencia)) |>
+  group_by(competencia) |>
+  summarise(saldo = sum(saldomovimentacao, na.rm = TRUE)) |>
+  collect() |>
+  mutate(serie = "Legacy CAGED")
+
+# Adjustments: added to legacy to correct the series
+ajustes <- tbl(con, "caged_ajustes") |>
+  filter(!is.na(competencia)) |>
+  group_by(competencia) |>
+  summarise(saldo_ajuste = sum(saldomovimentacao, na.rm = TRUE)) |>
+  collect()
+
+antigo_corrigido <- left_join(antigo, ajustes, by = "competencia") |>
+  mutate(
+    saldo = saldo + coalesce(saldo_ajuste, 0L),
+    serie = "Legacy CAGED (adjusted)"
+  ) |>
+  select(competencia, saldo, serie)
+
+# Novo CAGED: competenciamov + saldomovimentacao
+novo <- tbl(con, "caged_mov") |>
+  group_by(competencia = competenciamov) |>
+  summarise(saldo = sum(saldomovimentacao, na.rm = TRUE)) |>
+  collect() |>
+  mutate(serie = "Novo CAGED")
+
+# Combine series
+serie_longa <- bind_rows(antigo_corrigido, novo) |>
+  filter(!is.na(competencia)) |>
+  mutate(data = ym(as.character(competencia))) |>
+  filter(data >= ym("201501")) |>
+  arrange(data)
+```
+
+```{r caso6-grafico}
+ggplot(serie_longa, aes(x = data, y = saldo, color = serie)) +
+  geom_line(linewidth = 1) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "grey50") +
+  annotate("rect",
+    xmin = ym("202001"), xmax = ym("202012"),
+    ymin = -Inf, ymax = Inf,
+    alpha = 0.08, fill = "orange"
+  ) +
+  annotate("text",
+    x = ym("202006"), y = Inf, vjust = 1.5,
+    label = "COVID-19\nPandemic", size = 3, color = "darkorange"
+  ) +
+  scale_y_continuous(labels = label_number(scale = 1e-6, suffix = "M")) +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  scale_color_manual(values = c(
+    "Legacy CAGED (adjusted)" = "#795548",
+    "Novo CAGED"               = "#1565C0"
+  )) +
+  labs(
+    title    = "Formal Employment Balance — Historical Series 2015-2023",
+    subtitle = "Legacy CAGED corrected by Adjustments + Novo CAGED",
+    x        = NULL,
+    y        = "Monthly balance",
+    color    = NULL,
+    caption  = "Source: MTE/CAGED via datacaged"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "top")
+```
+
+---
+
+## Case 7 — Turnover by sector
+
+Turnover rate (dismissals / estimated stock) by economic sector.
+
+```{r caso7-dados}
+# cnae_secoes also defined here so Case 7 can be run independently
+cnae_secoes <- tibble::tribble(
+  ~secao, ~descricao,
+  "A",  "Agriculture",       "B", "Extractive Industries",
+  "C",  "Manufacturing", "D", "Electricity and Gas",
+  "E",  "Water and Sanitation", "F", "Construction",
+  "G",  "Trade",          "H", "Transport",
+  "I",  "Accommodation and Food", "J", "Information and Communication",
+  "K",  "Financial Activities",   "L", "Real Estate",
+  "M",  "Professional and Technical", "N", "Administrative Activities",
+  "O",  "Public Administration",      "P", "Education",
+  "Q",  "Health",             "R", "Arts and Culture",
+  "S",  "Other Activities", "T", "Domestic Services",
+  "U",  "International Organisations"
+)
+
+rotatividade <- tbl(con, "caged_mov") |>
+  filter(!is.na(secao)) |>
+  group_by(secao, competenciamov) |>
+  summarise(
+    admissoes     = sum(saldomovimentacao ==  1, na.rm = TRUE),
+    desligamentos = sum(saldomovimentacao == -1, na.rm = TRUE)
+  ) |>
+  collect() |>
+  left_join(cnae_secoes, by = "secao") |>
+  mutate(descricao = coalesce(descricao, paste("Setor", secao))) |>
+  group_by(descricao) |>
+  summarise(
+    total_admissoes     = sum(admissoes),
+    total_desligamentos = sum(desligamentos),
+    rotatividade_pct    = total_desligamentos / (total_admissoes + total_desligamentos)
+  ) |>
+  arrange(desc(rotatividade_pct))
+```
+
+```{r caso7-grafico}
+ggplot(
+  rotatividade |> filter(!is.na(descricao)),
+  aes(x = total_admissoes, y = total_desligamentos,
+      size = rotatividade_pct, color = rotatividade_pct,
+      label = descricao)
+) +
+  geom_point(alpha = 0.7) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "grey50") +
+  ggrepel::geom_text_repel(size = 3, max.overlaps = 12) +
+  scale_x_continuous(labels = label_number(scale = 1e-6, suffix = "M")) +
+  scale_y_continuous(labels = label_number(scale = 1e-6, suffix = "M")) +
+  scale_size_continuous(range = c(2, 10), guide = "none") +
+  scale_color_gradient(low = "#2196F3", high = "#F44336", labels = percent) +
+  labs(
+    title    = "Turnover by Economic Sector — 2023",
+    subtitle = "Points above the diagonal = more dismissals than hires",
+    x        = "Admissões",
+    y        = "Desligamentos",
+    color    = "Rotatividade",
+    caption  = "Source: MTE/CAGED via datacaged"
+  ) +
+  theme_minimal(base_size = 11)
+```
+
+---
+
+## Case 8 — Formal employment by establishment size
+
+Analysis of which company size concentrates the most job creation.
+
+```{r caso8-dados}
+porte_dic <- tibble::tribble(
+  ~tamestabjan, ~porte,
+  0L,  "Not declared",
+  1L,  "Up to 4 jobs",
+  2L,  "5 a 9",
+  3L,  "10 a 19",
+  4L,  "20 a 49",
+  5L,  "50 a 99",
+  6L,  "100 a 249",
+  7L,  "250 a 499",
+  8L,  "500 a 999",
+  9L,  "1000 or more"
+)
+
+porte <- tbl(con, "caged_mov") |>
+  filter(!is.na(tamestabjan)) |>
+  group_by(tamestabjan) |>
+  summarise(
+    saldo       = sum(saldomovimentacao, na.rm = TRUE),
+    admissoes   = sum(saldomovimentacao ==  1, na.rm = TRUE),
+    desligamentos = sum(saldomovimentacao == -1, na.rm = TRUE)
+  ) |>
+  collect() |>
+  left_join(porte_dic, by = "tamestabjan") |>
+  mutate(porte = factor(porte, levels = porte_dic$porte))
+```
+
+```{r caso8-grafico}
+ggplot(porte |> filter(!is.na(porte)), aes(x = porte)) +
+  geom_col(aes(y = admissoes),       fill = "#1565C0", alpha = 0.8) +
+  geom_col(aes(y = -desligamentos),  fill = "#B71C1C", alpha = 0.8) +
+  geom_point(aes(y = saldo), color = "#212121", size = 3) +
+  geom_hline(yintercept = 0, color = "grey30") +
+  scale_y_continuous(labels = label_number(scale = 1e-6, suffix = "M")) +
+  labs(
+    title    = "Movement by Establishment Size — 2023",
+    subtitle = "Azul = admissões | Vermelho = desligamentos | Ponto = saldo",
+    x        = "Size range (jobs in Jan/year)",
+    y        = "Movements",
+    caption  = "Source: MTE/CAGED via datacaged"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(axis.text.x = element_text(angle = 40, hjust = 1))
+```
+
+---
+
+## Case 9 — Formal employment by Brazilian region
+
+Comparison of the formal labour market across Brazil's 5 regions.
+
+```{r caso9-dados}
+data("uf_codigos")
+
+regiao_mensal <- tbl(con, "caged_mov") |>
+  group_by(uf, competenciamov) |>
+  summarise(saldo = sum(saldomovimentacao, na.rm = TRUE)) |>
+  collect() |>
+  left_join(uf_codigos, by = c("uf" = "codigo")) |>
+  filter(!is.na(regiao)) |>
+  group_by(regiao, competenciamov) |>
+  summarise(saldo = sum(saldo), .groups = "drop") |>
+  mutate(data = ym(as.character(competenciamov)))
+```
+
+```{r caso9-grafico}
+ggplot(regiao_mensal, aes(x = data, y = saldo, color = regiao, fill = regiao)) +
+  geom_line(linewidth = 1) +
+  geom_area(alpha = 0.1) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "grey40") +
+  scale_y_continuous(labels = label_number(scale = 1e-3, suffix = "k")) +
+  scale_x_date(date_breaks = "2 months", date_labels = "%b/%y") +
+  scale_color_brewer(palette = "Set1") +
+  scale_fill_brewer(palette  = "Set1") +
+  facet_wrap(~regiao, scales = "free_y", ncol = 2) +
+  labs(
+    title   = "Formal Employment Balance by Region — 2023",
+    x       = NULL,
+    y       = "Balance (thousand jobs)",
+    color   = NULL,
+    fill    = NULL,
+    caption = "Source: MTE/CAGED via datacaged"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    legend.position  = "none",
+    axis.text.x      = element_text(angle = 45, hjust = 1),
+    strip.text       = element_text(face = "bold")
+  )
+```
+
+---
+
+## Case 10 — Executive dashboard: labour market summary
+
+Set of key indicators in a consolidated dashboard.
+
+```{r caso10-dados}
+# Annual KPIs
+kpis <- tbl(con, "caged_mov") |>
+  summarise(
+    admissoes     = sum(saldomovimentacao ==  1, na.rm = TRUE),
+    desligamentos = sum(saldomovimentacao == -1, na.rm = TRUE),
+    saldo         = sum(saldomovimentacao,       na.rm = TRUE),
+    salario_medio = round(mean(salario[salario > 0], na.rm = TRUE), 2),
+    pct_mulheres  = round(mean(sexo == 3, na.rm = TRUE) * 100, 1),
+    pct_superior  = round(mean(graudeinstrucao >= 7, na.rm = TRUE) * 100, 1)
+  ) |>
+  collect()
+
+cat(glue::glue("
+=== FORMAL LABOUR MARKET DASHBOARD 2023 ===
+
+Hires:       {scales::number(kpis$admissoes,     big.mark = '.')}
+Dismissals:   {scales::number(kpis$desligamentos, big.mark = '.')}
+Balance:           {scales::number(kpis$saldo,         big.mark = '.')}
+Average wage:   R$ {scales::number(kpis$salario_medio, big.mark = '.', decimal.mark = ',')}
+Women (%):    {kpis$pct_mulheres}%
+Higher education:  {kpis$pct_superior}%
+"))
+```
+
+```{r caso10-parquet}
+# Export any result to Parquet via caged_to_parquet()
+caged_to_parquet(
+  "caged.duckdb",
+  output_dir = "~/exports_caged"
+)
+
+# Or partitioned by state for regional analyses
+caged_to_parquet(
+  "caged.duckdb",
+  output_dir   = "~/exports_caged",
+  tables       = "caged_mov",
+  partition_by = "uf"
+)
+```
+
+```{r caso10-fechar}
+DBI::dbDisconnect(con, shutdown = TRUE)
+```
+
+---
+
+> **Data note**: CAGED data is subject to revisions by the MTE.
+> For analyses requiring historical accuracy, consider also incorporating
+> adjustments via `caged_adjustments_load()`.
+

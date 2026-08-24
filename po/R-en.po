@@ -1,0 +1,248 @@
+# English translation — datacaged
+# Copyright (C) 2026 datacaged authors
+# This file is distributed under the same license as the datacaged package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: datacaged 0.2.0\n"
+"POT-Creation-Date: 2026-06-24 10:00\n"
+"PO-Revision-Date: 2026-06-24 10:00+0000\n"
+"Last-Translator: Alexsandro Prado <alexsandro.prado@ufersa.edu.br>\n"
+"Language-Team: English\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "No valid year. CAGED Adjustments cover up to {.val {ano_limite}}."
+msgstr "No valid year. CAGED Adjustments cover up to {.val {ano_limite}}."
+
+msgid "CAGED Adjustments only exist for years up to {.val {ano_limite}}."
+msgstr "CAGED Adjustments only exist for years up to {.val {ano_limite}}."
+
+msgid "Ignored years: {.val {invalid_years}}"
+msgstr "Ignored years: {.val {invalid_years}}"
+
+msgid "2/3  Parse and load into DuckDB"
+msgstr "2/3  Parse and load into DuckDB"
+
+msgid "3/3  Done"
+msgstr "3/3  Done"
+
+msgid "Summary"
+msgstr "Summary"
+
+msgid "No download tasks generated."
+msgstr "No download tasks generated."
+
+msgid "No files available to process."
+msgstr "No files available to process."
+
+msgid "Error in {.path {basename(arq)}}: {conditionMessage(e)}"
+msgstr "Error in {.path {basename(arq)}}: {conditionMessage(e)}"
+
+msgid "Total inserted: {format(n_inserido_total, big.mark = ',')} records"
+msgstr "Total inserted: {format(n_inserido_total, big.mark = ',')} records"
+
+msgid "Years : {years[1]}-{years[length(years)]}"
+msgstr "Years : {years[1]}-{years[length(years)]}"
+
+msgid "Months: {months[1]}-{months[length(months)]}"
+msgstr "Months: {months[1]}-{months[length(months)]}"
+
+msgid "DB    : {.path {db_path}}"
+msgstr "DB    : {.path {db_path}}"
+
+msgid "Querying HuggingFace repository ({.url {hf_api_url}})..."
+msgstr "Querying HuggingFace repository ({.url {hf_api_url}})..."
+
+msgid "Could not access the HuggingFace repository."
+msgstr "Could not access the HuggingFace repository."
+
+msgid "Check your connection with {.fn caged_status}."
+msgstr "Check your connection with {.fn caged_status}."
+
+msgid "Repository: {.url https://huggingface.co/datasets/alexsandroprado/caged}"
+msgstr "Repository: {.url https://huggingface.co/datasets/alexsandroprado/caged}"
+
+msgid "No year found in the HuggingFace repository for series '{type}'."
+msgstr "No year found in the HuggingFace repository for series '{type}'."
+
+msgid "No competency found in the HuggingFace repository."
+msgstr "No competency found in the HuggingFace repository."
+
+msgid "{nrow(resultado)} competenc{?y} listed{?}"
+msgstr "{nrow(resultado)} competenc{?y} listed{?}"
+
+msgid "Use {.code {cmd}} to download the most recent."
+msgstr "Use {.code {cmd}} to download the most recent."
+
+msgid "{.fn caged_ftp_files} has been renamed to {.fn caged_hf_files}."
+msgstr "{.fn caged_ftp_files} has been renamed to {.fn caged_hf_files}."
+
+msgid "The repository is now HuggingFace (HTTPS), no longer MTE's FTP."
+msgstr "The repository is now HuggingFace (HTTPS), no longer MTE's FTP."
+
+msgid "Use {.fn caged_hf_files} to avoid this warning."
+msgstr "Use {.fn caged_hf_files} to avoid this warning."
+
+msgid "Connected to {.path {db_path}}"
+msgstr "Connected to {.path {db_path}}"
+
+msgid "Empty data.frame - nothing to write."
+msgstr "Empty data.frame - nothing to write."
+
+msgid "Empty data.frame after cleaning - nothing to write."
+msgstr "Empty data.frame after cleaning - nothing to write."
+
+msgid "No new data to insert."
+msgstr "No new data to insert."
+
+msgid "Database not found: {.path {db_path}}"
+msgstr "Database not found: {.path {db_path}}"
+
+msgid "No CAGED table found in {.path {db_path}}."
+msgstr "No CAGED table found in {.path {db_path}}."
+
+msgid "File size: {tamanho_str}"
+msgstr "File size: {tamanho_str}"
+
+msgid "Tables"
+msgstr "Tables"
+
+msgid "Records     : {format(s$registros, big.mark = ',')}"
+msgstr "Records     : {format(s$registros, big.mark = ',')}"
+
+msgid "Periods     : {s$competencias}"
+msgstr "Periods     : {s$competencias}"
+
+msgid "{.arg db_path} or {.arg .con} must be provided."
+msgstr "{.arg db_path} or {.arg .con} must be provided."
+
+msgid "Table{?s} not found: {.val {invalidas}}"
+msgstr "Table{?s} not found: {.val {invalidas}}"
+
+msgid "Available: {.val {tabelas_disponiveis}}"
+msgstr "Available: {.val {tabelas_disponiveis}}"
+
+msgid "Directory created: {.path {output_dir}}"
+msgstr "Directory created: {.path {output_dir}}"
+
+msgid "No CAGED table found in {.path {db_path}}"
+msgstr "No CAGED table found in {.path {db_path}}"
+
+msgid "{length(tabelas_exportar)} table{?s} to export"
+msgstr "{length(tabelas_exportar)} table{?s} to export"
+
+msgid "Output: {.path {output_dir}}"
+msgstr "Output: {.path {output_dir}}"
+
+msgid "{tab}: already exists, skipping. Use {.code overwrite = TRUE}."
+msgstr "{tab}: already exists, skipping. Use {.code overwrite = TRUE}."
+
+msgid "Error exporting {tab}: {conditionMessage(e)}"
+msgstr "Error exporting {tab}: {conditionMessage(e)}"
+
+msgid "Done"
+msgstr "Done"
+
+msgid "{sum(resultados$status == 'exportado')} table{?s} exported"
+msgstr "{sum(resultados$status == 'exportado')} table{?s} exported"
+
+msgid "Database already up to date for all series."
+msgstr "Database already up to date for all series."
+
+msgid "No competency found on HuggingFace."
+msgstr "No competency found on HuggingFace."
+
+msgid "Failed to query HuggingFace for '{serie}': {conditionMessage(e)}"
+msgstr "Failed to query HuggingFace for '{serie}': {conditionMessage(e)}"
+
+msgid "{nrow(novas)} new competenc{?y} found"
+msgstr "{nrow(novas)} new competenc{?y} found"
+
+msgid "Period: {min(novas$competencia)} - {max(novas$competencia)}"
+msgstr "Period: {min(novas$competencia)} - {max(novas$competencia)}"
+
+msgid "Database already up to date."
+msgstr "Database already up to date."
+
+msgid "Max in DB: {max_banco} | Available: {max(as.integer(disponiveis$competencia))}"
+msgstr "Max in DB: {max_banco} | Available: {max(as.integer(disponiveis$competencia))}"
+
+msgid "Error updating '{serie}': {conditionMessage(e)}"
+msgstr "Error updating '{serie}': {conditionMessage(e)}"
+
+msgid "Download CAGED Microdata"
+msgstr "Download CAGED Microdata"
+
+msgid "{n} file{?s} to process"
+msgstr "{n} file{?s} to process"
+
+msgid "Cache: {.path {cache}}"
+msgstr "Cache: {.path {cache}}"
+
+msgid "No valid competency to download."
+msgstr "No valid competency to download."
+
+msgid "Failed to download {.url {url}} after 3 attempts. Skipping."
+msgstr "Failed to download {.url {url}} after 3 attempts. Skipping."
+
+msgid "Failed to extract {.path {basename(path)}}"
+msgstr "Failed to extract {.path {basename(path)}}"
+
+msgid "File not found: {.path {path}}"
+msgstr "File not found: {.path {path}}"
+
+msgid "Install 7-Zip: {.url https://www.7-zip.org/download.html}"
+msgstr "Install 7-Zip: {.url https://www.7-zip.org/download.html}"
+
+msgid "The standard Windows installer is sufficient (no need to add to PATH)."
+msgstr "The standard Windows installer is sufficient (no need to add to PATH)."
+
+msgid "Stream failed for {.path {basename(path)}}: {conditionMessage(e)}. Trying extraction..."
+msgstr "Stream failed for {.path {basename(path)}}: {conditionMessage(e)}. Trying extraction..."
+
+msgid "HuggingFace repository {cli::col_green('online')}"
+msgstr "HuggingFace repository {cli::col_green('online')}"
+
+msgid "Latency: {latencia_ms} ms"
+msgstr "Latency: {latencia_ms} ms"
+
+msgid "HuggingFace repository {cli::col_red('unavailable')}"
+msgstr "HuggingFace repository {cli::col_red('unavailable')}"
+
+msgid "Tested URL: {.url {url_teste}}"
+msgstr "Tested URL: {.url {url_teste}}"
+
+msgid "Check your connection or try again later."
+msgstr "Check your connection or try again later."
+
+msgid "HuggingFace may be under temporary maintenance."
+msgstr "HuggingFace may be under temporary maintenance."
+
+msgid "CAGED Microdata in DuckDB"
+msgstr "CAGED Microdata in DuckDB"
+
+msgid "Check connectivity with: caged_status()"
+msgstr "Check connectivity with: caged_status()"
+
+msgid "Quick start: caged_load(years = 2023, months = 1, db_path = \"caged.duckdb\")"
+msgstr "Quick start: caged_load(years = 2023, months = 1, db_path = \"caged.duckdb\")"
+
+msgid "Help   : help(package = \"datacaged\") | ?caged_load"
+msgstr "Help   : help(package = \"datacaged\") | ?caged_load"
+
+msgid "No .txt found in {.path {basename(path)}}. Skipping."
+msgstr "No .txt found in {.path {basename(path)}}. Skipping."
+
+msgid "Stream failed"
+msgstr "Stream failed"
+
+msgid "Downloading layouts"
+msgstr "Downloading layouts"
+
+msgid "No layout file found."
+msgstr "No layout file found."
+

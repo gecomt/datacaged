@@ -1,0 +1,285 @@
+---
+title: "Introduction to datacaged"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to datacaged}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment  = "#>",
+  eval     = FALSE
+)
+```
+
+## Overview
+
+The `datacaged` package simplifies access to **CAGED** microdata (Cadastro Geral de Empregados e Desempregados) directly from HuggingFace, loading data into a local **DuckDB** database for efficient analysis.
+
+It supports three series:
+
+| Period               | Series          | Database table                         |
+|----------------------|-----------------|-----------------------------------------|
+| Jan/2020 – present      | Novo CAGED      | `caged_mov`, `caged_for`, `caged_exc`   |
+| Jan/1992 – Dec/2019  | Legacy CAGED    | `caged_antigo`                          |
+| Jan/1992 – Dec/2019  | CAGED Adjustments| `caged_ajustes`                         |
+
+## Installation
+
+```{r install}
+# Via remotes
+remotes::install_github("gecomt/datacaged")
+```
+
+## Platform compatibility
+
+The `datacaged` package is compatible with **Windows, macOS and Linux** with no extra configuration for Novo CAGED (2020+).
+
+| Recurso | Windows | macOS | Linux |
+|---|---|---|---|
+| Download (HTTPS) | ✅ | ✅ | ✅ |
+| Downloads paralelos | ✅ | ✅ | ✅ |
+| Novo CAGED (2020+) | ✅ | ✅ | ✅ |
+| Legacy CAGED (pre-2020, PPMd) | ⚠️ requires 7-Zip | ⚠️ requires 7-Zip | ⚠️ requires 7-Zip |
+
+**Legacy CAGED** uses PPMd compression. If you need this data, install 7-Zip:
+
+- **Windows**: [baixe o instalador](https://www.7-zip.org/download.html) e instale normalmente
+- **macOS**: `brew install 7-zip`  
+- **Linux**: `sudo apt install 7zip` ou `sudo dnf install 7zip`
+
+Novo CAGED (2020+) uses LZMA, natively supported by the `archive` package on all platforms.
+
+## Parallel downloads
+
+By default, the package downloads 3 files simultaneously (MOV, FOR and EXC for each month), resulting in approximately **3× faster** downloads compared to sequential mode.
+
+```{r workers}
+# Control the number of workers
+caged_download(years = 2023, months = 1:3, workers = 3)  # padrão
+
+# Set globally for the entire session
+options(datacaged.workers = 4)
+
+# Sequential mode (useful for unstable connections)
+caged_download(years = 2023, months = 1, workers = 1)
+```
+
+## Basic usage: Full pipeline
+
+The `caged_load()` function does everything in a single command: downloads `.7z` files from HuggingFace, extracts, normalises and writes to DuckDB.
+
+```{r load-basico}
+library(datacaged)
+
+# Download Novo CAGED Jan–Dec/2023
+# Novo CAGED: national file, `states` does not filter
+caged_load(
+  years    = 2023,
+  months   = seq_len(12L),
+  db_path = "caged.duckdb"
+)
+```
+
+Progress is displayed in the terminal with a progress bar and final summary.
+
+## Querying the data
+
+After populating the database, connect and query with `dplyr` or plain SQL:
+
+```{r consulta-dplyr}
+library(dplyr)
+
+con <- caged_connect("caged.duckdb")
+
+# Monthly employment balance in 2023
+saldo_mensal <- tbl(con, "caged_mov") |>
+  group_by(competenciamov) |>
+  summarise(saldo = sum(saldomovimentacao, na.rm = TRUE)) |>
+  arrange(competenciamov) |>
+  collect()
+
+saldo_mensal
+```
+
+```{r consulta-sql}
+# Or with direct SQL
+DBI::dbGetQuery(con, "
+  SELECT
+    competenciamov,
+    uf,
+    SUM(saldomovimentacao) AS saldo,
+    AVG(salario)           AS salario_medio,
+    COUNT(*)               AS movimentacoes
+  FROM caged_mov
+  WHERE uf = 35          -- Sao Paulo
+  GROUP BY competenciamov, uf
+  ORDER BY competenciamov
+")
+```
+
+Always close the connection when done:
+
+```{r desconectar}
+DBI::dbDisconnect(con, shutdown = TRUE)
+```
+
+## Granular functions
+
+For more control, use the functions individually:
+
+### 1. Download files only
+
+```{r download}
+# Download and save to local cache (~/.local/share/R/datacaged por padrão)
+manifest <- caged_download(
+  years    = 2023,
+  months   = c(1L, 2L, 3L),
+  destdir = "~/meus_dados/caged_cache"
+)
+
+# manifest is a data.frame with the status of each file
+dplyr::count(manifest, status)
+```
+
+### 2. Parse files manually
+
+```{r parse}
+# One file at a time
+df <- caged_parse("~/meus_dados/caged_cache/caged_mov/2023/CAGEDMOV202301.7z")
+glimpse(df)
+
+# Several at once
+arquivos <- list.files(
+  "~/meus_dados/caged_cache/NOVO_CAGED/2023",
+  pattern    = "CAGEDMOV",
+  full.names = TRUE
+)
+df_todos <- caged_parse_batch(arquivos)
+```
+
+### 3. Write to database
+
+```{r gravar}
+caged_to_duckdb(df_todos, db_path = "caged.duckdb")
+```
+
+## Inspect the database
+
+```{r info}
+caged_info("caged.duckdb")
+#> ── caged.duckdb ────────────────────────────────────────
+#> Tamanho do arquivo: 142.3 MB
+#> ── Tabelas ──────────────────────────────────────────────
+#> * "caged_mov"   Registros: 3,665,155
+#> * "caged_for"      Registros:    91,098
+#> * "caged_exc"       Registros:     7,900
+#>   Registros   : 4.823.901
+#>   Competências: 202301 – 202312
+```
+
+## Example: Historical series with legacy CAGED
+
+```{r historico}
+# Baixa Legacy CAGED para Nordeste (2015–2019)
+nordeste <- c("MA", "PI", "CE", "RN", "PB", "PE", "AL", "SE", "BA")
+
+caged_load(
+  years    = 2015:2019,
+  db_path = "caged_historico.duckdb"
+)
+
+con <- caged_connect("caged_historico.duckdb")
+
+# Evolução anual do saldo formal no Nordeste
+tbl(con, "caged_antigo") |>
+  mutate(ano = as.integer(substr(as.character(competencia), 1, 4))) |>
+  group_by(ano, uf) |>
+  summarise(saldo = sum(saldomovimentacao, na.rm = TRUE)) |>
+  collect() |>
+  tidyr::pivot_wider(names_from = uf, values_from = saldo)
+
+DBI::dbDisconnect(con, shutdown = TRUE)
+```
+
+
+## CAGED Adjustments
+
+CAGED Adjustments contain retroactive corrections to legacy CAGED records (up to 2019).
+Use `caged_adjustments_load()` to download and write to the `caged_ajustes` table.
+
+```{r ajustes}
+# Baixar ajustes de 2019
+caged_adjustments_load(years = 2019, months = seq_len(12L), db_path = "caged.duckdb")
+
+# Listar o que está disponível no HuggingFace
+caged_hf_files(type = "ajustes")
+
+# Comparar saldo original vs ajustado
+con <- caged_connect("caged.duckdb")
+
+antigo  <- dplyr::tbl(con, "caged_antigo")  |>
+  dplyr::group_by(competencia) |>
+  dplyr::summarise(saldo_original = sum(saldomovimentacao, na.rm = TRUE))
+
+ajustes <- dplyr::tbl(con, "caged_ajustes") |>
+  dplyr::group_by(competencia) |>
+  dplyr::summarise(saldo_ajuste = sum(saldomovimentacao, na.rm = TRUE))
+
+dplyr::full_join(antigo, ajustes, by = "competencia") |>
+  dplyr::mutate(saldo_final = saldo_original + saldo_ajuste) |>
+  dplyr::collect()
+
+DBI::dbDisconnect(con, shutdown = TRUE)
+```
+
+## Performance tips
+
+- **DuckDB is columnar**: prefer `select()` before `collect()` to bring only the necessary columns.
+- **Re-runs are safe**: `caged_load()` skips competencies already in the database by default. Use `overwrite_competencies = TRUE` to overwrite.
+- **`.7z` cache**: downloaded files are stored in `~/.local/share/R/datacaged`. They can be reused without a new HuggingFace connection.
+- **Memory**: the pipeline processes one competency at a time to avoid excessive RAM usage with large periods.
+
+
+## Utilities
+
+```{r utilitarios}
+# Verificar se o HuggingFace está online antes de baixar
+caged_status()
+
+# Listar competências disponíveis no HuggingFace
+caged_hf_files()                     # Novo CAGED (últimos 12 meses)
+caged_hf_files(type = "antigo")      # Legacy CAGED
+caged_hf_files(type = "ajustes")     # CAGED Adjustments
+
+# Atualização incremental — baixa apenas o que ainda não está no banco
+caged_update(db_path = "caged.duckdb")
+caged_update(db_path = "caged.duckdb", series = c("novo", "antigo"))
+
+# Exportar tabelas para Parquet (nativo DuckDB, muito rápido)
+caged_to_parquet("caged.duckdb", output_dir = "~/exports")
+caged_to_parquet("caged.duckdb", output_dir = "~/exports",
+                 tables = "caged_mov", partition_by = "uf")
+```
+
+## Main variables
+
+| Column | Description |
+|---|---|
+| `competenciamov` | Competency in Novo CAGED, `YYYYMM` format (ex: `202301`) |
+| `competencia` | Competency in legacy CAGED and Adjustments, format `AAAAMM` |
+| `uf` | IBGE state code (ex: `35` = SP) |
+| `municipio` | IBGE municipality code |
+| `saldomovimentacao` | `+1` hire, `-1` dismissal |
+| `salario` | Contracted wage in BRL |
+| `sexo` | `1` male, `3` female |
+| `idade` | Age in years |
+| `escolaridade` | Education level code (1–9) |
+| `racacor` | Race/colour code (1–5) |
+| `tipomovimentacao` | Reason for movement code |
+| `secao` | CNAE 2.0 section (Novo CAGED) |
+| `fonte_tipo` | `MOV`, `FOR`, `EXC`, `ANTIGO` or `AJUSTES` |
+

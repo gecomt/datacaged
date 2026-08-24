@@ -1,0 +1,210 @@
+---
+output: github_document
+---
+
+<!-- README.pt-BR.md is generated from README.pt-BR.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+*[Read in English](README.md)*
+
+[![R-CMD-check](https://github.com/gecomt/datacaged/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/gecomt/datacaged/actions)
+[![codecov](https://codecov.io/gh/gecomt/datacaged/branch/main/graph/badge.svg)](https://app.codecov.io/gh/gecomt/datacaged)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE.md)
+
+> Microdados do CAGED direto no seu 'DuckDB', com pipeline completo e pronto para análise.
+
+O **datacaged** é um pacote R que automatiza todo o fluxo de trabalho com os microdados do CAGED (Cadastro Geral de Empregados e Desempregados). Os dados são baixados de um [repositório HuggingFace](https://huggingface.co/datasets/alexsandroprado/caged) via HTTPS, lidos com descompressão em stream e armazenados em banco analítico local ('DuckDB') para consultas rápidas com `dplyr` ou SQL.
+
+---
+
+## ✨ Principais funcionalidades
+
+* 📥 Download automatizado do HuggingFace (HTTPS — sem FTP)
+* ⚡ Downloads paralelos (`workers = 3` por padrão)
+* 📦 Descompressão em stream dos `.7z` — sem extração para disco temporário
+* 🗄️ Armazenamento eficiente em banco **'DuckDB'** local
+* 🔄 Pipeline completo em uma única função
+* 📊 Integração com `dplyr` para análise de dados
+* 🖥️ **Compatível com Windows, macOS e Linux**
+* 🧩 Suporte a múltiplas bases:
+
+  * Novo CAGED (2020+)
+  * CAGED antigo (1992–2019)
+  * CAGED Ajustes (correções históricas)
+
+---
+
+## 🚀 Instalação
+
+```r
+# install.packages("remotes")
+remotes::install_github("gecomt/datacaged")
+```
+
+---
+
+## 🖥️ Compatibilidade entre plataformas
+
+| Recurso | Windows | macOS | Linux |
+|---|---|---|---|
+| Download (HTTPS) | ✅ | ✅ | ✅ |
+| Downloads paralelos | ✅ | ✅ | ✅ |
+| Novo CAGED (2020+, LZMA) | ✅ | ✅ | ✅ |
+| CAGED antigo (pré-2020, PPMd) | ⚠️ | ⚠️ | ⚠️ |
+| DuckDB | ✅ | ✅ | ✅ |
+
+O **CAGED antigo (pré-2020)** usa compressão PPMd, que requer o 7-Zip instalado. **O Novo CAGED (2020+) funciona em todas as plataformas sem software adicional.**
+
+### Instalando o 7-Zip (necessário apenas para dados pré-2020)
+
+**Windows** — instale o [instalador oficial do 7-Zip](https://www.7-zip.org/download.html) (a instalação padrão em `C:\Program Files\7-Zip` é detectada automaticamente pelo pacote).
+
+**macOS**
+
+```sh
+brew install 7-zip
+```
+
+**Linux (Debian/Ubuntu)**
+
+```sh
+sudo apt install 7zip
+```
+
+**Linux (Fedora/RHEL)**
+
+```sh
+sudo dnf install 7zip
+```
+
+---
+
+## ⚡ Uso rápido
+
+```r
+library(datacaged)
+
+# Pipeline completo — baixa, parseia e grava no DuckDB
+caged_load(
+  years   = 2022:2023,
+  months  = seq_len(12L),
+  db_path = file.path(tempdir(), "caged.duckdb")
+)
+
+# Conecta e consulta
+con <- caged_connect(file.path(tempdir(), "caged.duckdb"))
+
+library(dplyr)
+
+tbl(con, "caged_mov") |>
+  filter(uf == 35, competenciamov >= 202201L) |>
+  group_by(competenciamov) |>
+  summarise(saldo = sum(saldomovimentacao, na.rm = TRUE)) |>
+  collect()
+
+DBI::dbDisconnect(con, shutdown = TRUE)
+```
+
+---
+
+## ⚙️ Performance
+
+```r
+# Downloads paralelos (padrão: 3 workers)
+caged_download(years = 2023, months = 1:12, workers = 3)
+
+# Sequencial (para conexões lentas ou depuração)
+caged_download(years = 2023, months = 1:12, workers = 1)
+
+# Configurar globalmente
+options(datacaged.workers = 4)
+```
+
+Os downloads paralelos processam os arquivos MOV, FOR e EXC simultaneamente por mês — aproximadamente **3× mais rápido** que o modo sequencial para o Novo CAGED.
+
+---
+
+## 🧠 Pipeline
+
+```
+HuggingFace (HTTPS)
+      ↓
+  caged_download()   ← paralelo, com cache local
+      ↓
+  caged_parse()      ← descompressão em stream via archive_read()
+      ↓
+  caged_to_duckdb()  ← inserção bulk, deduplicação por competência
+      ↓
+  caged_connect()    ← dplyr / SQL / DBI
+```
+
+---
+
+## 📚 Funções principais
+
+| Função | Descrição |
+|---|---|
+| `caged_load()` | Pipeline completo (download → parse → DuckDB) |
+| `caged_adjustments_load()` | Pipeline de ajustes |
+| `caged_download()` | Download dos `.7z` com cache |
+| `caged_download_layouts()` | Download dos layouts oficiais do MTE |
+| `caged_parse()` | Leitura de um único arquivo `.7z` |
+| `caged_parse_batch()` | Leitura em lote |
+| `caged_to_duckdb()` | Gravação no DuckDB |
+| `caged_connect()` | Conexão DBI |
+| `caged_info()` | Estatísticas do banco |
+| `caged_status()` | Verifica conectividade com o HuggingFace |
+| `caged_hf_files()` | Lista competências disponíveis |
+| `caged_update()` | Baixa apenas competências novas |
+| `caged_to_parquet()` | Exporta tabelas para Parquet |
+
+---
+
+## 🗄️ Estrutura do banco
+
+| Tabela | Conteúdo | Período |
+|---|---|---|
+| `caged_mov` | Movimentações | 2020+ |
+| `caged_for` | Declarações fora do prazo | 2020+ |
+| `caged_exc` | Exclusões | 2020+ |
+| `caged_antigo` | Histórico | 1992–2019 |
+| `caged_ajustes` | Ajustes retroativos | 1992–2019 |
+
+---
+
+## 🧾 Requisitos
+
+* R ≥ 4.2.0
+* 7-Zip *(opcional — necessário apenas para CAGED pré-2020 com compressão PPMd)*
+
+---
+
+## 📊 Casos de uso
+
+* Análise do mercado de trabalho
+* Indicadores econômicos
+* Pesquisa acadêmica
+* Monitoramento do emprego formal
+* Modelagem econométrica
+
+---
+
+## 📄 Licença
+
+MIT © Alexsandro Prado
+
+---
+
+## 📬 Contato
+
+**Autor:** Alexsandro Prado  
+**E-mail:** [alexsandro.prado@ufersa.edu.br](mailto:alexsandro.prado@ufersa.edu.br)  
+**GitHub:** <https://github.com/gecomt/datacaged>

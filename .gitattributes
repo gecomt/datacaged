@@ -1,0 +1,14 @@
+# Force LF line endings for all R package files
+* text=auto eol=lf
+
+# Binary files — no conversion
+*.rda    binary
+*.rds    binary
+*.RData  binary
+*.7z     binary
+*.zip    binary
+*.gz     binary
+*.mo     binary
+*.png    binary
+*.jpg    binary
+*.gif    binary

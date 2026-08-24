@@ -1,0 +1,247 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 datacaged authors
+# This file is distributed under the same license as the datacaged package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: datacaged 0.2.0\n"
+"POT-Creation-Date: 2026-06-24 10:00\n"
+"PO-Revision-Date: 2026-06-24 10:00+0000\n"
+"Last-Translator: Alexsandro Prado <alexsandro.prado@ufersa.edu.br>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "No valid year. CAGED Adjustments cover up to {.val {ano_limite}}."
+msgstr ""
+
+msgid "CAGED Adjustments only exist for years up to {.val {ano_limite}}."
+msgstr ""
+
+msgid "Ignored years: {.val {invalid_years}}"
+msgstr ""
+
+msgid "2/3  Parse and load into DuckDB"
+msgstr ""
+
+msgid "3/3  Done"
+msgstr ""
+
+msgid "Summary"
+msgstr ""
+
+msgid "No download tasks generated."
+msgstr ""
+
+msgid "No files available to process."
+msgstr ""
+
+msgid "Error in {.path {basename(arq)}}: {conditionMessage(e)}"
+msgstr ""
+
+msgid "Total inserted: {format(n_inserido_total, big.mark = ',')} records"
+msgstr ""
+
+msgid "Years : {years[1]}-{years[length(years)]}"
+msgstr ""
+
+msgid "Months: {months[1]}-{months[length(months)]}"
+msgstr ""
+
+msgid "DB    : {.path {db_path}}"
+msgstr ""
+
+msgid "Querying HuggingFace repository ({.url {hf_api_url}})..."
+msgstr ""
+
+msgid "Could not access the HuggingFace repository."
+msgstr ""
+
+msgid "Check your connection with {.fn caged_status}."
+msgstr ""
+
+msgid "Repository: {.url https://huggingface.co/datasets/alexsandroprado/caged}"
+msgstr ""
+
+msgid "No year found in the HuggingFace repository for series '{type}'."
+msgstr ""
+
+msgid "No competency found in the HuggingFace repository."
+msgstr ""
+
+msgid "{nrow(resultado)} competenc{?y} listed{?}"
+msgstr ""
+
+msgid "Use {.code {cmd}} to download the most recent."
+msgstr ""
+
+msgid "{.fn caged_ftp_files} has been renamed to {.fn caged_hf_files}."
+msgstr ""
+
+msgid "The repository is now HuggingFace (HTTPS), no longer MTE's FTP."
+msgstr ""
+
+msgid "Use {.fn caged_hf_files} to avoid this warning."
+msgstr ""
+
+msgid "Connected to {.path {db_path}}"
+msgstr ""
+
+msgid "Empty data.frame - nothing to write."
+msgstr ""
+
+msgid "Empty data.frame after cleaning - nothing to write."
+msgstr ""
+
+msgid "No new data to insert."
+msgstr ""
+
+msgid "Database not found: {.path {db_path}}"
+msgstr ""
+
+msgid "No CAGED table found in {.path {db_path}}."
+msgstr ""
+
+msgid "File size: {tamanho_str}"
+msgstr ""
+
+msgid "Tables"
+msgstr ""
+
+msgid "Records     : {format(s$registros, big.mark = ',')}"
+msgstr ""
+
+msgid "Periods     : {s$competencias}"
+msgstr ""
+
+msgid "{.arg db_path} or {.arg .con} must be provided."
+msgstr ""
+
+msgid "Table{?s} not found: {.val {invalidas}}"
+msgstr ""
+
+msgid "Available: {.val {tabelas_disponiveis}}"
+msgstr ""
+
+msgid "Directory created: {.path {output_dir}}"
+msgstr ""
+
+msgid "No CAGED table found in {.path {db_path}}"
+msgstr ""
+
+msgid "{length(tabelas_exportar)} table{?s} to export"
+msgstr ""
+
+msgid "Output: {.path {output_dir}}"
+msgstr ""
+
+msgid "{tab}: already exists, skipping. Use {.code overwrite = TRUE}."
+msgstr ""
+
+msgid "Error exporting {tab}: {conditionMessage(e)}"
+msgstr ""
+
+msgid "Done"
+msgstr ""
+
+msgid "{sum(resultados$status == 'exportado')} table{?s} exported"
+msgstr ""
+
+msgid "Database already up to date for all series."
+msgstr ""
+
+msgid "No competency found on HuggingFace."
+msgstr ""
+
+msgid "Failed to query HuggingFace for '{serie}': {conditionMessage(e)}"
+msgstr ""
+
+msgid "{nrow(novas)} new competenc{?y} found"
+msgstr ""
+
+msgid "Period: {min(novas$competencia)} - {max(novas$competencia)}"
+msgstr ""
+
+msgid "Database already up to date."
+msgstr ""
+
+msgid "Max in DB: {max_banco} | Available: {max(as.integer(disponiveis$competencia))}"
+msgstr ""
+
+msgid "Error updating '{serie}': {conditionMessage(e)}"
+msgstr ""
+
+msgid "Download CAGED Microdata"
+msgstr ""
+
+msgid "{n} file{?s} to process"
+msgstr ""
+
+msgid "Cache: {.path {cache}}"
+msgstr ""
+
+msgid "No valid competency to download."
+msgstr ""
+
+msgid "Failed to download {.url {url}} after 3 attempts. Skipping."
+msgstr ""
+
+msgid "Failed to extract {.path {basename(path)}}"
+msgstr ""
+
+msgid "File not found: {.path {path}}"
+msgstr ""
+
+msgid "Install 7-Zip: {.url https://www.7-zip.org/download.html}"
+msgstr ""
+
+msgid "The standard Windows installer is sufficient (no need to add to PATH)."
+msgstr ""
+
+msgid "Stream failed for {.path {basename(path)}}: {conditionMessage(e)}. Trying extraction..."
+msgstr ""
+
+msgid "HuggingFace repository {cli::col_green('online')}"
+msgstr ""
+
+msgid "Latency: {latencia_ms} ms"
+msgstr ""
+
+msgid "HuggingFace repository {cli::col_red('unavailable')}"
+msgstr ""
+
+msgid "Tested URL: {.url {url_teste}}"
+msgstr ""
+
+msgid "Check your connection or try again later."
+msgstr ""
+
+msgid "HuggingFace may be under temporary maintenance."
+msgstr ""
+
+msgid "CAGED Microdata in DuckDB"
+msgstr ""
+
+msgid "Check connectivity with: caged_status()"
+msgstr ""
+
+msgid "Quick start: caged_load(years = 2023, months = 1, db_path = \"caged.duckdb\")"
+msgstr ""
+
+msgid "Help   : help(package = \"datacaged\") | ?caged_load"
+msgstr ""
+
+msgid "No .txt found in {.path {basename(path)}}. Skipping."
+msgstr ""
+
+msgid "Stream failed"
+msgstr ""
+
+msgid "Downloading layouts"
+msgstr ""
+
+msgid "No layout file found."
+msgstr ""
+
