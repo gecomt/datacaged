@@ -206,7 +206,7 @@ caged_hf_files <- function(type    = "novo",
     cmd <- paste0(fn, "(years = ", yr, ", months = ", mo, ")")
 
     cli::cli_inform(c(
-      "i" = "{nrow(resultado)} competenc{?y} listed{?}",
+      "i" = "{nrow(resultado)} competenc{?y/ies} listed",
       "i" = "Use {.code {cmd}} to download the most recent."
     ))
   }

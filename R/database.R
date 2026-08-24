@@ -621,7 +621,7 @@ caged_update <- function(db_path,
 
     if (verbose) {
       cli::cli_inform(c(
-        "i" = "{nrow(novas)} new competenc{?y} found",
+        "i" = "{nrow(novas)} new competenc{?y/ies} found",
         "i" = "Period: {min(novas$competencia)} - {max(novas$competencia)}"
       ))
     }
