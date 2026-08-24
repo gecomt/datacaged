@@ -1,5 +1,3 @@
-# Workflow gerado por usethis::use_github_action("check-standard")
-# R Packages 2e — Seção 20.2.1
 name: R-CMD-check
 on:
   push:
@@ -41,7 +39,7 @@ jobs:
       - name: Check
         uses: r-lib/actions/check-r-package@v2
         with:
-          args: 'c("--as-cran", "--no-manual", "--no-staged-install")'
+          args: 'c("--as-cran", "--no-manual")'
           build_args: 'c("--no-manual", "--compact-vignettes=gs+qpdf")'
           error-on: '"error"'
         env:
