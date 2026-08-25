@@ -2,8 +2,6 @@
 
 
 
-*[Leia em Português](README.pt-BR.md)*
-
 *[Read in English](README.md)*
 
 [![R-CMD-check](https://github.com/gecomt/datacaged/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/gecomt/datacaged/actions)
