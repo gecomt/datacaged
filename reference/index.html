@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">datacaged</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
       </span>
     </div>
 
@@ -38,7 +38,16 @@
       <a href="../articles/introducao.html">Introdução ao datacaged</a>
     </li>
     <li>
+      <a href="../articles/introduction.html">Introduction to datacaged</a>
+    </li>
+    <li>
+      <a href="../articles/pipeline-en.html">Full Pipeline with DuckDB</a>
+    </li>
+    <li>
       <a href="../articles/pipeline.html">Pipeline Completo com DuckDB</a>
+    </li>
+    <li>
+      <a href="../articles/use-cases.html">Use Cases: Labour Market Analysis</a>
     </li>
   </ul></li>
 <li>
@@ -77,15 +86,15 @@
       </tr><tr><td>
           <p><code><a href="caged_download.html">caged_download()</a></code> </p>
         </td>
-        <td><p>Baixa microdados do CAGED do FTP do MTE</p></td>
+        <td><p>Baixa microdados do CAGED do repositório HuggingFace</p></td>
       </tr><tr><td>
           <p><code><a href="caged_download_layouts.html">caged_download_layouts()</a></code> </p>
         </td>
         <td><p>Baixa layouts (dicionários) do CAGED e Novo CAGED</p></td>
       </tr><tr><td>
-          <p><code><a href="caged_ftp_files.html">caged_ftp_files()</a></code> </p>
+          <p><code><a href="caged_hf_files.html">caged_hf_files()</a></code> <code><a href="caged_hf_files.html">caged_ftp_files()</a></code> </p>
         </td>
-        <td><p>Lista as competências disponíveis no FTP do MTE</p></td>
+        <td><p>Lista as competências disponíveis no repositório HuggingFace</p></td>
       </tr><tr><td>
           <p><code><a href="caged_info.html">caged_info()</a></code> </p>
         </td>
@@ -97,7 +106,7 @@
       </tr><tr><td>
           <p><code><a href="caged_parse.html">caged_parse()</a></code> </p>
         </td>
-        <td><p>Lê microdados de um arquivo .7z do CAGED (extrai em temp e lê)</p></td>
+        <td><p>Lê microdados de um arquivo .7z do CAGED</p></td>
       </tr><tr><td>
           <p><code><a href="caged_parse_batch.html">caged_parse_batch()</a></code> </p>
         </td>
@@ -105,11 +114,19 @@
       </tr><tr><td>
           <p><code><a href="caged_status.html">caged_status()</a></code> </p>
         </td>
-        <td><p>Verifica se o servidor FTP do MTE está acessível</p></td>
+        <td><p>Verifica se o repositório HuggingFace do CAGED está acessível</p></td>
       </tr><tr><td>
           <p><code><a href="caged_to_duckdb.html">caged_to_duckdb()</a></code> </p>
         </td>
         <td><p>Grava um data.frame de microdados do CAGED em uma tabela DuckDB</p></td>
+      </tr><tr><td>
+          <p><code><a href="caged_to_parquet.html">caged_to_parquet()</a></code> </p>
+        </td>
+        <td><p>Exporta tabelas do banco DuckDB para arquivos Parquet</p></td>
+      </tr><tr><td>
+          <p><code><a href="caged_update.html">caged_update()</a></code> </p>
+        </td>
+        <td><p>Atualiza o banco com as competências mais recentes disponíveis</p></td>
       </tr><tr><td>
           <p><code><a href="datacaged-package.html">datacaged-package</a></code> <code><a href="datacaged-package.html">datacaged</a></code> </p>
         </td>
@@ -131,7 +148,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
       </footer></div>

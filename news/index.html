@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">datacaged</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
       </span>
     </div>
 
@@ -38,7 +38,16 @@
       <a href="../articles/introducao.html">Introdução ao datacaged</a>
     </li>
     <li>
+      <a href="../articles/introduction.html">Introduction to datacaged</a>
+    </li>
+    <li>
+      <a href="../articles/pipeline-en.html">Full Pipeline with DuckDB</a>
+    </li>
+    <li>
       <a href="../articles/pipeline.html">Pipeline Completo com DuckDB</a>
+    </li>
+    <li>
+      <a href="../articles/use-cases.html">Use Cases: Labour Market Analysis</a>
     </li>
   </ul></li>
 <li>
@@ -64,15 +73,39 @@
     </div>
 
     <div class="section level2">
-<h2 class="page-header" data-toc-text="0.1.1" id="datacaged-011">datacaged 0.1.1<a class="anchor" aria-label="anchor" href="#datacaged-011"></a></h2>
-<ul><li>
-<code>DESCRIPTION</code>: <code>'DuckDB'</code> entre aspas simples em <code>Title</code> e <code>Description</code> conforme política do CRAN.</li>
-</ul></div>
-    <div class="section level2">
-<h2 class="page-header" data-toc-text="0.1.0" id="datacaged-010">datacaged 0.1.0<a class="anchor" aria-label="anchor" href="#datacaged-010"></a></h2>
-<p>Primeira versão do pacote — submetida ao CRAN.</p>
+<h2 class="page-header" data-toc-text="0.2.0" id="datacaged-020">datacaged 0.2.0<a class="anchor" aria-label="anchor" href="#datacaged-020"></a></h2>
 <div class="section level3">
-<h3 id="funções-exportadas-0-1-0">Funções exportadas<a class="anchor" aria-label="anchor" href="#fun%C3%A7%C3%B5es-exportadas-0-1-0"></a></h3>
+<h3 id="breaking-changes-0-2-0">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-2-0"></a></h3>
+<ul><li>Source migrated from FTP do MTE (<code>ftp://ftp.mtps.gov.br/pdet/microdados/</code>) to HuggingFace dataset (<code>https://huggingface.co/datasets/alexsandroprado/caged</code>). Downloads now use HTTPS — no more FTP port 21 issues behind firewalls.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="new-functions-0-2-0">New functions<a class="anchor" aria-label="anchor" href="#new-functions-0-2-0"></a></h3>
+<ul><li>
+<code><a href="../reference/caged_hf_files.html">caged_hf_files()</a></code>: replaces <code><a href="../reference/caged_hf_files.html">caged_ftp_files()</a></code> — lists available competencies from the HuggingFace repository via its REST API.</li>
+<li>
+<code><a href="../reference/caged_update.html">caged_update()</a></code>: incremental update — downloads only competencies not yet in the local DuckDB bank, querying the bank max competência and HuggingFace availability.</li>
+<li>
+<code><a href="../reference/caged_to_parquet.html">caged_to_parquet()</a></code>: exports DuckDB tables to Parquet files using DuckDB’s native <code>COPY TO ... (FORMAT PARQUET)</code> — supports optional column partitioning. — lists available competencies from the HuggingFace repository via its REST API.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="deprecated-0-2-0">Deprecated<a class="anchor" aria-label="anchor" href="#deprecated-0-2-0"></a></h3>
+<ul><li>
+<code><a href="../reference/caged_hf_files.html">caged_ftp_files()</a></code>: kept as an alias with a deprecation warning. Will be removed in a future version. Use <code><a href="../reference/caged_hf_files.html">caged_hf_files()</a></code> instead.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="internal-changes-0-2-0">Internal changes<a class="anchor" aria-label="anchor" href="#internal-changes-0-2-0"></a></h3>
+<ul><li><p><code>download.R</code>: <code>.ftp_url()</code> renamed to <code>.hf_url()</code>; <code>.download_file()</code> now uses <code>method = "libcurl"</code> with HTTPS and <code>--location</code> to follow CDN redirects.</p></li>
+<li><p><code>availability.R</code>: <code>.ftp_list()</code> renamed to <code>.hf_list_dir()</code>; uses <code>httr2</code> instead of curl FTP listing.</p></li>
+<li><p><code>status.R</code>: <code><a href="../reference/caged_status.html">caged_status()</a></code> now checks HuggingFace API endpoint.</p></li>
+<li><p>Added <code>httr2 (&gt;= 1.0.0)</code> to <code>Imports</code>. # datacaged 0.1.2</p></li>
+<li><p><code>DESCRIPTION</code>: URL do FTP do MTE adicionada ao campo <code>Description:</code> conforme política do CRAN.</p></li>
+<li><p><code>man/*.Rd</code>: <code>\dontrun{}</code> substituído por <code>\donttest{}</code> em todos os exemplos — os exemplos requerem internet mas podem ser executados pelo usuário.</p></li>
+<li><p><code>man/*.Rd</code>: <code>db_path = "caged.duckdb"</code> substituído por <code>db_path = file.path(tempdir(), "caged.duckdb")</code> em todos os exemplos para evitar escrita no diretório de trabalho do usuário. # datacaged 0.1.1</p></li>
+<li><p><code>DESCRIPTION</code>: <code>'DuckDB'</code> entre aspas simples em <code>Title</code> e <code>Description</code> conforme política do CRAN. # datacaged 0.1.0</p></li>
+</ul><p>Primeira versão do pacote — submetida ao CRAN.</p>
+</div>
+<div class="section level3">
+<h3 id="funções-exportadas-0-2-0">Funções exportadas<a class="anchor" aria-label="anchor" href="#fun%C3%A7%C3%B5es-exportadas-0-2-0"></a></h3>
 <ul><li>
 <code><a href="../reference/caged_load.html">caged_load()</a></code> — pipeline completo: download → parse → DuckDB (Novo CAGED e antigo).</li>
 <li>
@@ -92,7 +125,7 @@
 <li>
 <code><a href="../reference/caged_status.html">caged_status()</a></code> — verifica disponibilidade do servidor FTP do MTE.</li>
 <li>
-<code><a href="../reference/caged_ftp_files.html">caged_ftp_files()</a></code> — lista competências disponíveis no FTP.</li>
+<code><a href="../reference/caged_hf_files.html">caged_ftp_files()</a></code> — lista competências disponíveis no FTP.</li>
 <li>
 <code><a href="../reference/caged_download_layouts.html">caged_download_layouts()</a></code> — baixa os layouts oficiais do MTE.</li>
 <li>Dataset <code>uf_codigos</code> — tabela de UFs com códigos IBGE e regiões.</li>
@@ -112,7 +145,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
       </footer></div>

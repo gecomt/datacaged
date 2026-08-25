@@ -5,13 +5,13 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pipeline Completo com DuckDB • datacaged</title>
+<title>Full Pipeline with DuckDB • datacaged</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="Pipeline Completo com DuckDB">
+<script src="../pkgdown.js"></script><meta property="og:title" content="Full Pipeline with DuckDB">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -92,24 +92,24 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>Pipeline Completo com DuckDB</h1>
+      <h1 data-toc-skip>Full Pipeline with DuckDB</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/gecomt/datacaged/blob/main/vignettes/pipeline.Rmd" class="external-link"><code>vignettes/pipeline.Rmd</code></a></small>
-      <div class="hidden name"><code>pipeline.Rmd</code></div>
+      <small class="dont-index">Source: <a href="https://github.com/gecomt/datacaged/blob/main/vignettes/pipeline-en.Rmd" class="external-link"><code>vignettes/pipeline-en.Rmd</code></a></small>
+      <div class="hidden name"><code>pipeline-en.Rmd</code></div>
 
     </div>
 
     
     
-<p>Este guia demonstra o pipeline completo do <code>datacaged</code>:
-desde a verificação do repositório HuggingFace até consultas analíticas
-no DuckDB com <code>dplyr</code> e SQL.</p>
+<p>This guide demonstrates the full <code>datacaged</code> pipeline:
+from checking the HuggingFace repository to analytical queries in DuckDB
+with <code>dplyr</code> and SQL.</p>
 <div class="section level2">
-<h2 id="verificar-disponibilidade-antes-de-baixar">1. Verificar disponibilidade antes de baixar<a class="anchor" aria-label="anchor" href="#verificar-disponibilidade-antes-de-baixar"></a>
+<h2 id="check-availability-before-downloading">1. Check availability before downloading<a class="anchor" aria-label="anchor" href="#check-availability-before-downloading"></a>
 </h2>
-<p>Antes de iniciar qualquer download, verifique se o repositório
-HuggingFace está acessível e quais competências estão disponíveis.</p>
+<p>Antes de iniciar qualquer download, check that the HuggingFace
+repository is accessible and which competencies are available.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/gecomt/datacaged" class="external-link">datacaged</a></span><span class="op">)</span></span>
 <span></span>
@@ -119,25 +119,26 @@ HuggingFace está acessível e quais competências estão disponíveis.</p>
 <span><span class="co">#&gt; ℹ Latência: 312 ms</span></span>
 <span><span class="co">#&gt; ℹ Dataset: https://huggingface.co/datasets/alexsandroprado/caged</span></span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Lista os 12 months mais recentes disponíveis no Novo CAGED</span></span>
+<code class="sourceCode R"><span><span class="co"># List the 12 most recent competencies available in Novo CAGED</span></span>
 <span><span class="fu"><a href="../reference/caged_hf_files.html">caged_hf_files</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Lista todas as competências do CAGED antigo</span></span>
+<span><span class="co"># Lista todas as competências do Legacy CAGED</span></span>
 <span><span class="fu"><a href="../reference/caged_hf_files.html">caged_hf_files</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"antigo"</span>, n <span class="op">=</span> <span class="cn">Inf</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Lista competências do CAGED Ajustes</span></span>
+<span><span class="co"># Lista competências do CAGED Adjustments</span></span>
 <span><span class="fu"><a href="../reference/caged_hf_files.html">caged_hf_files</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"ajustes"</span>, n <span class="op">=</span> <span class="fl">24</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Capturar o resultado para uso programático</span></span>
+<span><span class="co"># Capture result for programmatic use</span></span>
 <span><span class="va">disponivel</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/caged_hf_files.html">caged_hf_files</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Competência mais recente:"</span>, <span class="va">disponivel</span><span class="op">$</span><span class="va">competencia</span>, <span class="st">"\n"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="download-dos-microdados">2. Download dos microdados<a class="anchor" aria-label="anchor" href="#download-dos-microdados"></a>
+<h2 id="download-microdata">2. Download microdata<a class="anchor" aria-label="anchor" href="#download-microdata"></a>
 </h2>
-<p>O <code><a href="../reference/caged_download.html">caged_download()</a></code> gerencia cache local automaticamente:
-arquivos já baixados não são re-baixados. O retorno é um
-<code>manifest</code> — data.frame com o status de cada arquivo.</p>
+<p>The <code><a href="../reference/caged_download.html">caged_download()</a></code> function manages local cache
+automatically: already-downloaded files are not re-downloaded. It
+returns a <code>manifest</code> — a data.frame with the status of each
+file.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Baixa Novo CAGED de 2023 inteiro (MOV + FOR + EXC por competência)</span></span>
 <span><span class="va">manifest</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/caged_download.html">caged_download</a></span><span class="op">(</span></span>
@@ -146,7 +147,7 @@ arquivos já baixados não são re-baixados. O retorno é um
 <span>  destdir <span class="op">=</span> <span class="st">"~/dados/caged_cache"</span>   <span class="co"># omitir para usar cache padrão</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Inspecionar o manifest</span></span>
+<span><span class="co"># Inspect o manifest</span></span>
 <span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">manifest</span>, <span class="va">type</span>, <span class="va">status</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 4 × 3</span></span>
 <span><span class="co">#&gt;   type  status       n</span></span>
@@ -156,15 +157,15 @@ arquivos já baixados não são re-baixados. O retorno é um
 <span><span class="co">#&gt; 3 MOV   baixado     12</span></span>
 <span><span class="co">#&gt; 4 MOV   cache        0</span></span>
 <span></span>
-<span><span class="co"># Arquivos disponíveis para processar</span></span>
+<span><span class="co"># Files available for processing</span></span>
 <span><span class="va">manifest</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">status</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"baixado"</span>, <span class="st">"cache"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">type</span>, <span class="va">competencia</span>, <span class="va">nome_arquivo</span>, <span class="va">arquivo</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Baixa CAGED antigo — arquivo nacional único por competência</span></span>
+<code class="sourceCode R"><span><span class="co"># Baixa Legacy CAGED — arquivo nacional único por competência</span></span>
 <span><span class="va">manifest_ant</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/caged_download.html">caged_download</a></span><span class="op">(</span>years <span class="op">=</span> <span class="fl">2018</span><span class="op">:</span><span class="fl">2019</span>, months <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">12L</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Baixar também os ajustes do mesmo período</span></span>
+<span><span class="co"># Download adjustments for the same period too</span></span>
 <span><span class="fu"><a href="../reference/caged_adjustments_load.html">caged_adjustments_load</a></span><span class="op">(</span></span>
 <span>  years    <span class="op">=</span> <span class="fl">2018</span><span class="op">:</span><span class="fl">2019</span>,</span>
 <span>  months   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">12L</span><span class="op">)</span>,</span>
@@ -172,15 +173,15 @@ arquivos já baixados não são re-baixados. O retorno é um
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="parse-dos-arquivos">3. Parse dos arquivos<a class="anchor" aria-label="anchor" href="#parse-dos-arquivos"></a>
+<h2 id="parse-files">3. Parse files<a class="anchor" aria-label="anchor" href="#parse-files"></a>
 </h2>
-<p>O <code><a href="../reference/caged_parse.html">caged_parse()</a></code> extrai o <code>.7z</code>, lê o
-<code>.txt</code> e devolve um tibble normalizado.</p>
+<p><code><a href="../reference/caged_parse.html">caged_parse()</a></code> extracts the <code>.7z</code>, reads the
+<code>.txt</code> and returns a normalised tibble.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Parsear um único arquivo</span></span>
+<code class="sourceCode R"><span><span class="co"># Parse a single file</span></span>
 <span><span class="va">df_jan</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/caged_parse.html">caged_parse</a></span><span class="op">(</span><span class="st">"~/dados/caged_cache/NOVO_CAGED/2023/202301/CAGEDMOV202301.7z"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Inspecionar</span></span>
+<span><span class="co"># Inspect</span></span>
 <span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="va">df_jan</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: 3,665,155</span></span>
 <span><span class="co">#&gt; Columns: 29</span></span>
@@ -190,7 +191,7 @@ arquivos já baixados não são re-baixados. O retorno é um
 <span><span class="co">#&gt; $ saldomovimentacao   &lt;dbl&gt; 1, -1, ...</span></span>
 <span><span class="co">#&gt; $ salario             &lt;dbl&gt; 1412.00, 2800.50, ...</span></span>
 <span></span>
-<span><span class="co"># Parsear vários arquivos do mesmo type (devem ser todos MOV, ou todos FOR, etc.)</span></span>
+<span><span class="co"># Parse multiple files of the same type (devem ser todos MOV, ou todos FOR, etc.)</span></span>
 <span><span class="va">arquivos_mov</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span></span>
 <span>  <span class="st">"~/dados/caged_cache/NOVO_CAGED/2023"</span>,</span>
 <span>  pattern    <span class="op">=</span> <span class="st">"CAGEDMOV"</span>,</span>
@@ -200,53 +201,53 @@ arquivos já baixados não são re-baixados. O retorno é um
 <span><span class="va">df_mov_2023</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/caged_parse_batch.html">caged_parse_batch</a></span><span class="op">(</span><span class="va">arquivos_mov</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="gravar-no-duckdb">4. Gravar no DuckDB<a class="anchor" aria-label="anchor" href="#gravar-no-duckdb"></a>
+<h2 id="write-to-duckdb">4. Write to DuckDB<a class="anchor" aria-label="anchor" href="#write-to-duckdb"></a>
 </h2>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Gravar o tibble parseado no banco</span></span>
+<code class="sourceCode R"><span><span class="co"># Write the parsed tibble to the database</span></span>
 <span><span class="fu"><a href="../reference/caged_to_duckdb.html">caged_to_duckdb</a></span><span class="op">(</span><span class="va">df_mov_2023</span>, db_path <span class="op">=</span> <span class="st">"caged.duckdb"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Re-runs são seguros: competências já no banco são puladas</span></span>
+<span><span class="co"># Re-runs are safe: competencies already in the database are skipped</span></span>
 <span><span class="fu"><a href="../reference/caged_to_duckdb.html">caged_to_duckdb</a></span><span class="op">(</span><span class="va">df_mov_2023</span>, db_path <span class="op">=</span> <span class="st">"caged.duckdb"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; ℹ 12 competências já no banco — pulando.</span></span>
 <span></span>
-<span><span class="co"># Para regravar (ex: após corrigir dados):</span></span>
+<span><span class="co"># To overwrite (e.g. after correcting data):</span></span>
 <span><span class="fu"><a href="../reference/caged_to_duckdb.html">caged_to_duckdb</a></span><span class="op">(</span><span class="va">df_mov_2023</span>, db_path <span class="op">=</span> <span class="st">"caged.duckdb"</span>,</span>
 <span>                overwrite_competencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Gravar numa table específica sem autodetectar</span></span>
+<span><span class="co"># Write to a specific table without auto-detection</span></span>
 <span><span class="fu"><a href="../reference/caged_to_duckdb.html">caged_to_duckdb</a></span><span class="op">(</span><span class="va">df_jan</span>, db_path <span class="op">=</span> <span class="st">"caged.duckdb"</span>, table <span class="op">=</span> <span class="st">"caged_mov"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="pipeline-completo-em-um-único-comando">5. Pipeline completo em um único comando<a class="anchor" aria-label="anchor" href="#pipeline-completo-em-um-%C3%BAnico-comando"></a>
+<h2 id="full-pipeline-in-a-single-command">5. Full pipeline in a single command<a class="anchor" aria-label="anchor" href="#full-pipeline-in-a-single-command"></a>
 </h2>
-<p>Para o caso mais comum — baixar tudo e gravar no banco — use
-<code><a href="../reference/caged_load.html">caged_load()</a></code>:</p>
+<p>For the most common case — download everything and write to the
+database — use <code><a href="../reference/caged_load.html">caged_load()</a></code>:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/gecomt/datacaged" class="external-link">datacaged</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># ── Novo CAGED 2022-2023 ──────────────────────────────────────────────────────</span></span>
+<span><span class="co"># ── Novo CAGED 2022-2023 ─────────────────────────────────────────────────────</span></span>
 <span><span class="fu"><a href="../reference/caged_load.html">caged_load</a></span><span class="op">(</span></span>
 <span>  years    <span class="op">=</span> <span class="fl">2022</span><span class="op">:</span><span class="fl">2023</span>,</span>
 <span>  months   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">12L</span><span class="op">)</span>,</span>
 <span>  db_path <span class="op">=</span> <span class="st">"caged.duckdb"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># ── CAGED antigo 2015-2019 ────────────────────────────────────────────────────</span></span>
+<span><span class="co"># ── Legacy CAGED 2015-2019 ────────────────────────────────────────────────────</span></span>
 <span><span class="fu"><a href="../reference/caged_load.html">caged_load</a></span><span class="op">(</span></span>
 <span>  years    <span class="op">=</span> <span class="fl">2015</span><span class="op">:</span><span class="fl">2019</span>,</span>
 <span>  months   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">12L</span><span class="op">)</span>,</span>
 <span>  db_path <span class="op">=</span> <span class="st">"caged.duckdb"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># ── CAGED Ajustes 2015-2019 ───────────────────────────────────────────────────</span></span>
+<span><span class="co"># ── CAGED Adjustments 2015-2019 ───────────────────────────────────────────────────</span></span>
 <span><span class="fu"><a href="../reference/caged_adjustments_load.html">caged_adjustments_load</a></span><span class="op">(</span></span>
 <span>  years    <span class="op">=</span> <span class="fl">2015</span><span class="op">:</span><span class="fl">2019</span>,</span>
 <span>  months   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">12L</span><span class="op">)</span>,</span>
 <span>  db_path <span class="op">=</span> <span class="st">"caged.duckdb"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># ── Verificar o banco resultante ──────────────────────────────────────────────</span></span>
+<span><span class="co"># ── Check the resulting database ─────────────────────────────────────────────</span></span>
 <span><span class="fu"><a href="../reference/caged_info.html">caged_info</a></span><span class="op">(</span><span class="st">"caged.duckdb"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; ── caged.duckdb ──────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; Tamanho do arquivo: 4.2 GB</span></span>
@@ -258,20 +259,20 @@ arquivos já baixados não são re-baixados. O retorno é um
 <span><span class="co">#&gt; * "caged_ajustes" Registros:    342,000   Competências: 201501 – 201912</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="consultas-com-dplyr">6. Consultas com dplyr<a class="anchor" aria-label="anchor" href="#consultas-com-dplyr"></a>
+<h2 id="queries-with-dplyr">6. Queries with dplyr<a class="anchor" aria-label="anchor" href="#queries-with-dplyr"></a>
 </h2>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">con</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/caged_connect.html">caged_connect</a></span><span class="op">(</span><span class="st">"caged.duckdb"</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># ── Tabelas disponíveis ───────────────────────────────────────────────────────</span></span>
+<code class="sourceCode R"><span><span class="co"># ── Available tables ─────────────────────────────────────────────────────────</span></span>
 <span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbListTables.html" class="external-link">dbListTables</a></span><span class="op">(</span><span class="va">con</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># ── Referência lazy (não carrega na memória) ──────────────────────────────────</span></span>
+<span><span class="co"># ── Lazy reference (does not load into memory) ───────────────────────────────</span></span>
 <span><span class="va">mov</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html" class="external-link">tbl</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"caged_mov"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># ── Saldo mensal ──────────────────────────────────────────────────────────────</span></span>
+<span><span class="co"># ── Monthly balance ───────────────────────────────────────────────────────────</span></span>
 <span><span class="va">mov</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">competenciamov</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span></span>
@@ -282,7 +283,7 @@ arquivos já baixados não são re-baixados. O retorno é um
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">competenciamov</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html" class="external-link">collect</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># ── Saldo por UF e setor ──────────────────────────────────────────────────────</span></span>
+<span><span class="co"># ── Balance by state and sector ──────────────────────────────────────────────</span></span>
 <span><span class="va">mov</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">competenciamov</span> <span class="op">&gt;=</span> <span class="fl">202301</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">uf</span>, <span class="va">secao</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -290,7 +291,7 @@ arquivos já baixados não são re-baixados. O retorno é um
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">saldo</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html" class="external-link">collect</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># ── Salário médio por escolaridade e sexo ─────────────────────────────────────</span></span>
+<span><span class="co"># ── Average wage by education level and gender ───────────────────────────────</span></span>
 <span><span class="va">mov</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">salario</span><span class="op">)</span>, <span class="va">salario</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">graudeinstrucao</span>, <span class="va">sexo</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -300,7 +301,7 @@ arquivos já baixados não são re-baixados. O retorno é um
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html" class="external-link">collect</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># ── Top 10 municípios por admissões ──────────────────────────────────────────</span></span>
+<span><span class="co"># ── Top 10 municipalities by hires ───────────────────────────────────────────</span></span>
 <span><span class="va">mov</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">saldomovimentacao</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">municipio</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -309,10 +310,10 @@ arquivos já baixados não são re-baixados. O retorno é um
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html" class="external-link">collect</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="consultas-com-sql-direto">7. Consultas com SQL direto<a class="anchor" aria-label="anchor" href="#consultas-com-sql-direto"></a>
+<h2 id="direct-sql-queries">7. Direct SQL queries<a class="anchor" aria-label="anchor" href="#direct-sql-queries"></a>
 </h2>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Saldo líquido por seção da CNAE e mês</span></span>
+<code class="sourceCode R"><span><span class="co"># Net balance by CNAE section and month</span></span>
 <span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html" class="external-link">dbGetQuery</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"</span></span>
 <span><span class="st">  SELECT</span></span>
 <span><span class="st">    competenciamov                    AS competencia,</span></span>
@@ -327,7 +328,7 @@ arquivos já baixados não são re-baixados. O retorno é um
 <span><span class="st">  ORDER BY competenciamov, saldo DESC</span></span>
 <span><span class="st">"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Distribuição etária por faixa e type de movimentação</span></span>
+<span><span class="co"># Age distribution by range and movement type</span></span>
 <span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html" class="external-link">dbGetQuery</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"</span></span>
 <span><span class="st">  SELECT</span></span>
 <span><span class="st">    CASE</span></span>
@@ -345,10 +346,10 @@ arquivos já baixados não são re-baixados. O retorno é um
 <span><span class="st">"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="série-histórica-unindo-novo-caged-e-caged-antigo">8. Série histórica: unindo Novo CAGED e CAGED antigo<a class="anchor" aria-label="anchor" href="#s%C3%A9rie-hist%C3%B3rica-unindo-novo-caged-e-caged-antigo"></a>
+<h2 id="historical-series-joining-novo-caged-and-legacy-caged">8. Historical series: joining Novo CAGED and legacy CAGED<a class="anchor" aria-label="anchor" href="#historical-series-joining-novo-caged-and-legacy-caged"></a>
 </h2>
-<p>Para construir séries longas que cruzem o ponto de ruptura de 2020,
-normalize as colunas antes de empilhar.</p>
+<p>To build long series that cross the 2020 break point, normalise
+columns before stacking.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Novo CAGED — colunas a normalizar</span></span>
 <span><span class="va">novo</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html" class="external-link">tbl</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"caged_mov"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -363,7 +364,7 @@ normalize as colunas antes de empilhar.</p>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>serie <span class="op">=</span> <span class="st">"novo"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># CAGED antigo — já tem coluna competencia e saldomovimentacao</span></span>
+<span><span class="co"># Legacy CAGED — já tem coluna competencia e saldomovimentacao</span></span>
 <span><span class="va">antigo</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html" class="external-link">tbl</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"caged_antigo"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span></span>
 <span>    <span class="va">competencia</span>,</span>
@@ -385,12 +386,12 @@ normalize as colunas antes de empilhar.</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">competencia</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="exportar-resultados">9. Exportar resultados<a class="anchor" aria-label="anchor" href="#exportar-resultados"></a>
+<h2 id="export-results">9. Export results<a class="anchor" aria-label="anchor" href="#export-results"></a>
 </h2>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Exportar para CSV</span></span>
+<span><span class="co"># Export to CSV</span></span>
 <span><span class="va">resultado</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html" class="external-link">tbl</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"caged_mov"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">competenciamov</span>, <span class="va">uf</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>saldo <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">saldomovimentacao</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -398,10 +399,10 @@ normalize as colunas antes de empilhar.</p>
 <span></span>
 <span><span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/write_delim.html" class="external-link">write_csv</a></span><span class="op">(</span><span class="va">resultado</span>, <span class="st">"saldo_uf_mensal.csv"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Exportar todas as tabelas do banco para Parquet (nativo DuckDB, muito mais rápido)</span></span>
+<span><span class="co"># Export all database tables to Parquet (native DuckDB, much faster)</span></span>
 <span><span class="fu"><a href="../reference/caged_to_parquet.html">caged_to_parquet</a></span><span class="op">(</span><span class="st">"caged.duckdb"</span>, output_dir <span class="op">=</span> <span class="st">"~/exports"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Exportar só caged_mov particionado por UF</span></span>
+<span><span class="co"># Export only caged_mov partitioned by state</span></span>
 <span><span class="fu"><a href="../reference/caged_to_parquet.html">caged_to_parquet</a></span><span class="op">(</span></span>
 <span>  <span class="st">"caged.duckdb"</span>,</span>
 <span>  output_dir   <span class="op">=</span> <span class="st">"~/exports"</span>,</span>
@@ -409,49 +410,50 @@ normalize as colunas antes de empilhar.</p>
 <span>  partition_by <span class="op">=</span> <span class="st">"uf"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Fechar conexão</span></span>
+<span><span class="co"># Close connection</span></span>
 <span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html" class="external-link">dbDisconnect</a></span><span class="op">(</span><span class="va">con</span>, shutdown <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="atualização-incremental">10. Atualização incremental<a class="anchor" aria-label="anchor" href="#atualiza%C3%A7%C3%A3o-incremental"></a>
+<h2 id="incremental-update">10. Incremental update<a class="anchor" aria-label="anchor" href="#incremental-update"></a>
 </h2>
-<p>Use <code><a href="../reference/caged_update.html">caged_update()</a></code> para manter o banco atualizado sem
-re-baixar tudo. A função consulta o banco para descobrir a competência
-máxima e baixa apenas o que é mais recente no HuggingFace.</p>
+<p>Use <code><a href="../reference/caged_update.html">caged_update()</a></code> to keep the database up to date
+without re-downloading everything. The function queries the database to
+find the maximum competency and downloads only what is more recent on
+HuggingFace.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Atualiza o Novo CAGED com os meses ainda não presentes no banco</span></span>
+<code class="sourceCode R"><span><span class="co"># Update Novo CAGED with months not yet in the database</span></span>
 <span><span class="fu"><a href="../reference/caged_update.html">caged_update</a></span><span class="op">(</span>db_path <span class="op">=</span> <span class="st">"caged.duckdb"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Atualizar todas as séries</span></span>
+<span><span class="co"># Update all series</span></span>
 <span><span class="fu"><a href="../reference/caged_update.html">caged_update</a></span><span class="op">(</span></span>
 <span>  db_path <span class="op">=</span> <span class="st">"caged.duckdb"</span>,</span>
 <span>  series  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"novo"</span>, <span class="st">"antigo"</span>, <span class="st">"ajustes"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="boas-práticas">11. Boas práticas<a class="anchor" aria-label="anchor" href="#boas-pr%C3%A1ticas"></a>
+<h2 id="best-practices">11. Best practices<a class="anchor" aria-label="anchor" href="#best-practices"></a>
 </h2>
 <ul>
 <li>
-<strong>Sempre feche a conexão</strong> com
-<code>DBI::dbDisconnect(con, shutdown = TRUE)</code> ao terminar.</li>
+<strong>Always close the connection</strong> with
+<code>DBI::dbDisconnect(con, shutdown = TRUE)</code> when done.</li>
 <li>
-<strong>Use <code><a href="https://dplyr.tidyverse.org/reference/tbl.html" class="external-link">tbl()</a></code> antes de
-<code><a href="https://dplyr.tidyverse.org/reference/compute.html" class="external-link">collect()</a></code></strong>: o DuckDB executa o máximo possível
-antes de trazer dados para o R.</li>
+<strong>Use <code><a href="https://dplyr.tidyverse.org/reference/tbl.html" class="external-link">tbl()</a></code> before
+<code><a href="https://dplyr.tidyverse.org/reference/compute.html" class="external-link">collect()</a></code></strong>: DuckDB executes as much as possible
+before bringing data into R.</li>
 <li>
-<strong><code><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select()</a></code> cedo</strong>: traga apenas as colunas
-necessárias para economizar memória.</li>
+<strong><code><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select()</a></code> early</strong>: bring only the
+necessary columns to save memory.</li>
 <li>
-<strong>Re-runs seguros</strong>: <code><a href="../reference/caged_load.html">caged_load()</a></code> detecta
-competências já gravadas e as pula automaticamente.</li>
+<strong>Safe re-runs</strong>: <code><a href="../reference/caged_load.html">caged_load()</a></code> detects
+already-written competencies and skips them automatically.</li>
 <li>
-<strong>Cache local</strong>: os <code>.7z</code> ficam em
-<code>tools::R_user_dir("datacaged", "cache")</code> e são reutilizados
-entre sessões.</li>
+<strong>Local cache</strong>: <code>.7z</code> files are stored in
+<code>tools::R_user_dir("datacaged", "cache")</code> and reused between
+sessions.</li>
 <li>
-<strong>Grandes volumes</strong>: o pipeline processa uma
-competência de cada vez para não estourar a RAM.</li>
+<strong>Large volumes</strong>: the pipeline processes one
+competency at a time to avoid running out of RAM.</li>
 </ul>
 </div>
   </div>
