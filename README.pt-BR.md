@@ -1,6 +1,8 @@
-# datacaged <img src="man/figures/logo.png" align="right" height="138" alt="" />
-# 
-# [![DOI](https://zenodo.org/badge/1227005418.svg)](https://doi.org/10.5281/zenodo.20058818)
+# datacaged <img src="man/figures/datacaged.svg" align="right" height="138" alt="" />
+
+
+
+*[Leia em Português](README.pt-BR.md)*
 
 *[Read in English](README.md)*
 

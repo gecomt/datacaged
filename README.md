@@ -3,8 +3,6 @@
 
 # datacaged <img src="man/figures/datacaged.svg" align="right" height="138" alt="" />
 
-
-
 *[Leia em Português](README.pt-BR.md)*
 
 [![R-CMD-check](https://github.com/gecomt/datacaged/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/gecomt/datacaged/actions)
