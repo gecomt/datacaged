@@ -273,10 +273,10 @@
 #'
 #' | Recurso | Windows | macOS | Linux |
 #' |---|---|---|---|
-#' | Download (HTTPS) | ✅ | ✅ | ✅ |
-#' | Downloads paralelos | ✅ | ✅ | ✅ |
-#' | Novo CAGED (2020+, LZMA) | ✅ | ✅ | ✅ |
-#' | CAGED antigo (PPMd) | ⚠️ | ⚠️ | ⚠️ |
+#' | Download (HTTPS) | OK | OK | OK |
+#' | Downloads paralelos | OK  | OK | OK |
+#' | Novo CAGED (2020+, LZMA) | OK | OK | OK |
+#' | CAGED antigo (PPMd) | Requer 7-Zip | Requer 7-Zip | Requer 7-Zip ️ |
 #'
 #' O CAGED antigo (pré-2020) usa PPMd e requer 7-Zip instalado.
 #' O Novo CAGED usa LZMA e funciona em todas as plataformas sem dependências extras.

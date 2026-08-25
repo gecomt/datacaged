@@ -50,10 +50,10 @@ Para o \strong{CAGED antigo} (até 2019), o download é nacional (arquivo único
 
 \strong{Compatibilidade entre plataformas:}\tabular{llll}{
    Recurso \tab Windows \tab macOS \tab Linux \cr
-   Download (HTTPS) \tab ✅ \tab ✅ \tab ✅ \cr
-   Downloads paralelos \tab ✅ \tab ✅ \tab ✅ \cr
-   Novo CAGED (2020+, LZMA) \tab ✅ \tab ✅ \tab ✅ \cr
-   CAGED antigo (PPMd) \tab ⚠️ \tab ⚠️ \tab ⚠️ \cr
+   Download (HTTPS) \tab OK \tab OK \tab OK \cr
+   Downloads paralelos \tab OK \tab OK \tab OK \cr
+   Novo CAGED (2020+, LZMA) \tab OK \tab OK \tab OK \cr
+   CAGED antigo (PPMd) \tab Requer 7-Zip \tab Requer 7-Zip \tab Requer 7-Zip ️ \cr
 }
 
 
