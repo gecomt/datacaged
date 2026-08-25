@@ -74,7 +74,7 @@ dplyr::tbl(con, "caged_mov") |>
    \code{caged_for} \tab \verb{CAGEDFOR*.7z} \tab Jan/2020+ \cr
    \code{caged_exc} \tab \verb{CAGEDEXC*.7z} \tab Jan/2020+ \cr
    \code{caged_antigo} \tab \verb{CAGEDEST_*.7z} \tab 1992–Dez/2019 \cr
-   \code{caged_ajustes} \tab \verb{CAGEDAJUSTES_*.7z} \tab 1992–Dez/2019 \cr
+   \code{caged_ajustes} \tab \verb{CAGEDEST_AJUSTES_*.7z} \tab 1992–Dez/2019 \cr
 }
 }
 

@@ -6,7 +6,7 @@
 #' Baixa, parseia e grava os arquivos do CAGED Ajustes no banco DuckDB local.
 #'
 #' O CAGED Ajustes contém correções retroativas de vínculos do CAGED antigo
-#' (até 2019). Cada arquivo `CAGEDAJUSTES_{MM}{AAAA}.7z` registra
+#' (até 2019). Cada arquivo `CAGEDEST_AJUSTES_{MM}{AAAA}.7z` registra
 #' movimentações ajustadas após a declaração original — essencial para
 #' reconstrução de séries históricas mais precisas.
 #'
@@ -27,22 +27,25 @@
 #' @return invisível: tibble com estatísticas do banco após a carga.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # List available adjustment competencies first
 #' avail <- caged_hf_files(type = "ajustes", n = 3, verbose = FALSE)
 #'
 #' if (nrow(avail) > 0) {
+#'   db <- file.path(tempdir(), "caged_ajustes.duckdb")
+#'
 #'   # Download and load adjustments
 #'   caged_adjustments_load(
 #'     years   = avail$ano[1],
 #'     months  = avail$mes[1],
-#'     db_path = file.path(tempdir(), "caged.duckdb")
+#'     db_path = db
 #'   )
 #'
-#'   con <- caged_connect(file.path(tempdir(), "caged.duckdb"))
+#'   con <- caged_connect(db)
+#'   # List tables and records
 #'   dplyr::tbl(con, "caged_ajustes") |>
 #'     dplyr::group_by(competencia) |>
-#'     dplyr::summarise(saldo = sum(saldomovimentacao, na.rm = TRUE)) |>
+#'     dplyr::count() |>
 #'     dplyr::collect()
 #'   DBI::dbDisconnect(con, shutdown = TRUE)
 #' }

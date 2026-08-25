@@ -71,7 +71,7 @@
   if      (grepl("CAGEDMOV",     nome)) "MOV"
   else if (grepl("CAGEDFOR",     nome)) "FOR"
   else if (grepl("CAGEDEXC",     nome)) "EXC"
-  else if (grepl("CAGEDAJUSTES", nome)) "AJUSTES"
+  else if (grepl("CAGEDEST_AJUSTES|CAGEDAJUSTES", nome)) "AJUSTES"
   else                                   "ANTIGO"
 }
 
@@ -172,13 +172,13 @@
 #' df <- caged_parse(path_mov, type = "MOV")
 #' head(df)
 #'
-#' \donttest{
-#' # Arquivo real baixado do HuggingFace
-#' df_mov <- caged_parse("~/Downloads/CAGEDMOV202301.7z")
+#' \dontrun{
+#' # Com arquivo baixado manualmente via caged_download() ou pelo navegador:
+#' df_mov <- caged_parse(file.path("~", "Downloads", "CAGEDMOV202301.7z"))
 #' dplyr::glimpse(df_mov)
 #'
 #' # Tipo detectado automaticamente
-#' df_for <- caged_parse("~/Downloads/CAGEDFOR202301.7z")
+#' df_for <- caged_parse(file.path("~", "Downloads", "CAGEDFOR202301.7z"))
 #' }
 #' @seealso [caged_parse_batch()] para processar múltiplos arquivos de uma vez.
 #' @seealso [caged_to_duckdb()] para gravar o resultado no banco.

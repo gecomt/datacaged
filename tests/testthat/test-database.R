@@ -266,6 +266,7 @@ test_that("caged_to_duckdb múltiplas gravações com mesma .con acumulam corret
 # ── Testes de workers= (downloads paralelos) ──────────────────────────────────
 
 test_that(".run_downloads workers=1 funciona em modo sequencial", {
+  skip_on_ci()  # faz tentativa de download com timeout curto
   tasks <- datacaged:::.build_tasks(2023L, 1L)
   cache <- tempfile("cache_test_")
   on.exit(unlink(cache, recursive = TRUE))
@@ -284,6 +285,7 @@ test_that(".run_downloads workers=1 funciona em modo sequencial", {
 
 test_that(".run_downloads workers=3 retorna mesma estrutura que workers=1", {
   skip_on_cran()
+  skip_on_ci()  # faz tentativa de download real
 
   tasks <- datacaged:::.build_tasks(2023L, 1L)
   cache <- tempfile("cache_test_")
@@ -300,14 +302,16 @@ test_that(".run_downloads workers=3 retorna mesma estrutura que workers=1", {
 })
 
 test_that("caged_download workers capado em min(workers, n_tasks)", {
-  # 0 tarefas: usar mes futuro no ano corrente que ainda nao existe
-  skip_on_cran()
+  # Mockar download para testar logica de capping de workers sem rede
+  local_mocked_bindings(
+    .download_file = function(url, destfile, timeout, ...) invisible(NULL),
+    .package = "datacaged"
+  )
   ano_atual <- as.integer(format(Sys.Date(), "%Y"))
-  # Baixar com ano valido mas mes que resulta em 0 tarefas (futuro)
   expect_no_error(
     caged_download(
       years   = ano_atual,
-      months  = 12L,  # dezembro do ano atual pode nao existir ainda
+      months  = 12L,
       destdir = tempfile(),
       workers = 99L,
       timeout = 5L

@@ -17,7 +17,7 @@
 #'   (numeric), `url` (character) e `mensagem` (character).
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' caged_status()
 #'
 #' # Só verificar sem imprimir
@@ -50,7 +50,7 @@ caged_status <- function(timeout = 10, verbose = TRUE) {
     mensagem    = if (ok) {
       paste0("HuggingFace online (", latencia_ms, " ms)")
     } else {
-      "Reposit\u00F3rio HuggingFace inacess\u00EDvel"
+      "HuggingFace repository unavailable"
     }
   )
 

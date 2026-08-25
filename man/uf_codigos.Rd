@@ -28,11 +28,14 @@ CAGED, que armazenam apenas o código numérico da UF.
 data(uf_codigos)
 head(uf_codigos)
 
-# Join com microdados do CAGED
-\donttest{
+# Join com microdados do CAGED (requer banco populado com caged_load())
+\dontrun{
 con <- caged_connect(file.path(tempdir(), "caged.duckdb"))
-df  <- dplyr::tbl(con, "caged_mov") |> dplyr::collect()
-dplyr::left_join(df, uf_codigos, by = c("uf" = "codigo"))
+if ("caged_mov" \%in\% DBI::dbListTables(con)) {
+  df <- dplyr::tbl(con, "caged_mov") |> dplyr::collect()
+  dplyr::left_join(df, uf_codigos, by = c("uf" = "codigo"))
+}
+DBI::dbDisconnect(con, shutdown = TRUE)
 }
 }
 \keyword{datasets}

@@ -38,28 +38,39 @@ test_that(".max_competencias retorna max correto por tabela", {
   expect_equal(result[["caged_mov"]], 202312L)
 })
 
-test_that("caged_update retorna NULL quando banco já está atualizado", {
-  skip_on_cran()
+test_that("caged_update retorna NULL quando banco ja esta atualizado", {
+  # Mock caged_hf_files para nao consultar a rede — teste rapido e deterministico
+  local_mocked_bindings(
+    caged_hf_files = function(...) tibble::tibble(
+      competencia = "202412", ano = 2024L, mes = 12L,
+      url = "https://example.com/fake.7z"
+    ),
+    .package = "datacaged"
+  )
 
   db <- tempfile(fileext = ".duckdb")
   on.exit(unlink(db))
 
-  # Popula banco com competência muito futura para simular "já atualizado"
-  df_futuro <- make_df_mov_test(999912L)  # competência impossível no HF
-  caged_to_duckdb(df_futuro, db_path = db)
+  # 999912 > 202412 → caged_update deve retornar NULL sem baixar nada
+  caged_to_duckdb(make_df_mov_test(999912L), db_path = db)
 
-  result <- caged_update(db_path = db, verbose = FALSE)
+  result <- suppressMessages(
+    caged_update(db_path = db, verbose = FALSE)
+  )
   expect_null(result)
 })
 
-test_that("caged_update erro para db_path inexistente", {
+test_that("caged_update com banco vazio usa timeout", {
   skip_on_cran()
-  # Com banco vazio (não existente), update tenta criar — não é erro
-  # Mas com banco corrompido deve dar erro no connect
+  skip_on_ci()  # banco vazio pode disparar download grande
+  # Apenas verificar que nao lanca erro fatal com timeout curto
   expect_no_error(
-    caged_update(
-      db_path = tempfile(fileext = ".duckdb"),
-      verbose = FALSE
+    suppressMessages(
+      caged_update(
+        db_path = tempfile(fileext = ".duckdb"),
+        verbose = FALSE,
+        timeout = 3L  # timeout muito curto — nao baixa nada
+      )
     )
   )
 })

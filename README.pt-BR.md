@@ -1,8 +1,13 @@
+# datacaged <img src="man/figures/logo.png" align="right" height="138" alt="" />
+# 
+# [![DOI](https://zenodo.org/badge/1227005418.svg)](https://doi.org/10.5281/zenodo.20058818)
+
 *[Read in English](README.md)*
 
 [![R-CMD-check](https://github.com/gecomt/datacaged/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/gecomt/datacaged/actions)
 [![codecov](https://codecov.io/gh/gecomt/datacaged/branch/main/graph/badge.svg)](https://app.codecov.io/gh/gecomt/datacaged)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE.md)
+[![DOI](https://zenodo.org/badge/1227005418.svg)](https://doi.org/10.5281/zenodo.20058818)
 
 > Microdados do CAGED direto no seu 'DuckDB', com pipeline completo e pronto para análise.
 

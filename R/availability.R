@@ -19,7 +19,7 @@
 #'   `ano`, `mes` e `url`, ordenado do mais recente para o mais antigo.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Últimos 12 meses disponíveis (padrão)
 #' caged_hf_files()
 #'
@@ -137,14 +137,58 @@ caged_hf_files <- function(type    = "novo",
 
   } else {
     # CAGED antigo / Ajustes: estrutura <pasta>/<AAAA>/<arquivos>.7z
-    padrao <- if (type == "ajustes") "^CAGEDAJUSTES_\\d{6}\\.7z$" else "^CAGEDEST_\\d{6}\\.7z$"
-    prefixo_len <- if (type == "ajustes") 13L else 9L
+    padrao <- if (type == "ajustes") "^CAGEDEST_AJUSTES_\\d{6}\\.7z$" else "^CAGEDEST_\\d{6}\\.7z$"
+    prefixo_len <- if (type == "ajustes") 17L else 9L
 
-    for (ano in anos) {
+    # Para ajustes: incluir pasta especial "2002a2009" e limitar a <= 2019
+    anos_busca <- if (type == "ajustes") {
+      pastas_disponiveis <- anos_disponiveis[
+        grepl("^\\d{4}$", anos_disponiveis) |
+        grepl("^\\d{4}a\\d{4}$", anos_disponiveis)
+      ]
+      # Filtrar apenas anos válidos para ajustes (<= 2019)
+      pastas_disponiveis <- pastas_disponiveis[
+        !grepl("^\\d{4}$", pastas_disponiveis) |
+        suppressWarnings(as.integer(pastas_disponiveis)) <= 2019L
+      ]
+      sort(unique(pastas_disponiveis), decreasing = TRUE)
+    } else {
+      anos
+    }
+
+    for (ano in anos_busca) {
       arquivos <- .hf_list_dir(paste0(pasta_raiz, "/", ano), timeout)
       if (is.null(arquivos) || length(arquivos) == 0L) next
 
+      # Padrão mensal: CAGEDEST_AJUSTES_MMAAAA.7z
+      # Padrão anual (2002a2009): CAGEDEST_AJUSTES_AAAA.7z
+      padrao_anual <- "^CAGEDEST_AJUSTES_\\d{4}\\.7z$"
       todos <- arquivos[grepl(padrao, arquivos, ignore.case = TRUE)]
+
+      # Para pasta 2002a2009 (arquivos anuais sem mês)
+      if (length(todos) == 0L && grepl("a", ano)) {
+        todos_anuais <- arquivos[grepl(padrao_anual, arquivos, ignore.case = TRUE)]
+        if (length(todos_anuais) > 0L) {
+          for (arq in todos_anuais) {
+            aaaa <- substr(arq, 18L, 21L)  # "CAGEDEST_AJUSTES_" = 17 chars
+            if (!grepl("^\\d{4}$", aaaa)) next
+            a <- as.integer(aaaa)
+            if (is.na(a) || a < 1992L || a > 2019L) next
+            # Usar mes=0 para indicar arquivo anual
+            for (m in 1:12) {
+              competencias[[length(competencias) + 1L]] <- tibble::tibble(
+                competencia = sprintf("%d%02d", a, m),
+                ano         = a,
+                mes         = as.integer(m),
+                url         = glue::glue("{.HF_BASE}/{pasta_raiz}/{ano}/{arq}")
+              )
+              if (!is.infinite(n) && length(competencias) >= n) break
+            }
+          }
+        }
+        next
+      }
+
       if (length(todos) == 0L) next
 
       mm_vec   <- substr(todos, prefixo_len + 1L, prefixo_len + 2L)
@@ -214,13 +258,7 @@ caged_hf_files <- function(type    = "novo",
   invisible(resultado)
 }
 
-#' Alias de compatibilidade: caged_ftp_files() -> caged_hf_files()
-#'
-#' @description
-#' Esta função é um alias mantido por compatibilidade reversa.
-#' Prefira usar [caged_hf_files()] nas novas chamadas.
-#'
-#' @inheritParams caged_hf_files
+#' @rdname caged_hf_files
 #' @export
 caged_ftp_files <- function(type    = "novo",
                              n       = 12,

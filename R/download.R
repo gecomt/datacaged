@@ -9,7 +9,7 @@
 #' Estrutura de pastas no repositório:
 #'   caged_novo/<AAAA>/<CAGEDMOV|FOR|EXC><AAAAMM>.7z
 #'   caged_antigo/<AAAA>/<CAGEDEST_MM AAAA>.7z
-#'   caged_ajustes/<AAAA>/<CAGEDAJUSTES_MM AAAA>.7z
+#'   CAGED_AJUSTES/<AAAA>/CAGEDEST_AJUSTES_MMAAAA.7z
 #'
 #' @noRd
 .hf_url <- function(year, month, type = "MOV") {
@@ -20,8 +20,15 @@
     nome   <- glue::glue("CAGEDEST_{mm}{year}.7z")
     subdir <- glue::glue("{.HF_PASTA_ANTIGO}/{year}")
   } else if (type == "AJUSTES") {
-    nome   <- glue::glue("CAGEDAJUSTES_{mm}{year}.7z")
-    subdir <- glue::glue("{.HF_PASTA_AJUSTES}/{year}")
+    # Anos 2002-2009: arquivo anual em pasta "2002a2009"
+    # Anos 2010-2019: arquivo mensal por ano
+    if (year <= 2009L) {
+      nome   <- glue::glue("CAGEDEST_AJUSTES_{year}.7z")
+      subdir <- glue::glue("{.HF_PASTA_AJUSTES}/2002a2009")
+    } else {
+      nome   <- glue::glue("CAGEDEST_AJUSTES_{mm}{year}.7z")
+      subdir <- glue::glue("{.HF_PASTA_AJUSTES}/{year}")
+    }
   } else {
     prefixo <- switch(type,
       MOV = "CAGEDMOV",
@@ -244,7 +251,7 @@
 #'   `uf` e `status` (baixado / cache / nao_encontrado / erro).
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Baixa Novo CAGED de jan-mar/2023
 #' manifest <- caged_download(years = 2023, months = c(1L, 2L, 3L))
 #'
@@ -258,7 +265,7 @@
 #' caged_download(years = 2023, months = 1, force = TRUE)
 #'
 #' # Salvar em diretório personalizado
-#' caged_download(years = 2023, months = 1, destdir = "D:/dados/caged")
+#' caged_download(years = 2023, months = 1, destdir = file.path(tempdir(), "caged_cache"))
 #' }
 #'
 #' @details

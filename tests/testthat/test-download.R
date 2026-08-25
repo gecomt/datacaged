@@ -22,7 +22,7 @@ test_that(".hf_url gera URL correta para CAGED antigo", {
 
 test_that(".hf_url gera URL correta para CAGED AJUSTES", {
   url <- datacaged:::.hf_url(2018, 5, type = "AJUSTES")
-  expect_match(url, "CAGED_AJUSTES/2018/CAGEDAJUSTES_052018\\.7z$")
+  expect_match(url, "CAGED_AJUSTES/2018/CAGEDEST_AJUSTES_052018\\.7z$")
 })
 
 test_that(".hf_url erro para type inválido", {
@@ -74,16 +74,22 @@ test_that(".cache_dir cria diretório se não existir", {
 })
 
 test_that(".download_file retorna NULL para URL inexistente (404)", {
-  skip_on_cran()
-  # URL que definitivamente não existe no repositório HF
-  url_404 <- paste0(
-    "https://huggingface.co/datasets/alexsandroprado/caged/resolve/main/",
-    "arquivo_que_nao_existe_xyz123.7z"
+  # Mockar req_perform para simular 404 sem rede
+  local_mocked_bindings(
+    req_perform = function(req, ...) {
+      structure(
+        list(status_code = 404L, url = req$url, headers = list(), body = raw(0)),
+        class = "httr2_response"
+      )
+    },
+    resp_status = function(resp, ...) resp$status_code,
+    .package = "httr2"
   )
   destfile <- tempfile(fileext = ".7z")
   on.exit(unlink(destfile))
-
-  result <- datacaged:::.download_file(url_404, destfile, timeout = 15)
+  result <- datacaged:::.download_file(
+    "https://example.com/nao_existe.7z", destfile, timeout = 5
+  )
   expect_null(result)
   expect_false(file.exists(destfile))
 })

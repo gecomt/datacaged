@@ -61,7 +61,7 @@ O CAGED antigo (pré-2020) usa PPMd e requer 7-Zip instalado.
 O Novo CAGED usa LZMA e funciona em todas as plataformas sem dependências extras.
 }
 \examples{
-\donttest{
+\dontrun{
 # Baixa Novo CAGED de jan-mar/2023
 manifest <- caged_download(years = 2023, months = c(1L, 2L, 3L))
 
@@ -75,7 +75,7 @@ caged_download(years = 2018)
 caged_download(years = 2023, months = 1, force = TRUE)
 
 # Salvar em diretório personalizado
-caged_download(years = 2023, months = 1, destdir = "D:/dados/caged")
+caged_download(years = 2023, months = 1, destdir = file.path(tempdir(), "caged_cache"))
 }
 
 }

@@ -17,7 +17,7 @@
 #'   e `status` (`"baixado"`, `"cache"` ou `"naoencontrado"`).
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' caged_download_layouts()
 #' caged_download_layouts(type = "antigo")
 #' caged_download_layouts(type = "novo")

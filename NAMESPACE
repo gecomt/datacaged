@@ -14,87 +14,111 @@ export(caged_status)
 export(caged_to_duckdb)
 export(caged_to_parquet)
 export(caged_update)
-importFrom(DBI,dbAppendTable)
-importFrom(DBI,dbBind)
-importFrom(DBI,dbClearResult)
-importFrom(DBI,dbConnect)
-importFrom(DBI,dbDisconnect)
-importFrom(DBI,dbExecute)
-importFrom(DBI,dbExistsTable)
-importFrom(DBI,dbFetch)
-importFrom(DBI,dbGetQuery)
-importFrom(DBI,dbListFields)
-importFrom(DBI,dbListTables)
-importFrom(DBI,dbSendQuery)
-importFrom(DBI,dbSendStatement)
-importFrom(DBI,dbWriteTable)
-importFrom(archive,archive)
-importFrom(archive,archive_extract)
-importFrom(archive,archive_read)
-importFrom(cli,cli_abort)
-importFrom(cli,cli_h1)
-importFrom(cli,cli_h2)
-importFrom(cli,cli_inform)
-importFrom(cli,cli_progress_bar)
-importFrom(cli,cli_progress_done)
-importFrom(cli,cli_progress_update)
-importFrom(cli,cli_warn)
-importFrom(cli,col_blue)
-importFrom(cli,col_cyan)
-importFrom(cli,col_green)
-importFrom(cli,col_red)
-importFrom(cli,col_silver)
-importFrom(cli,col_yellow)
-importFrom(cli,num_ansi_colors)
-importFrom(cli,pb_bar)
-importFrom(cli,pb_current)
-importFrom(cli,pb_elapsed)
-importFrom(cli,pb_eta_str)
-importFrom(cli,pb_total)
-importFrom(cli,style_bold)
-importFrom(dplyr,arrange)
-importFrom(dplyr,bind_rows)
-importFrom(dplyr,collect)
-importFrom(dplyr,count)
-importFrom(dplyr,desc)
-importFrom(dplyr,filter)
-importFrom(dplyr,full_join)
-importFrom(dplyr,group_by)
-importFrom(dplyr,left_join)
-importFrom(dplyr,mutate)
-importFrom(dplyr,pull)
-importFrom(dplyr,summarise)
-importFrom(dplyr,tbl)
+importFrom(DBI,
+  dbAppendTable,
+  dbBind,
+  dbClearResult,
+  dbConnect,
+  dbDisconnect,
+  dbExecute,
+  dbExistsTable,
+  dbFetch,
+  dbGetQuery,
+  dbListFields,
+  dbListTables,
+  dbSendQuery,
+  dbSendStatement,
+  dbWriteTable
+)
+importFrom(archive,
+  archive,
+  archive_extract,
+  archive_read
+)
+importFrom(cli,
+  cli_abort,
+  cli_h1,
+  cli_h2,
+  cli_inform,
+  cli_progress_bar,
+  cli_progress_done,
+  cli_progress_update,
+  cli_warn,
+  col_blue,
+  col_cyan,
+  col_green,
+  col_red,
+  col_silver,
+  col_yellow,
+  num_ansi_colors,
+  pb_bar,
+  pb_current,
+  pb_elapsed,
+  pb_eta_str,
+  pb_total,
+  style_bold
+)
+importFrom(dplyr,
+  arrange,
+  bind_rows,
+  collect,
+  count,
+  desc,
+  filter,
+  full_join,
+  group_by,
+  left_join,
+  mutate,
+  pull,
+  summarise,
+  tbl
+)
 importFrom(duckdb,duckdb)
-importFrom(furrr,furrr_options)
-importFrom(furrr,future_map)
-importFrom(future,availableCores)
-importFrom(future,multisession)
-importFrom(future,plan)
+importFrom(furrr,
+  furrr_options,
+  future_map
+)
+importFrom(future,
+  availableCores,
+  multisession,
+  plan
+)
 importFrom(glue,glue)
-importFrom(httr2,req_error)
-importFrom(httr2,req_perform)
-importFrom(httr2,req_retry)
-importFrom(httr2,req_timeout)
-importFrom(httr2,request)
-importFrom(httr2,resp_body_json)
-importFrom(httr2,resp_body_raw)
-importFrom(httr2,resp_status)
-importFrom(progressr,progressor)
-importFrom(progressr,with_progress)
-importFrom(purrr,compact)
-importFrom(purrr,map)
-importFrom(purrr,walk2)
-importFrom(readr,col_character)
-importFrom(readr,cols)
-importFrom(readr,locale)
-importFrom(readr,read_delim)
-importFrom(stringr,str_remove)
-importFrom(stringr,str_replace_all)
+importFrom(httr2,
+  req_error,
+  req_perform,
+  req_retry,
+  req_timeout,
+  request,
+  resp_body_json,
+  resp_body_raw,
+  resp_status
+)
+importFrom(progressr,
+  progressor,
+  with_progress
+)
+importFrom(purrr,
+  compact,
+  map,
+  walk2
+)
+importFrom(readr,
+  col_character,
+  cols,
+  locale,
+  read_delim
+)
+importFrom(stringr,
+  str_remove,
+  str_replace_all
+)
 importFrom(tibble,tibble)
 importFrom(tools,R_user_dir)
-importFrom(utils,download.file)
-importFrom(utils,globalVariables)
-importFrom(utils,head)
-importFrom(utils,packageVersion)
-importFrom(utils,unzip)
+importFrom(utils,
+  download.file,
+  globalVariables,
+  head,
+  packageVersion,
+  unzip
+)

@@ -37,7 +37,7 @@ compara com o que já existe no banco e baixa apenas o que está faltando.
 É o modo mais prático de manter o banco atualizado sem re-baixar tudo.
 }
 \examples{
-\donttest{
+\dontrun{
 # Atualizar Novo CAGED com as competências mais recentes
 caged_update(db_path = file.path(tempdir(), "caged.duckdb"))
 

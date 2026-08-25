@@ -50,24 +50,32 @@ Combina \code{caged_download()}, \code{caged_parse()} e \code{caged_to_duckdb()}
 em um único comando. É o jeito mais simples de popular o banco local.
 }
 \examples{
-\donttest{
-# Novo CAGED 2022-2023
+\dontrun{
+# Download real — exemplos nao executados automaticamente (requerem rede e tempo)
+
+# Novo CAGED: 1 mes recente
 caged_load(
-  years   = 2022:2023,
+  years   = 2024,
+  months  = 1,
   db_path = file.path(tempdir(), "caged.duckdb")
 )
 
-# CAGED antigo nacional (2015-2019)
+# CAGED antigo: 1 ano
 caged_load(
-  years   = 2015:2019,
+  years   = 2019,
+  months  = seq_len(12L),
   db_path = file.path(tempdir(), "caged_historico.duckdb")
 )
 
-# Conecta e consulta depois
+# Conecta e consulta
 con <- caged_connect(file.path(tempdir(), "caged.duckdb"))
-dplyr::tbl(con, "caged_mov") |>
-  dplyr::group_by(competencia, uf) |>
-  dplyr::summarise(saldo = sum(saldomovimentacao, na.rm = TRUE))
+if ("caged_mov" \%in\% DBI::dbListTables(con)) {
+  dplyr::tbl(con, "caged_mov") |>
+    dplyr::group_by(competencia, uf) |>
+    dplyr::summarise(saldo = sum(saldomovimentacao, na.rm = TRUE)) |>
+    dplyr::collect()
+}
+DBI::dbDisconnect(con, shutdown = TRUE)
 }
 
 }

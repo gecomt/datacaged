@@ -1,1 +1,0 @@
-### code from vignette 'pipeline'

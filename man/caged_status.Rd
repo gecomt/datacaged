@@ -22,7 +22,7 @@ Faz uma requisição leve à API do HuggingFace e retorna o status.
 um download com \code{caged_load()} ou \code{caged_download()}.
 }
 \examples{
-\donttest{
+\dontrun{
 caged_status()
 
 # Só verificar sem imprimir

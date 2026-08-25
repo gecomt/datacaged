@@ -31,11 +31,6 @@ con <- caged_connect(file.path(tempdir(), "caged.duckdb"))
 # Listar tabelas disponíveis
 DBI::dbListTables(con)
 
-# Consultar com dplyr
-dplyr::tbl(con, "caged_mov") |>
-  dplyr::group_by(competenciamov) |>
-  dplyr::summarise(saldo = sum(saldomovimentacao, na.rm = TRUE))
-
 # Sempre fechar ao terminar
 DBI::dbDisconnect(con, shutdown = TRUE)
 }

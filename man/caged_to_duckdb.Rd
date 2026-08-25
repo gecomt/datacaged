@@ -46,8 +46,8 @@ As tabelas criadas são:
 }
 }
 \examples{
-\donttest{
-# Parse e grava em um único fluxo
+\dontrun{
+# Parse e grava em um único fluxo (requer arquivo baixado)
 df <- caged_parse("CAGEDMOV202301.7z")
 caged_to_duckdb(df, db_path = file.path(tempdir(), "caged.duckdb"))
 

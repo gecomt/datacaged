@@ -24,11 +24,6 @@
 #' # Listar tabelas disponíveis
 #' DBI::dbListTables(con)
 #'
-#' # Consultar com dplyr
-#' dplyr::tbl(con, "caged_mov") |>
-#'   dplyr::group_by(competenciamov) |>
-#'   dplyr::summarise(saldo = sum(saldomovimentacao, na.rm = TRUE))
-#'
 #' # Sempre fechar ao terminar
 #' DBI::dbDisconnect(con, shutdown = TRUE)
 #' }
@@ -70,8 +65,8 @@ caged_connect <- function(db_path, read_only = FALSE, quiet = FALSE) {
 #' @return invisible: number of rows inserted.
 #'
 #' @examples
-#' \donttest{
-#' # Parse e grava em um único fluxo
+#' \dontrun{
+#' # Parse e grava em um único fluxo (requer arquivo baixado)
 #' df <- caged_parse("CAGEDMOV202301.7z")
 #' caged_to_duckdb(df, db_path = file.path(tempdir(), "caged.duckdb"))
 #'
@@ -294,24 +289,32 @@ caged_info <- function(db_path) {
 #' @return invisible: tibble with final database statistics (via `caged_info()`).
 #'
 #' @examples
-#' \donttest{
-#' # Novo CAGED 2022-2023
+#' \dontrun{
+#' # Download real — exemplos nao executados automaticamente (requerem rede e tempo)
+#'
+#' # Novo CAGED: 1 mes recente
 #' caged_load(
-#'   years   = 2022:2023,
+#'   years   = 2024,
+#'   months  = 1,
 #'   db_path = file.path(tempdir(), "caged.duckdb")
 #' )
 #'
-#' # CAGED antigo nacional (2015-2019)
+#' # CAGED antigo: 1 ano
 #' caged_load(
-#'   years   = 2015:2019,
+#'   years   = 2019,
+#'   months  = seq_len(12L),
 #'   db_path = file.path(tempdir(), "caged_historico.duckdb")
 #' )
 #'
-#' # Conecta e consulta depois
+#' # Conecta e consulta
 #' con <- caged_connect(file.path(tempdir(), "caged.duckdb"))
-#' dplyr::tbl(con, "caged_mov") |>
-#'   dplyr::group_by(competencia, uf) |>
-#'   dplyr::summarise(saldo = sum(saldomovimentacao, na.rm = TRUE))
+#' if ("caged_mov" %in% DBI::dbListTables(con)) {
+#'   dplyr::tbl(con, "caged_mov") |>
+#'     dplyr::group_by(competencia, uf) |>
+#'     dplyr::summarise(saldo = sum(saldomovimentacao, na.rm = TRUE)) |>
+#'     dplyr::collect()
+#' }
+#' DBI::dbDisconnect(con, shutdown = TRUE)
 #' }
 #'
 #' @seealso [caged_adjustments_load()] para o CAGED Ajustes (correções retroativas até 2019).
@@ -507,7 +510,35 @@ caged_load <- function(years,
 #' @return número de linhas inseridas
 #' @noRd
 .insert_rows <- function(con, table, df) {
-  DBI::dbAppendTable(con, table, df)
+  # Adicionar colunas ausentes na tabela antes de inserir (schema evolution)
+  existing_cols <- DBI::dbListFields(con, table)
+  new_cols <- setdiff(names(df), existing_cols)
+
+  if (length(new_cols) > 0) {
+    for (col in new_cols) {
+      # Detectar tipo da coluna
+      col_type <- if (is.numeric(df[[col]])) "DOUBLE" else "VARCHAR"
+      sql <- sprintf(
+        "ALTER TABLE %s ADD COLUMN %s %s",
+        DBI::dbQuoteIdentifier(con, table),
+        DBI::dbQuoteIdentifier(con, col),
+        col_type
+      )
+      DBI::dbExecute(con, sql)
+    }
+  }
+
+  # Reordenar colunas do df para coincidir com a tabela
+  all_cols <- DBI::dbListFields(con, table)
+  df_aligned <- df[, intersect(all_cols, names(df)), drop = FALSE]
+  # Colunas na tabela mas nao no df — preencher com NA
+  missing <- setdiff(all_cols, names(df))
+  for (col in missing) {
+    df_aligned[[col]] <- NA
+  }
+  df_aligned <- df_aligned[, all_cols, drop = FALSE]
+
+  DBI::dbAppendTable(con, table, df_aligned)
   nrow(df)
 }
 
@@ -541,7 +572,7 @@ caged_load <- function(years,
 #'   ou NULL se o banco já estiver atualizado.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Atualizar Novo CAGED com as competências mais recentes
 #' caged_update(db_path = file.path(tempdir(), "caged.duckdb"))
 #'
@@ -599,12 +630,13 @@ caged_update <- function(db_path,
 
     # Determina a competência máxima já no banco para esta série
     tabs <- tabelas_por_serie[[serie]]
-    max_banco <- if (length(tabs) == 0 || !any(tabs %in% names(max_no_banco))) {
+    tabs_presentes <- tabs[tabs %in% names(max_no_banco)]
+    max_banco <- if (length(tabs_presentes) == 0) {
       0L
     } else {
-      max(max_no_banco[tabs[tabs %in% names(max_no_banco)]], na.rm = TRUE)
+      max(unlist(max_no_banco[tabs_presentes]), na.rm = TRUE)
     }
-    if (is.infinite(max_banco)) max_banco <- 0L
+    if (is.infinite(max_banco) || is.na(max_banco)) max_banco <- 0L
 
     # Filtra apenas competências novas (> max no banco)
     novas <- disponiveis[as.integer(disponiveis$competencia) > max_banco, ]
@@ -720,7 +752,7 @@ caged_update <- function(db_path,
 #' @return invisível: tibble com `tabela`, `arquivo` e `registros` exportados.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' db <- file.path(tempdir(), "caged.duckdb")
 #' caged_load(years = 2023, months = 1, db_path = db)
 #'

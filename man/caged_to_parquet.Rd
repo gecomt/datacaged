@@ -35,7 +35,7 @@ exportação eficiente. Significativamente mais rápido que \code{collect()} +
 \code{arrow::write_parquet()} para grandes volumes.
 }
 \examples{
-\donttest{
+\dontrun{
 db <- file.path(tempdir(), "caged.duckdb")
 caged_load(years = 2023, months = 1, db_path = db)
 
