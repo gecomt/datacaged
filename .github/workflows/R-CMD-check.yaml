@@ -33,7 +33,7 @@ jobs:
       R_PKG_STAGED_INSTALL: no
       CI: true
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: r-lib/actions/setup-pandoc@v2
 
@@ -60,7 +60,7 @@ jobs:
 
       - name: Upload check results
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: check-results-${{ matrix.config.os }}-${{ matrix.config.r }}
           path: check/datacaged.Rcheck/00check.log
