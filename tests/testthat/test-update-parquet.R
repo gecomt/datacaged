@@ -44,7 +44,9 @@ test_that("caged_update retorna NULL quando banco ja esta atualizado", {
     caged_hf_files = function(...) tibble::tibble(
       competencia = "202412", ano = 2024L, mes = 12L,
       url = "https://example.com/fake.7z"
-    ),
+    ,
+    .package = "datacaged"
+  ),
     .package = "datacaged"
   )
 

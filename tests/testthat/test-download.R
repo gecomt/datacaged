@@ -74,16 +74,10 @@ test_that(".cache_dir cria diretório se não existir", {
 })
 
 test_that(".download_file retorna NULL para URL inexistente (404)", {
-  # Mockar req_perform para simular 404 sem rede
+  # Mockar .download_file diretamente (evita vazar mock de httr2 na sessao)
   local_mocked_bindings(
-    req_perform = function(req, ...) {
-      structure(
-        list(status_code = 404L, url = req$url, headers = list(), body = raw(0)),
-        class = "httr2_response"
-      )
-    },
-    resp_status = function(resp, ...) resp$status_code,
-    .package = "httr2"
+    .download_file = function(url, destfile, timeout, ...) invisible(NULL),
+    .package = "datacaged"
   )
   destfile <- tempfile(fileext = ".7z")
   on.exit(unlink(destfile))

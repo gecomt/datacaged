@@ -258,20 +258,6 @@ caged_hf_files <- function(type    = "novo",
   invisible(resultado)
 }
 
-#' @rdname caged_hf_files
-#' @export
-caged_ftp_files <- function(type    = "novo",
-                             n       = 12,
-                             timeout = 15,
-                             verbose = TRUE) {
-  cli::cli_warn(c(
-    "!" = "{.fn caged_ftp_files} has been renamed to {.fn caged_hf_files}.",
-    "i" = "The repository is now HuggingFace (HTTPS), no longer MTE's FTP.",
-    "i" = "Use {.fn caged_hf_files} to avoid this warning."
-  ))
-  caged_hf_files(type = type, n = n, timeout = timeout, verbose = verbose)
-}
-
 # -- Utilitário interno: lista diretório via API HuggingFace ------------------
 
 #' Lista o conteúdo de uma pasta no repositório HuggingFace via API

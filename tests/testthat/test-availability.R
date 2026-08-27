@@ -78,19 +78,3 @@ test_that("caged_hf_files valida argumento n", {
   expect_error(caged_hf_files(n = NA), "inteiro positivo")
 })
 
-test_that("caged_ftp_files emite warning de deprecacao", {
-  local_mocked_bindings(
-    caged_hf_files = function(...) tibble::tibble(),
-    .package = "datacaged"
-  )
-  warned <- FALSE
-  withCallingHandlers(
-    caged_ftp_files(n = 1, verbose = FALSE),
-    warning = function(w) {
-      if (grepl("renamed|hf_files|renomeada", conditionMessage(w), ignore.case = TRUE))
-        warned <<- TRUE
-      invokeRestart("muffleWarning")
-    }
-  )
-  expect_true(warned)
-})

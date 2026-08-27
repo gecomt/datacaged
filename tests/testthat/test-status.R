@@ -1,23 +1,5 @@
 # test-status.R
 
-# Helper: resposta fake do HuggingFace para testes sem rede
-.mock_hf_online <- function(expr) {
-  local_mocked_bindings(
-    req_perform = function(req, ...) {
-      structure(
-        list(
-          status_code = 200L,
-          url = "https://huggingface.co/api/datasets/alexsandroprado/caged/tree/main",
-          headers = list("content-type" = "application/json"),
-          body = charToRaw('[{"path":"NOVO_CAGED","type":"directory"}]')
-        ),
-        class = "httr2_response"
-      )
-    },
-    .package = "httr2"
-  )
-}
-
 test_that("caged_status retorna lista com campos corretos", {
   local_mocked_bindings(
     caged_status = function(...) list(

@@ -2,12 +2,9 @@
 % Please edit documentation in R/availability.R
 \name{caged_hf_files}
 \alias{caged_hf_files}
-\alias{caged_ftp_files}
 \title{Lista as competências disponíveis no repositório HuggingFace}
 \usage{
 caged_hf_files(type = "novo", n = 12, timeout = 15, verbose = TRUE)
-
-caged_ftp_files(type = "novo", n = 12, timeout = 15, verbose = TRUE)
 }
 \arguments{
 \item{type}{character. Which series to query:

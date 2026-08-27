@@ -1,5 +1,9 @@
 # datacaged 0.2.1
 
+## Breaking changes
+
+* `caged_ftp_files()` removed — use `caged_hf_files()` instead.
+
 ## Bug fixes
 
 * Fixed `caged_hf_files(type = "ajustes")` returning years > 2019 — now

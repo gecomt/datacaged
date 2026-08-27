@@ -1,4 +1,4 @@
-# datacaged <img src="man/figures/datacaged.svg" align="right" height="138" alt="" />
+# datacaged <img src="man/figures/logo.png" align="right" height="138" alt="" />
 
 *[Leia em Português](README.pt-BR.md)*
 
