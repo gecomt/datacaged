@@ -75,6 +75,11 @@
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.2.1" id="datacaged-021">datacaged 0.2.1<a class="anchor" aria-label="anchor" href="#datacaged-021"></a></h2>
 <div class="section level3">
+<h3 id="breaking-changes-0-2-1">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-2-1"></a></h3>
+<ul><li>
+<code>caged_ftp_files()</code> removed — use <code><a href="../reference/caged_hf_files.html">caged_hf_files()</a></code> instead.</li>
+</ul></div>
+<div class="section level3">
 <h3 id="bug-fixes-0-2-1">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-2-1"></a></h3>
 <ul><li>Fixed <code>caged_hf_files(type = "ajustes")</code> returning years &gt; 2019 — now correctly filters to years &lt;= 2019.</li>
 <li>Fixed CAGED Adjustments file name pattern (<code>CAGEDEST_AJUSTES_</code> was incorrectly read as <code>CAGEDAJUSTES_</code>); updated <code>prefixo_len</code> from 13 to 17.</li>
@@ -96,7 +101,7 @@
 <div class="section level3">
 <h3 id="new-functions-0-2-0">New functions<a class="anchor" aria-label="anchor" href="#new-functions-0-2-0"></a></h3>
 <ul><li>
-<code><a href="../reference/caged_hf_files.html">caged_hf_files()</a></code>: replaces <code><a href="../reference/caged_hf_files.html">caged_ftp_files()</a></code> — lists available competencies from the HuggingFace repository via its REST API.</li>
+<code><a href="../reference/caged_hf_files.html">caged_hf_files()</a></code>: replaces <code>caged_ftp_files()</code> — lists available competencies from the HuggingFace repository via its REST API.</li>
 <li>
 <code><a href="../reference/caged_update.html">caged_update()</a></code>: incremental update — downloads only competencies not yet in the local DuckDB bank, querying the bank max competência and HuggingFace availability.</li>
 <li>
@@ -105,7 +110,7 @@
 <div class="section level3">
 <h3 id="deprecated-0-2-0">Deprecated<a class="anchor" aria-label="anchor" href="#deprecated-0-2-0"></a></h3>
 <ul><li>
-<code><a href="../reference/caged_hf_files.html">caged_ftp_files()</a></code>: kept as an alias with a deprecation warning. Will be removed in a future version. Use <code><a href="../reference/caged_hf_files.html">caged_hf_files()</a></code> instead.</li>
+<code>caged_ftp_files()</code>: kept as an alias with a deprecation warning. Will be removed in a future version. Use <code><a href="../reference/caged_hf_files.html">caged_hf_files()</a></code> instead.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="internal-changes-0-2-0">Internal changes<a class="anchor" aria-label="anchor" href="#internal-changes-0-2-0"></a></h3>
@@ -140,7 +145,7 @@
 <li>
 <code><a href="../reference/caged_status.html">caged_status()</a></code> — verifica disponibilidade do servidor FTP do MTE.</li>
 <li>
-<code><a href="../reference/caged_hf_files.html">caged_ftp_files()</a></code> — lista competências disponíveis no FTP.</li>
+<code>caged_ftp_files()</code> — lista competências disponíveis no FTP.</li>
 <li>
 <code><a href="../reference/caged_download_layouts.html">caged_download_layouts()</a></code> — baixa os layouts oficiais do MTE.</li>
 <li>Dataset <code>uf_codigos</code> — tabela de UFs com códigos IBGE e regiões.</li>
