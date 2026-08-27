@@ -34,7 +34,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">datacaged</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.1</span>
       </span>
     </div>
 
@@ -94,7 +94,7 @@
       </header><div class="row">
   <div class="contents col-md-9">
 <div class="section level1">
-<div class="page-header"><h1 id="datacaged-">datacaged <img src="reference/figures/datacaged.svg" align="right" height="138" alt=""><a class="anchor" aria-label="anchor" href="#datacaged-"></a>
+<div class="page-header"><h1 id="datacaged-">datacaged <img src="reference/figures/logo.png" align="right" height="138" alt=""><a class="anchor" aria-label="anchor" href="#datacaged-"></a>
 </h1></div>
 <p><em><a href="README.pt-BR.html">Leia em Português</a></em></p>
 <p><a href="https://github.com/gecomt/datacaged/actions" class="external-link"><img src="https://github.com/gecomt/datacaged/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a> <a href="https://app.codecov.io/gh/gecomt/datacaged" class="external-link"><img src="https://codecov.io/gh/gecomt/datacaged/branch/main/graph/badge.svg" alt="codecov"></a> <a href="LICENSE.html"><img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License: MIT"></a> <a href="https://doi.org/10.5281/zenodo.20058818" class="external-link"><img src="https://zenodo.org/badge/1227005418.svg" alt="DOI"></a></p>
@@ -235,25 +235,21 @@
 <div class="section level2">
 <h2 id="brain-pipeline">🧠 Pipeline<a class="anchor" aria-label="anchor" href="#brain-pipeline"></a>
 </h2>
-<div class="sourceCode" id="cb7"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">HuggingFace</span> (HTTPS)</span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>      ↓</span>
-<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="fu">caged_download</span>()   ← parallel, with local cache</span>
-<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>      ↓</span>
-<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>  <span class="fu">caged_parse</span>()      ← stream decompression via <span class="fu">archive_read</span>()</span>
-<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>      ↓</span>
-<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>  <span class="fu">caged_to_duckdb</span>()  ← bulk insert, deduplication by period</span>
-<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>      ↓</span>
-<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>  <span class="fu">caged_connect</span>()    ← dplyr <span class="sc">/</span> SQL <span class="sc">/</span> DBI</span></code></pre></div>
+<pre><code>HuggingFace (HTTPS)
+      ↓
+  caged_download()   ← parallel, with local cache
+      ↓
+  caged_parse()      ← stream decompression via archive_read()
+      ↓
+  caged_to_duckdb()  ← bulk insert, deduplication by period
+      ↓
+  caged_connect()    ← dplyr / SQL / DBI</code></pre>
 <hr>
 </div>
 <div class="section level2">
 <h2 id="books-main-functions">📚 Main functions<a class="anchor" aria-label="anchor" href="#books-main-functions"></a>
 </h2>
 <table class="table">
-<colgroup>
-<col width="39%">
-<col width="60%">
-</colgroup>
 <thead><tr>
 <th>Function</th>
 <th>Description</th>
@@ -385,7 +381,7 @@
 <div class="section level2">
 <h2 id="mailbox_with_mail-contact">📬 Contact<a class="anchor" aria-label="anchor" href="#mailbox_with_mail-contact"></a>
 </h2>
-<p><strong>Author:</strong> Alexsandro Prado<br><strong>Email:</strong> <a href="mailto:alexsandro.prado@ufersa.edu.br" class="email">alexsandro.prado@ufersa.edu.br</a><br><strong>GitHub:</strong> <a href="https://github.com/gecomt/datacaged" class="external-link uri">https://github.com/gecomt/datacaged</a></p>
+<p><strong>Author:</strong> Alexsandro Prado<br><strong>Email:</strong> <a href="mailto:alexsandro.prado@ufersa.edu.br">alexsandro.prado@ufersa.edu.br</a><br><strong>GitHub:</strong> <a href="https://github.com/gecomt/datacaged" class="external-link uri">https://github.com/gecomt/datacaged</a></p>
 </div>
 </div>
   </div>

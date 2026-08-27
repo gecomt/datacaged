@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">datacaged</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.1</span>
       </span>
     </div>
 
@@ -72,6 +72,21 @@
       <small>Source: <a href="https://github.com/gecomt/datacaged/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.2.1" id="datacaged-021">datacaged 0.2.1<a class="anchor" aria-label="anchor" href="#datacaged-021"></a></h2>
+<div class="section level3">
+<h3 id="bug-fixes-0-2-1">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-2-1"></a></h3>
+<ul><li>Fixed <code>caged_hf_files(type = "ajustes")</code> returning years &gt; 2019 — now correctly filters to years &lt;= 2019.</li>
+<li>Fixed CAGED Adjustments file name pattern (<code>CAGEDEST_AJUSTES_</code> was incorrectly read as <code>CAGEDAJUSTES_</code>); updated <code>prefixo_len</code> from 13 to 17.</li>
+<li>Added support for <code>CAGED_AJUSTES/2002a2009/</code> folder (annual files <code>CAGEDEST_AJUSTES_AAAA.7z</code>).</li>
+<li>Fixed <code>.insert_rows()</code> to handle schema evolution when loading data from multiple years with different column sets (<code>ALTER TABLE ... ADD COLUMN</code>).</li>
+<li>Converted <code>\donttest{}</code> examples that require network access or a populated database to <code>\dontrun{}</code> to pass <code>R CMD check --run-donttest</code>.</li>
+<li>Fixed duplicate <code>caged_ftp_files</code> alias in documentation.</li>
+<li>Removed U+FE0F variation selector from source files (LaTeX PDF error).</li>
+<li>Updated CI workflows: added <code>concurrency</code>, <code>CI=true</code>, reduced coverage timeout to 15 min, added <code>dependabot.yml</code>.</li>
+<li>Replaced absolute file paths in examples (<code>~/Downloads/</code>, <code>D:/dados/</code>) with portable alternatives (<code>file.path(tempdir(), ...)</code>, <code>file.path("~", ...)</code>).</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.2.0" id="datacaged-020">datacaged 0.2.0<a class="anchor" aria-label="anchor" href="#datacaged-020"></a></h2>
 <div class="section level3">
