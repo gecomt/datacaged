@@ -28,7 +28,7 @@ library(datacaged)
 
 # Verifica se o repositório HuggingFace está online e mede a latência
 caged_status()
-#> ✔ Repositório HuggingFace online
+#> OK Repositório HuggingFace online
 #> ℹ Latência: 312 ms
 #> ℹ Dataset: https://huggingface.co/datasets/alexsandroprado/caged
 ```

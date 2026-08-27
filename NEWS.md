@@ -1,3 +1,24 @@
+# datacaged 0.2.1
+
+## Bug fixes
+
+* Fixed `caged_hf_files(type = "ajustes")` returning years > 2019 — now
+  correctly filters to years <= 2019.
+* Fixed CAGED Adjustments file name pattern (`CAGEDEST_AJUSTES_` was
+  incorrectly read as `CAGEDAJUSTES_`); updated `prefixo_len` from 13 to 17.
+* Added support for `CAGED_AJUSTES/2002a2009/` folder (annual files
+  `CAGEDEST_AJUSTES_AAAA.7z`).
+* Fixed `.insert_rows()` to handle schema evolution when loading data from
+  multiple years with different column sets (`ALTER TABLE ... ADD COLUMN`).
+* Converted `\donttest{}` examples that require network access or a populated
+  database to `\dontrun{}` to pass `R CMD check --run-donttest`.
+* Fixed duplicate `caged_ftp_files` alias in documentation.
+* Removed U+FE0F variation selector from source files (LaTeX PDF error).
+* Updated CI workflows: added `concurrency`, `CI=true`, reduced coverage
+  timeout to 15 min, added `dependabot.yml`.
+* Replaced absolute file paths in examples (`~/Downloads/`, `D:/dados/`)
+  with portable alternatives (`file.path(tempdir(), ...)`, `file.path("~", ...)`).
+
 # datacaged 0.2.0
 
 ## Breaking changes

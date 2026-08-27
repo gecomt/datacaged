@@ -40,10 +40,10 @@ O `datacaged` é compatível com **Windows, macOS e Linux** sem configuração a
 
 | Recurso | Windows | macOS | Linux |
 |---|---|---|---|
-| Download (HTTPS) | ✅ | ✅ | ✅ |
-| Downloads paralelos | ✅ | ✅ | ✅ |
-| Novo CAGED (2020+) | ✅ | ✅ | ✅ |
-| CAGED antigo (pré-2020, PPMd) | ⚠️ requer 7-Zip | ⚠️ requer 7-Zip | ⚠️ requer 7-Zip |
+| Download (HTTPS) | OK | OK | OK |
+| Downloads paralelos | OK | OK | OK |
+| Novo CAGED (2020+) | OK | OK | OK |
+| CAGED antigo (pré-2020, PPMd) | (!) requer 7-Zip | (!) requer 7-Zip | (!) requer 7-Zip |
 
 O **CAGED antigo** usa compressão PPMd. Se precisar desses dados, instale o 7-Zip:
 

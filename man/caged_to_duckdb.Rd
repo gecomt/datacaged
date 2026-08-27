@@ -40,9 +40,9 @@ re-rodar o pipeline sem apagar dados anteriores).
 \details{
 As tabelas criadas são:
 \itemize{
-\item \code{caged_mov}, \code{caged_for}, \code{caged_exc} — para dados de 2020 em diante
-\item \code{caged_antigo} — para dados até 2019 (CAGED antigo)
-\item \code{caged_ajustes} — ajustes retroativos do CAGED antigo
+\item \code{caged_mov}, \code{caged_for}, \code{caged_exc} --- para dados de 2020 em diante
+\item \code{caged_antigo} --- para dados até 2019 (CAGED antigo)
+\item \code{caged_ajustes} --- ajustes retroativos do CAGED antigo
 }
 }
 \examples{

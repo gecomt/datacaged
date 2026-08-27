@@ -46,9 +46,9 @@ caged_connect <- function(db_path, read_only = FALSE, quiet = FALSE) {
 #' re-rodar o pipeline sem apagar dados anteriores).
 #'
 #' As tabelas criadas são:
-#' - `caged_mov`, `caged_for`, `caged_exc` — para dados de 2020 em diante
-#' - `caged_antigo` — para dados até 2019 (CAGED antigo)
-#' - `caged_ajustes` — ajustes retroativos do CAGED antigo
+#' - `caged_mov`, `caged_for`, `caged_exc` --- para dados de 2020 em diante
+#' - `caged_antigo` --- para dados até 2019 (CAGED antigo)
+#' - `caged_ajustes` --- ajustes retroativos do CAGED antigo
 #'
 #' @param df data.frame or tibble. Data returned by `caged_parse()`.
 #' @param db_path character or NULL. Path to the file `.duckdb`.
@@ -264,14 +264,14 @@ caged_info <- function(db_path) {
 
 # -- Pipeline principal: caged_load --------------------------------------------
 
-#' Pipeline completo: download → parse → DuckDB
+#' Pipeline completo: download -> parse -> DuckDB
 #'
 #' Combina `caged_download()`, `caged_parse()` e `caged_to_duckdb()`
 #' em um único comando. É o jeito mais simples de popular o banco local.
 #'
 #' @param years integer vector. Desired years.
-#' @param months integer vector. Desired months (1–12). Default: `seq_len(12L)` (todos os meses).
-#' @param states character vector or NULL. **Ignored** — the parameter is validated
+#' @param months integer vector. Desired months (1--12). Default: `seq_len(12L)` (todos os meses).
+#' @param states character vector or NULL. **Ignored** --- the parameter is validated
 #'   but does not filter downloads for any series (Novo CAGED, antigo or Ajustes),
 #'   as all files are national in scope. Kept for backwards compatibility.
 #' @param db_path character. Path to the file `.duckdb`.
@@ -290,7 +290,7 @@ caged_info <- function(db_path) {
 #'
 #' @examples
 #' \dontrun{
-#' # Download real — exemplos nao executados automaticamente (requerem rede e tempo)
+#' # Download real --- exemplos nao executados automaticamente (requerem rede e tempo)
 #'
 #' # Novo CAGED: 1 mes recente
 #' caged_load(
@@ -372,7 +372,7 @@ caged_load <- function(years,
   manifest_ok <- dplyr::filter(manifest, status %in% c("baixado", "cache"))
   n_inserido_total <- 0L
 
-  # Abre UMA conexão para todo o loop — evita open/close por arquivo
+  # Abre UMA conexão para todo o loop --- evita open/close por arquivo
   con_load <- caged_connect(db_path, quiet = TRUE)
   on.exit(.disconnect(con_load), add = TRUE)
 
@@ -531,7 +531,7 @@ caged_load <- function(years,
   # Reordenar colunas do df para coincidir com a tabela
   all_cols <- DBI::dbListFields(con, table)
   df_aligned <- df[, intersect(all_cols, names(df)), drop = FALSE]
-  # Colunas na tabela mas nao no df — preencher com NA
+  # Colunas na tabela mas nao no df --- preencher com NA
   missing <- setdiff(all_cols, names(df))
   for (col in missing) {
     df_aligned[[col]] <- NA

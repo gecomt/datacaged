@@ -7,14 +7,14 @@
 #'
 #' O CAGED Ajustes contém correções retroativas de vínculos do CAGED antigo
 #' (até 2019). Cada arquivo `CAGEDEST_AJUSTES_{MM}{AAAA}.7z` registra
-#' movimentações ajustadas após a declaração original — essencial para
+#' movimentações ajustadas após a declaração original --- essencial para
 #' reconstrução de séries históricas mais precisas.
 #'
 #' Os dados são gravados na tabela `caged_ajustes` do banco DuckDB, com o mesmo
 #' schema do `caged_antigo`.
 #'
 #' @param years integer vector. Desired years. Maximum: 2019.
-#' @param months integer vector. Desired months (1–12). Default: `seq_len(12L)`.
+#' @param months integer vector. Desired months (1--12). Default: `seq_len(12L)`.
 #' @param db_path character. Path to the file `.duckdb`.
 #' @param destdir character or NULL. Cache directory for `.7z` files.
 #'   Default: `tools::R_user_dir("datacaged", "cache")`.

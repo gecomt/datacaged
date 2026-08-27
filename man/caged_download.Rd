@@ -17,9 +17,9 @@ caged_download(
 \arguments{
 \item{years}{integer vector. Desired years (ex: \code{2020:2023}).}
 
-\item{months}{integer vector. Desired months (1–12). Default: \code{seq_len(12L)} (todos os meses).}
+\item{months}{integer vector. Desired months (1--12). Default: \code{seq_len(12L)} (todos os meses).}
 
-\item{states}{character vector or NULL. \strong{Ignorado} — mantido por compatibilidade.}
+\item{states}{character vector or NULL. \strong{Ignorado} --- mantido por compatibilidade.}
 
 \item{destdir}{character or NULL. Local directory to save os arquivos.
 If NULL, uses the default directory do sistema via
@@ -53,7 +53,7 @@ Para o \strong{CAGED antigo} (até 2019), o download é nacional (arquivo único
    Download (HTTPS) \tab OK \tab OK \tab OK \cr
    Downloads paralelos \tab OK \tab OK \tab OK \cr
    Novo CAGED (2020+, LZMA) \tab OK \tab OK \tab OK \cr
-   CAGED antigo (PPMd) \tab Requer 7-Zip \tab Requer 7-Zip \tab Requer 7-Zip ️ \cr
+   CAGED antigo (PPMd) \tab (!) \tab (!) \tab (!) \cr
 }
 
 

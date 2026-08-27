@@ -62,7 +62,7 @@
 
       status <- httr2::resp_status(resp)
 
-      # Arquivo não encontrado no repositório — retorna NULL
+      # Arquivo não encontrado no repositório --- retorna NULL
       if (status %in% c(404L, 403L)) {
         if (file.exists(destfile)) unlink(destfile)
         return(invisible(NULL))
@@ -91,7 +91,7 @@
       return(invisible(destfile))
     }
 
-    # Falha — espera antes de tentar novamente
+    # Falha --- espera antes de tentar novamente
     if (tentativa < 3) sleep_fn(5 * tentativa)
   }
 
@@ -235,8 +235,8 @@
 #' Para o **CAGED antigo** (até 2019), o download é nacional (arquivo único por competência).
 #'
 #' @param years integer vector. Desired years (ex: `2020:2023`).
-#' @param months integer vector. Desired months (1–12). Default: `seq_len(12L)` (todos os meses).
-#' @param states character vector or NULL. **Ignorado** — mantido por compatibilidade.
+#' @param months integer vector. Desired months (1--12). Default: `seq_len(12L)` (todos os meses).
+#' @param states character vector or NULL. **Ignorado** --- mantido por compatibilidade.
 #' @param destdir character or NULL. Local directory to save os arquivos.
 #'   If NULL, uses the default directory do sistema via
 #'   `tools::R_user_dir("datacaged", "cache")`.
@@ -274,9 +274,9 @@
 #' | Recurso | Windows | macOS | Linux |
 #' |---|---|---|---|
 #' | Download (HTTPS) | OK | OK | OK |
-#' | Downloads paralelos | OK  | OK | OK |
+#' | Downloads paralelos | OK | OK | OK |
 #' | Novo CAGED (2020+, LZMA) | OK | OK | OK |
-#' | CAGED antigo (PPMd) | Requer 7-Zip | Requer 7-Zip | Requer 7-Zip ️ |
+#' | CAGED antigo (PPMd) | (!) | (!) | (!) |
 #'
 #' O CAGED antigo (pré-2020) usa PPMd e requer 7-Zip instalado.
 #' O Novo CAGED usa LZMA e funciona em todas as plataformas sem dependências extras.

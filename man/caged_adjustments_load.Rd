@@ -17,7 +17,7 @@ caged_adjustments_load(
 \arguments{
 \item{years}{integer vector. Desired years. Maximum: 2019.}
 
-\item{months}{integer vector. Desired months (1–12). Default: \code{seq_len(12L)}.}
+\item{months}{integer vector. Desired months (1--12). Default: \code{seq_len(12L)}.}
 
 \item{db_path}{character. Path to the file \code{.duckdb}.}
 
@@ -41,7 +41,7 @@ Baixa, parseia e grava os arquivos do CAGED Ajustes no banco DuckDB local.
 \details{
 O CAGED Ajustes contém correções retroativas de vínculos do CAGED antigo
 (até 2019). Cada arquivo \verb{CAGEDEST_AJUSTES_\{MM\}\{AAAA\}.7z} registra
-movimentações ajustadas após a declaração original — essencial para
+movimentações ajustadas após a declaração original --- essencial para
 reconstrução de séries históricas mais precisas.
 
 Os dados são gravados na tabela \code{caged_ajustes} do banco DuckDB, com o mesmo

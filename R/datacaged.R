@@ -56,8 +56,8 @@
 #' | `caged_mov` | `CAGEDMOV*.7z` | Jan/2020+ |
 #' | `caged_for` | `CAGEDFOR*.7z` | Jan/2020+ |
 #' | `caged_exc` | `CAGEDEXC*.7z` | Jan/2020+ |
-#' | `caged_antigo` | `CAGEDEST_*.7z` | 1992–Dez/2019 |
-#' | `caged_ajustes` | `CAGEDEST_AJUSTES_*.7z` | 1992–Dez/2019 |
+#' | `caged_antigo` | `CAGEDEST_*.7z` | 1992--Dez/2019 |
+#' | `caged_ajustes` | `CAGEDEST_AJUSTES_*.7z` | 1992--Dez/2019 |
 #'
 #' @docType package
 #' @name datacaged-package

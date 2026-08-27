@@ -2,7 +2,7 @@
 % Please edit documentation in R/database.R
 \name{caged_load}
 \alias{caged_load}
-\title{Pipeline completo: download → parse → DuckDB}
+\title{Pipeline completo: download -> parse -> DuckDB}
 \usage{
 caged_load(
   years,
@@ -19,9 +19,9 @@ caged_load(
 \arguments{
 \item{years}{integer vector. Desired years.}
 
-\item{months}{integer vector. Desired months (1–12). Default: \code{seq_len(12L)} (todos os meses).}
+\item{months}{integer vector. Desired months (1--12). Default: \code{seq_len(12L)} (todos os meses).}
 
-\item{states}{character vector or NULL. \strong{Ignored} — the parameter is validated
+\item{states}{character vector or NULL. \strong{Ignored} --- the parameter is validated
 but does not filter downloads for any series (Novo CAGED, antigo or Ajustes),
 as all files are national in scope. Kept for backwards compatibility.}
 
@@ -51,7 +51,7 @@ em um único comando. É o jeito mais simples de popular o banco local.
 }
 \examples{
 \dontrun{
-# Download real — exemplos nao executados automaticamente (requerem rede e tempo)
+# Download real --- exemplos nao executados automaticamente (requerem rede e tempo)
 
 # Novo CAGED: 1 mes recente
 caged_load(

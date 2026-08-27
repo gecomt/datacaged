@@ -20,7 +20,7 @@ Wrapper sobre \code{caged_parse()} que processa um vetor de caminhos,
 empilha os resultados e reporta progresso.
 }
 \details{
-Tipicamente você não chama esta função diretamente — ela é usada
+Tipicamente você não chama esta função diretamente --- ela é usada
 internamente por \code{caged_load()}. Mas é útil quando você quer controle
 manual sobre o que parsear.
 }

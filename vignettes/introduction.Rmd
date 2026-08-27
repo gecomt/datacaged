@@ -40,10 +40,10 @@ The `datacaged` package is compatible with **Windows, macOS and Linux** with no 
 
 | Recurso | Windows | macOS | Linux |
 |---|---|---|---|
-| Download (HTTPS) | ✅ | ✅ | ✅ |
-| Downloads paralelos | ✅ | ✅ | ✅ |
-| Novo CAGED (2020+) | ✅ | ✅ | ✅ |
-| Legacy CAGED (pre-2020, PPMd) | ⚠️ requires 7-Zip | ⚠️ requires 7-Zip | ⚠️ requires 7-Zip |
+| Download (HTTPS) | OK | OK | OK |
+| Downloads paralelos | OK | OK | OK |
+| Novo CAGED (2020+) | OK | OK | OK |
+| Legacy CAGED (pre-2020, PPMd) | (!) requires 7-Zip | (!) requires 7-Zip | (!) requires 7-Zip |
 
 **Legacy CAGED** uses PPMd compression. If you need this data, install 7-Zip:
 

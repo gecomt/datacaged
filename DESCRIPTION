@@ -1,6 +1,6 @@
 Package: datacaged
 Title: CAGED Microdata Download and Storage in 'DuckDB'
-Version: 0.2.0
+Version: 0.2.1
 Authors@R: 
     person("Alexsandro", "Prado",
            email   = "alexsandro.prado@ufersa.edu.br",
@@ -19,7 +19,7 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 LazyDataCompression: bzip2
-Date: 2026-08-24
+Date: 2026-08-26
 Roxygen: list(markdown = TRUE)
 Imports:
     archive,

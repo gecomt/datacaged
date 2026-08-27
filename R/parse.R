@@ -137,7 +137,7 @@
 .normalize_names <- function(nomes) {
   nomes |>
     tolower() |>
-    # Remove diacríticos via escapes Unicode — evita dependência de locale
+    # Remove diacríticos via escapes Unicode --- evita dependência de locale
     stringr::str_replace_all(
       c("\u00e1|\u00e0|\u00e3|\u00e2|\u00e4" = "a",
         "\u00e9|\u00e8|\u00ea|\u00eb"         = "e",
@@ -255,7 +255,7 @@ caged_parse <- function(path, type = NULL) {
 #' Wrapper sobre `caged_parse()` que processa um vetor de caminhos,
 #' empilha os resultados e reporta progresso.
 #'
-#' Tipicamente você não chama esta função diretamente — ela é usada
+#' Tipicamente você não chama esta função diretamente --- ela é usada
 #' internamente por `caged_load()`. Mas é útil quando você quer controle
 #' manual sobre o que parsear.
 #'
