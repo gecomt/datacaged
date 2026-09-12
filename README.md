@@ -9,7 +9,7 @@
 [![CRAN status](https://www.r-pkg.org/badges/version/datacaged)](https://CRAN.R-project.org/package=datacaged)
 [![CRAN checks](https://badges.cranchecks.info/summary/datacaged.svg)](https://cran.r-project.org/web/checks/check_results_datacaged.html)
 [![Downloads](https://cranlogs.r-pkg.org/badges/grand-total/datacaged)](https://cran.r-project.org/package=datacaged)
-[![Downloads](https://cranlogs.r-pkg.org/badges/datacaged)](https://cran.r-project.org/package=datacaged)
+
 
 > CAGED microdata straight into your 'DuckDB', with a complete pipeline ready for analysis.
 
