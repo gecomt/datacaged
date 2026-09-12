@@ -6,6 +6,7 @@
 [![codecov](https://codecov.io/gh/gecomt/datacaged/branch/main/graph/badge.svg)](https://app.codecov.io/gh/gecomt/datacaged)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE.md)
 [![DOI](https://zenodo.org/badge/1227005418.svg)](https://doi.org/10.5281/zenodo.20058818)
+[![R-universeversion](https://r-lib.r-universe.dev/usethis/badges/version)](https://r-lib.r-universe.dev/usethis)
 
 > CAGED microdata straight into your 'DuckDB', with a complete pipeline ready for analysis.
 
