@@ -6,6 +6,9 @@
 [![codecov](https://codecov.io/gh/gecomt/datacaged/branch/main/graph/badge.svg)](https://app.codecov.io/gh/gecomt/datacaged)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE.md)
 [![DOI](https://zenodo.org/badge/1227005418.svg)](https://doi.org/10.5281/zenodo.20058818)
+[![CRAN status](https://www.r-pkg.org/badges/version/datacaged)](https://CRAN.R-project.org/package=datacaged)
+[![CRAN checks](https://badges.cranchecks.info/summary/datacaged.svg)](https://cran.r-project.org/web/checks/check_results_datacaged.html)
+[![Downloads](https://cranlogs.r-pkg.org/badges/grand-total/datacaged)](https://cran.r-project.org/package=datacaged)
 
 > Microdados do CAGED direto no seu 'DuckDB', com pipeline completo e pronto para análise.
 
