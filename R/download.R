@@ -34,7 +34,7 @@
       MOV = "CAGEDMOV",
       FOR = "CAGEDFOR",
       EXC = "CAGEDEXC",
-      cli::cli_abort("Invalid type: {.val {type}}. Use MOV, FOR, EXC, ANTIGO or AJUSTES.")
+      cli::cli_abort(gettext("Invalid type: {.val {type}}. Use MOV, FOR, EXC, ANTIGO or AJUSTES."))
     )
     nome   <- glue::glue("{prefixo}{competencia}.7z")
     subdir <- glue::glue("{.HF_PASTA_NOVO}/{year}/{competencia}")
@@ -73,8 +73,14 @@
         return(1L)
       }
 
-      # Sucesso: salvar no disco
-      writeBin(httr2::resp_body_raw(resp), destfile)
+      # Sucesso: grava em arquivo temporario e renomeia ao final. Assim uma
+      # gravacao interrompida (disco cheio, Ctrl+C) nunca deixa um arquivo
+      # parcial com o nome final, que o cache trataria como valido.
+      parcial <- paste0(destfile, ".part")
+      on.exit(if (file.exists(parcial)) unlink(parcial), add = TRUE)
+      writeBin(httr2::resp_body_raw(resp), parcial)
+      if (file.exists(destfile)) unlink(destfile)
+      if (!file.rename(parcial, destfile)) stop("could not move downloaded file")
       0L
     }, error = function(e) {
       1L
@@ -97,7 +103,7 @@
 
   # Esgotou tentativas
   if (file.exists(destfile)) unlink(destfile)
-  cli::cli_warn("Failed to download {.url {url}} after 3 attempts. Skipping.")
+  cli::cli_warn(gettext("Failed to download {.url {url}} after 3 attempts. Skipping."))
   invisible(NULL)
 }
 
@@ -108,7 +114,7 @@
 #' Ordem: archive -> unzip -> 7-Zip (Rtools/PATH/Program Files)
 #' @noRd
 .extract_7z <- function(path, exdir) {
-  if (!file.exists(path)) cli::cli_abort("File not found: {.path {path}}")
+  if (!file.exists(path)) cli::cli_abort(gettext("File not found: {.path {path}}"))
 
   # Tentativa 1: archive (libarchive) -- funciona para Novo CAGED (LZMA) e CAGED antigo (PPMd)
   ok <- tryCatch({
@@ -167,10 +173,10 @@
   }
 
   cli::cli_abort(c(
-    "Falha ao extrair {.path {basename(path)}}.",
-    "i" = "O arquivo usa compressao PPMd (7-Zip avancado).",
-    "i" = "Install 7-Zip: {.url https://www.7-zip.org/download.html}",
-    "i" = "The standard Windows installer is sufficient (no need to add to PATH)."
+    gettext("Failed to extract {.path {basename(path)}}."),
+    "i" = gettext("The file uses PPMd compression (advanced 7-Zip)."),
+    "i" = gettext("Install 7-Zip: {.url https://www.7-zip.org/download.html}"),
+    "i" = gettext("The standard Windows installer is sufficient (no need to add to PATH).")
   ))
 }
 
@@ -300,24 +306,24 @@ caged_download <- function(years,
   n     <- nrow(tasks)
 
   if (n == 0) {
-    cli::cli_inform("No valid competency to download.")
+    cli::cli_inform(gettext("No valid competency to download."))
     return(invisible(tibble::tibble()))
   }
 
   workers <- max(1L, min(as.integer(workers), n))
 
-  cli::cli_h1("Download CAGED Microdata")
+  cli::cli_h1(gettext("Download CAGED Microdata"))
   cli::cli_inform(c(
-    "i" = "{n} file{?s} to process",
+    "i" = gettext("{n} file{?s} to process"),
     "i" = paste0("Fonte: ", .HF_BASE),
-    "i" = "Cache: {.path {cache}}",
-    "i" = "Workers: {workers}"
+    "i" = gettext("Cache: {.path {cache}}"),
+    "i" = gettext("Workers: {workers}")
   ))
 
   resultado_final <- .run_downloads(tasks, cache, force, timeout, workers)
 
   resumo <- dplyr::count(resultado_final, status)
-  cli::cli_h2("Summary")
+  cli::cli_h2(gettext("Summary"))
   purrr::walk2(resumo$status, resumo$n, function(s, cnt) {
     icon <- switch(s,
       baixado        = cli::col_green("v"),
@@ -375,7 +381,7 @@ caged_download <- function(years,
     # Sequencial com barra de progresso cli
     resultados <- vector("list", n)
     cli::cli_progress_bar(
-      name   = "Baixando",
+      name   = gettext("Downloading"),
       total  = n,
       format = "{cli::pb_bar} {cli::pb_current}/{cli::pb_total} [{cli::pb_elapsed}] ETA: {cli::pb_eta_str}"
     )

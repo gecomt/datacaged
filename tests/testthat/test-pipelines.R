@@ -23,7 +23,7 @@ make_df_pipeline <- function(n = 50L) {
 
 test_that("pipeline sintetico: caged_to_duckdb cria banco e caged_connect conecta", {
   db <- tempfile(fileext = ".duckdb")
-  on.exit(unlink(db))
+  on.exit(unlink(db), add = TRUE)
 
   df <- make_df_pipeline()
   n  <- caged_to_duckdb(df, db_path = db)
@@ -39,7 +39,7 @@ test_that("pipeline sintetico: caged_to_duckdb cria banco e caged_connect conect
 
 test_that("pipeline sintetico: caged_info retorna estatisticas corretas", {
   db <- tempfile(fileext = ".duckdb")
-  on.exit(unlink(db))
+  on.exit(unlink(db), add = TRUE)
 
   caged_to_duckdb(make_df_pipeline(20L), db_path = db)
   info <- caged_info(db)
@@ -61,7 +61,7 @@ test_that("pipeline sintetico: caged_update nao baixa quando banco ja atualizado
   )
 
   db <- tempfile(fileext = ".duckdb")
-  on.exit(unlink(db))
+  on.exit(unlink(db), add = TRUE)
 
   # 999912 > 202412 → nao deve baixar nada
   df <- make_df_pipeline()
@@ -75,7 +75,7 @@ test_that("pipeline sintetico: caged_update nao baixa quando banco ja atualizado
 test_that("pipeline sintetico: caged_to_parquet exporta arquivo", {
   db  <- tempfile(fileext = ".duckdb")
   out <- tempfile("parquet_")
-  on.exit({ unlink(db); unlink(out, recursive = TRUE) })
+  on.exit({ unlink(db); unlink(out, recursive = TRUE) }, add = TRUE)
 
   caged_to_duckdb(make_df_pipeline(30L), db_path = db)
   result <- caged_to_parquet(db, output_dir = out, tables = "caged_mov")
@@ -153,16 +153,15 @@ test_that("caged_load() cria banco DuckDB com tabela caged_mov", {
 })
 
 test_that("caged_download_layouts() retorna tibble com colunas esperadas", {
-  # .list_layout_urls retorna tibble com colunas: arquivo, url_lista (list column)
+  ## Listagem e download mockados: nenhum acesso a rede
+  urls_pedidas <- character()
   local_mocked_bindings(
-    .list_layout_urls = function(url_dir, timeout = 15) {
-      nomes <- c("CAGEDMOV_Layout.xlsx", "CAGEDFOR_Layout.xlsx")
-      tibble::tibble(
-        arquivo   = nomes,
-        url_lista = lapply(nomes, function(n) paste0(url_dir, "/", n))
-      )
+    .hf_list_dir = function(path, timeout = 15) {
+      c("2023", "Leia-me.txt",
+        "Layout N\u00e3o-identificado Novo Caged Movimenta\u00e7\u00e3o.xlsx")
     },
     .download_file = function(url, destfile, timeout, ...) {
+      urls_pedidas <<- c(urls_pedidas, url)
       writeBin(raw(10L), destfile)
       invisible(destfile)
     },
@@ -170,20 +169,60 @@ test_that("caged_download_layouts() retorna tibble com colunas esperadas", {
   )
 
   destdir <- tempfile("caged_lay_mock_")
-  dir.create(destdir, recursive = TRUE)
   on.exit(unlink(destdir, recursive = TRUE), add = TRUE)
 
-  result <- tryCatch(
-    caged_download_layouts(type = "novo", destdir = destdir, timeout = 5L),
-    error = function(e) {
-      skip(paste("Layouts indisponivel:", conditionMessage(e)))
-    }
+  result <- suppressMessages(
+    caged_download_layouts(type = "novo", destdir = destdir, timeout = 5L)
   )
 
-  if (!inherits(result, "try-error") && !is.null(result)) {
-    expect_s3_class(result, "data.frame")
-    expect_true(all(c("base", "arquivo", "url", "destino", "status") %in% names(result)))
-  }
+  expect_s3_class(result, "data.frame")
+  expect_true(all(c("base", "arquivo", "url", "destino", "status") %in% names(result)))
+  ## So o .xlsx com "layout" no nome; pastas e .txt ficam de fora
+  expect_equal(nrow(result), 1L)
+  expect_equal(result$status, "baixado")
+  ## URL do HuggingFace com acentos codificados em UTF-8
+  expect_match(urls_pedidas, "^https://huggingface.co/datasets/alexsandroprado/caged/resolve/main/NOVO_CAGED/")
+  expect_match(urls_pedidas, "N%C3%A3o-identificado", fixed = TRUE)
+  ## Arquivo local sem acentos
+  expect_equal(basename(result$destino),
+               "Layout Nao-identificado Novo Caged Movimentacao.xlsx")
+  expect_true(file.exists(result$destino))
+
+  ## Segunda chamada usa o cache
+  result2 <- suppressMessages(
+    caged_download_layouts(type = "novo", destdir = destdir, timeout = 5L)
+  )
+  expect_equal(result2$status, "cache")
+})
+
+test_that("caged_download_layouts() avisa quando o HuggingFace nao responde", {
+  local_mocked_bindings(
+    .hf_list_dir = function(path, timeout = 15) NULL,
+    .package = "datacaged"
+  )
+  destdir <- tempfile("caged_lay_off_")
+  on.exit(unlink(destdir, recursive = TRUE), add = TRUE)
+
+  expect_warning(
+    res <- suppressMessages(
+      caged_download_layouts(type = "novo", destdir = destdir, verbose = FALSE)
+    ),
+    "Could not list"
+  )
+  expect_equal(nrow(res), 0L)
+})
+
+test_that("caged_download_layouts() baixa layouts reais do HuggingFace", {
+  skip_on_cran()
+  skip_if_offline("huggingface.co")
+
+  destdir <- tempfile("caged_lay_real_")
+  on.exit(unlink(destdir, recursive = TRUE), add = TRUE)
+
+  result <- suppressMessages(caged_download_layouts(destdir = destdir, timeout = 60))
+  expect_setequal(result$base, c("antigo", "novo", "ajustes"))
+  expect_true(all(result$status == "baixado"))
+  expect_true(all(file.size(result$destino) > 0))
 })
 
 test_that("caged_adjustments_load() cria banco com tabela caged_ajustes", {

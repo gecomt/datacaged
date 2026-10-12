@@ -1,61 +1,73 @@
-# Brazilian Portuguese translation — datacaged
-# Copyright (C) 2026 datacaged authors
-# This file is distributed under the same license as the datacaged package.
-#
 msgid ""
 msgstr ""
-"Project-Id-Version: datacaged 0.2.0\n"
-"POT-Creation-Date: 2026-06-24 10:00\n"
-"PO-Revision-Date: 2026-06-24 10:00+0000\n"
+"Project-Id-Version: datacaged 0.2.3\n"
+"Report-Msgid-Bugs-To: alexsandro.prado@ufersa.edu.br\n"
+"POT-Creation-Date: 2026-10-05 14:01\n"
+"PO-Revision-Date: 2026-10-05 12:00-0300\n"
 "Last-Translator: Alexsandro Prado <alexsandro.prado@ufersa.edu.br>\n"
-"Language-Team: Brazilian Portuguese\n"
+"Language-Team: Portuguese (Brazil)\n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-msgid "No valid year. CAGED Adjustments cover up to {.val {ano_limite}}."
-msgstr "Nenhum ano valido. CAGED Ajustes cobre ate {.val {ano_limite}}."
-
 msgid "CAGED Adjustments only exist for years up to {.val {ano_limite}}."
-msgstr "CAGED Ajustes so existe para anos ate {.val {ano_limite}}."
+msgstr "Os Ajustes do CAGED só existem para anos até {.val {ano_limite}}."
 
 msgid "Ignored years: {.val {invalid_years}}"
 msgstr "Anos ignorados: {.val {invalid_years}}"
 
-msgid "2/3  Parse and load into DuckDB"
-msgstr "2/3  Parse e carga no DuckDB"
+msgid "No valid year. CAGED Adjustments cover up to {.val {ano_limite}}."
+msgstr "Nenhum ano válido. Os Ajustes do CAGED vão até {.val {ano_limite}}."
 
-msgid "3/3  Done"
-msgstr "3/3  Concluido"
+msgid "Years : {years[1]}-{years[length(years)]}"
+msgstr "Anos : {years[1]}-{years[length(years)]}"
 
-msgid "Summary"
-msgstr "Resumo"
+msgid "Months: {months[1]}-{months[length(months)]}"
+msgstr "Meses: {months[1]}-{months[length(months)]}"
+
+msgid "DB    : {.path {db_path}}"
+msgstr "Banco: {.path {db_path}}"
+
+msgid "1/3  Download"
+msgstr "1/3  Download"
 
 msgid "No download tasks generated."
 msgstr "Nenhuma tarefa de download gerada."
 
+msgid "{nrow(tasks)} file{?s} to process"
+msgstr "{nrow(tasks)} arquivo{?s} a processar"
+
+msgid "Cache: {.path {cache}}"
+msgstr "Cache: {.path {cache}}"
+
+msgid "Summary"
+msgstr "Resumo"
+
 msgid "No files available to process."
 msgstr "Nenhum arquivo disponível para processar."
+
+msgid "2/3  Parse and load into DuckDB"
+msgstr "2/3  Leitura e carga no DuckDB"
+
+msgid "Files"
+msgstr "Arquivos"
 
 msgid "Error in {.path {basename(arq)}}: {conditionMessage(e)}"
 msgstr "Erro em {.path {basename(arq)}}: {conditionMessage(e)}"
 
+msgid "3/3  Done"
+msgstr "3/3  Concluído"
+
 msgid "Total inserted: {format(n_inserido_total, big.mark = ',')} records"
 msgstr "Total inserido: {format(n_inserido_total, big.mark = ',')} registros"
 
-msgid "Years : {years[1]}-{years[length(years)]}"
-msgstr "Anos  : {years[1]}-{years[length(years)]}"
-
-msgid "Months: {months[1]}-{months[length(months)]}"
-msgstr "Meses : {months[1]}-{months[length(months)]}"
-
-msgid "DB    : {.path {db_path}}"
-msgstr "Banco : {.path {db_path}}"
+msgid "{.arg n} must be a positive integer or {.code Inf}, not {.val {n}}."
+msgstr "{.arg n} deve ser um inteiro positivo ou {.code Inf}, não {.val {n}}."
 
 msgid "Querying HuggingFace repository ({.url {hf_api_url}})..."
-msgstr "Consultando repositório HuggingFace ({.url {hf_api_url}})..."
+msgstr "Consultando o repositório HuggingFace ({.url {hf_api_url}})..."
 
 msgid "Could not access the HuggingFace repository."
 msgstr "Não foi possível acessar o repositório HuggingFace."
@@ -63,29 +75,26 @@ msgstr "Não foi possível acessar o repositório HuggingFace."
 msgid "Check your connection with {.fn caged_status}."
 msgstr "Verifique sua conexão com {.fn caged_status}."
 
-msgid "Repository: {.url https://huggingface.co/datasets/alexsandroprado/caged}"
-msgstr "Repositório: {.url https://huggingface.co/datasets/alexsandroprado/caged}"
+msgid ""
+"Repository: {.url https://huggingface.co/datasets/alexsandroprado/caged}"
+msgstr ""
+"Repositório: {.url https://huggingface.co/datasets/alexsandroprado/caged}"
 
 msgid "No year found in the HuggingFace repository for series '{type}'."
-msgstr "Nenhum ano encontrado no repositório HuggingFace para a série '{type}'."
+msgstr ""
+"Nenhum ano encontrado no repositório HuggingFace para a série '{type}'."
 
 msgid "No competency found in the HuggingFace repository."
-msgstr "Nenhuma competencia encontrada no repositório HuggingFace."
+msgstr "Nenhuma competência encontrada no repositório HuggingFace."
 
-msgid "{nrow(resultado)} competenc{?y} listed{?}"
-msgstr "{nrow(resultado)} competencia{?s} listada{?s}"
+msgid "Available competencies - {serie}"
+msgstr "Competências disponíveis - {serie}"
+
+msgid "{nrow(resultado)} competenc{?y/ies} listed"
+msgstr "{nrow(resultado)} competência{?s} listada{?s}"
 
 msgid "Use {.code {cmd}} to download the most recent."
 msgstr "Use {.code {cmd}} para baixar a mais recente."
-
-msgid "{.fn caged_ftp_files} has been renamed to {.fn caged_hf_files}."
-msgstr "{.fn caged_ftp_files} foi renomeada para {.fn caged_hf_files}."
-
-msgid "The repository is now HuggingFace (HTTPS), no longer MTE's FTP."
-msgstr "O repositório agora é HuggingFace (HTTPS), não mais o FTP do MTE."
-
-msgid "Use {.fn caged_hf_files} to avoid this warning."
-msgstr "Use {.fn caged_hf_files} para evitar este aviso."
 
 msgid "Connected to {.path {db_path}}"
 msgstr "Conectado a {.path {db_path}}"
@@ -93,11 +102,46 @@ msgstr "Conectado a {.path {db_path}}"
 msgid "Empty data.frame - nothing to write."
 msgstr "data.frame vazio - nada a gravar."
 
+msgid "{.arg db_path} or {.arg .con} must be provided."
+msgstr "Informe {.arg db_path} ou {.arg .con}."
+
+msgid "No competency column found in the data.frame."
+msgstr "Nenhuma coluna de competência encontrada no data.frame."
+
+msgid "Columns present: {.val {names(df)}}"
+msgstr "Colunas presentes: {.val {names(df)}}"
+
+msgid ""
+"Expected: {.col competencia}, {.col competenciamov}, {.col competenciadec} "
+"or {.col competencia_declarada}."
+msgstr ""
+"Esperado: {.col competencia}, {.col competenciamov}, {.col competenciadec} "
+"ou {.col competencia_declarada}."
+
+msgid "{n_antes - nrow(df)} row{?s} with invalid competency removed (NA/Inf)."
+msgstr ""
+"{n_antes - nrow(df)} linha{?s} com competência inválida removida{?s} (NA/"
+"Inf)."
+
 msgid "Empty data.frame after cleaning - nothing to write."
-msgstr "data.frame vazio após limpeza - nada a gravar."
+msgstr "data.frame vazio após a limpeza - nada a gravar."
+
+msgid ""
+"{length(ja_gravadas)} competenc{?y/ies} already in the database - skipping."
+msgstr "{length(ja_gravadas)} competência{?s} já no banco - pulando."
+
+msgid "Use {.code overwrite_competencies = TRUE} to force."
+msgstr "Use {.code overwrite_competencies = TRUE} para forçar."
 
 msgid "No new data to insert."
 msgstr "Nenhum dado novo para inserir."
+
+msgid ""
+"{format(n_inserido, big.mark = ',')} {cli::qty(n_inserido)}record{?s} "
+"inserted into {.val {table}}"
+msgstr ""
+"{format(n_inserido, big.mark = ',')} {cli::qty(n_inserido)}registro{?s} "
+"inserido{?s} em {.val {table}}"
 
 msgid "Database not found: {.path {db_path}}"
 msgstr "Banco não encontrado: {.path {db_path}}"
@@ -115,10 +159,61 @@ msgid "Records     : {format(s$registros, big.mark = ',')}"
 msgstr "Registros   : {format(s$registros, big.mark = ',')}"
 
 msgid "Periods     : {s$competencias}"
-msgstr "Competencias: {s$competencias}"
+msgstr "Períodos    : {s$competencias}"
 
-msgid "{.arg db_path} or {.arg .con} must be provided."
-msgstr "{.arg db_path} ou {.arg .con} deve ser fornecido."
+msgid "Column {.col fonte_tipo} not found."
+msgstr "Coluna {.col fonte_tipo} não encontrada."
+
+msgid "Provide {.arg table} manually."
+msgstr "Informe {.arg table} manualmente."
+
+msgid "The data.frame mixes CAGED types: {.val {tipos}}."
+msgstr "O data.frame mistura tipos de CAGED: {.val {tipos}}."
+
+msgid "Process and write each type separately."
+msgstr "Processe e grave cada tipo separadamente."
+
+msgid "Unknown type: {.val {tipos}}"
+msgstr "Tipo desconhecido: {.val {tipos}}"
+
+msgid "Table {.val {table}} created."
+msgstr "Tabela {.val {table}} criada."
+
+msgid "Series: {serie}"
+msgstr "Série: {serie}"
+
+msgid "Failed to query HuggingFace for '{serie}': {conditionMessage(e)}"
+msgstr "Falha ao consultar o HuggingFace para '{serie}': {conditionMessage(e)}"
+
+msgid "No competency found on HuggingFace."
+msgstr "Nenhuma competência encontrada no HuggingFace."
+
+msgid "Database already up to date."
+msgstr "Banco já atualizado."
+
+msgid "Available up to: {max(as.integer(disponiveis$competencia))}"
+msgstr "Disponível até: {max(as.integer(disponiveis$competencia))}"
+
+msgid "{length(faltantes)} competenc{?y/ies} to download"
+msgstr "{length(faltantes)} competência{?s} a baixar"
+
+msgid "Period: {min(faltantes)} - {max(faltantes)}"
+msgstr "Período: {min(faltantes)} - {max(faltantes)}"
+
+msgid "Error updating '{serie}': {conditionMessage(e)}"
+msgstr "Erro ao atualizar '{serie}': {conditionMessage(e)}"
+
+msgid "Database already up to date for all series."
+msgstr "Banco já atualizado para todas as séries."
+
+msgid "Directory created: {.path {output_dir}}"
+msgstr "Diretório criado: {.path {output_dir}}"
+
+msgid "{.arg partition_by} must be NULL or a character vector of column names."
+msgstr "{.arg partition_by} deve ser NULL ou um vetor de nomes de colunas."
+
+msgid "No CAGED table found in {.path {db_path}}"
+msgstr "Nenhuma tabela CAGED encontrada em {.path {db_path}}"
 
 msgid "Table{?s} not found: {.val {invalidas}}"
 msgstr "Tabela{?s} não encontrada{?s}: {.val {invalidas}}"
@@ -126,20 +221,28 @@ msgstr "Tabela{?s} não encontrada{?s}: {.val {invalidas}}"
 msgid "Available: {.val {tabelas_disponiveis}}"
 msgstr "Disponíveis: {.val {tabelas_disponiveis}}"
 
-msgid "Directory created: {.path {output_dir}}"
-msgstr "Diretório criado: {.path {output_dir}}"
-
-msgid "No CAGED table found in {.path {db_path}}"
-msgstr "Nenhuma tabela CAGED encontrada em {.path {db_path}}"
+msgid "Exporting to Parquet"
+msgstr "Exportando para Parquet"
 
 msgid "{length(tabelas_exportar)} table{?s} to export"
 msgstr "{length(tabelas_exportar)} tabela{?s} a exportar"
 
 msgid "Output: {.path {output_dir}}"
-msgstr "Destino: {.path {output_dir}}"
+msgstr "Saída: {.path {output_dir}}"
 
 msgid "{tab}: already exists, skipping. Use {.code overwrite = TRUE}."
 msgstr "{tab}: já existe, pulando. Use {.code overwrite = TRUE}."
+
+msgid "{tab}: column{?s} {.val {ausentes}} not found; table not exported."
+msgstr ""
+"{tab}: coluna{?s} {.val {ausentes}} não encontrada{?s}; tabela não exportada."
+
+msgid ""
+"{tab}: {format(n_registros, big.mark = ',')} records -> {.path "
+"{basename(destino)}}"
+msgstr ""
+"{tab}: {format(n_registros, big.mark = ',')} registros -> {.path "
+"{basename(destino)}}"
 
 msgid "Error exporting {tab}: {conditionMessage(e)}"
 msgstr "Erro ao exportar {tab}: {conditionMessage(e)}"
@@ -150,68 +253,158 @@ msgstr "Concluído"
 msgid "{sum(resultados$status == 'exportado')} table{?s} exported"
 msgstr "{sum(resultados$status == 'exportado')} tabela{?s} exportada{?s}"
 
-msgid "Database already up to date for all series."
-msgstr "Banco já atualizado em todas as séries."
+msgid "Invalid UF{?s}: {.val {invalidas}}"
+msgstr "UF{?s} inválida{?s}: {.val {invalidas}}"
 
-msgid "No competency found on HuggingFace."
-msgstr "Nenhuma competencia encontrada no HuggingFace."
+msgid "Use valid abbreviations: {.val {ufs_validas}}"
+msgstr "Use siglas válidas: {.val {ufs_validas}}"
 
-msgid "Failed to query HuggingFace for '{serie}': {conditionMessage(e)}"
-msgstr "Falha ao consultar HuggingFace para '{serie}': {conditionMessage(e)}"
+msgid "Invalid {.arg years} argument."
+msgstr "Argumento {.arg years} inválido."
 
-msgid "{nrow(novas)} new competenc{?y} found"
-msgstr "{nrow(novas)} competencia{?s} nova{?s} encontrada{?s}"
+msgid "Provide a numeric vector of years between {min_year} and {ano_max}."
+msgstr "Informe um vetor numérico de anos entre {min_year} e {ano_max}."
 
-msgid "Period: {min(novas$competencia)} - {max(novas$competencia)}"
-msgstr "Período: {min(novas$competencia)} – {max(novas$competencia)}"
+msgid "{.arg years} contains NA values."
+msgstr "{.arg years} contém valores NA."
 
-msgid "Database already up to date."
-msgstr "Banco já está atualizado."
+msgid "Invalid years: {.val {years[years < min_year | years > ano_max]}}"
+msgstr "Anos inválidos: {.val {years[years < min_year | years > ano_max]}}"
 
-msgid "Max in DB: {max_banco} | Available: {max(as.integer(disponiveis$competencia))}"
-msgstr "Máx no banco: {max_banco} | Disponível: {max(as.integer(disponiveis$competencia))}"
+msgid "Provide years between {min_year} and {ano_max}."
+msgstr "Informe anos entre {min_year} e {ano_max}."
 
-msgid "Error updating '{serie}': {conditionMessage(e)}"
-msgstr "Erro ao atualizar '{serie}': {conditionMessage(e)}"
+msgid "Invalid {.arg months} argument. Provide integers between 1 and 12."
+msgstr "Argumento {.arg months} inválido. Informe inteiros entre 1 e 12."
 
-msgid "Download CAGED Microdata"
-msgstr "Download de Microdados do CAGED"
+msgid "{.arg months} contains NA values."
+msgstr "{.arg months} contém valores NA."
 
-msgid "{n} file{?s} to process"
-msgstr "{n} arquivo{?s} a processar"
+msgid "Invalid months: {.val {months[months < 1L | months > 12L]}}"
+msgstr "Meses inválidos: {.val {months[months < 1L | months > 12L]}}"
 
-msgid "Cache: {.path {cache}}"
-msgstr "Cache em: {.path {cache}}"
+msgid "Provide integers between 1 and 12."
+msgstr "Informe inteiros entre 1 e 12."
 
-msgid "No valid competency to download."
-msgstr "Nenhuma competencia valida para baixar."
+msgid "Invalid type: {.val {type}}. Use MOV, FOR, EXC, ANTIGO or AJUSTES."
+msgstr "Tipo inválido: {.val {type}}. Use MOV, FOR, EXC, ANTIGO ou AJUSTES."
+
+msgid "could not move downloaded file"
+msgstr "não foi possível mover o arquivo baixado"
 
 msgid "Failed to download {.url {url}} after 3 attempts. Skipping."
 msgstr "Falha ao baixar {.url {url}} após 3 tentativas. Pulando."
 
-msgid "Failed to extract {.path {basename(path)}}"
-msgstr "Falha ao extrair {.path {basename(path)}}"
-
 msgid "File not found: {.path {path}}"
 msgstr "Arquivo não encontrado: {.path {path}}"
+
+msgid "Failed to extract {.path {basename(path)}}."
+msgstr "Falha ao extrair {.path {basename(path)}}."
+
+msgid "The file uses PPMd compression (advanced 7-Zip)."
+msgstr "O arquivo usa compressão PPMd (7-Zip avançado)."
 
 msgid "Install 7-Zip: {.url https://www.7-zip.org/download.html}"
 msgstr "Instale o 7-Zip: {.url https://www.7-zip.org/download.html}"
 
 msgid "The standard Windows installer is sufficient (no need to add to PATH)."
-msgstr "O instalador padrao do Windows e suficiente (sem precisar adicionar ao PATH)."
+msgstr ""
+"O instalador padrão do Windows é suficiente (não é preciso adicionar ao "
+"PATH)."
 
-msgid "Stream failed for {.path {basename(path)}}: {conditionMessage(e)}. Trying extraction..."
-msgstr "Stream falhou em {.path {basename(path)}}: {conditionMessage(e)}. Tentando extração..."
+msgid "No valid competency to download."
+msgstr "Nenhuma competência válida para baixar."
 
-msgid "HuggingFace repository {cli::col_green('online')}"
-msgstr "Repositório HuggingFace {cli::col_green('online')}"
+msgid "Download CAGED Microdata"
+msgstr "Download dos microdados do CAGED"
+
+msgid "{n} file{?s} to process"
+msgstr "{n} arquivo{?s} a processar"
+
+msgid "Workers: {workers}"
+msgstr "Downloads paralelos: {workers}"
+
+msgid "Downloading"
+msgstr "Baixando"
+
+msgid "Bases: {.val {paste(bases, collapse = ', ')}}"
+msgstr "Bases: {.val {paste(bases, collapse = ', ')}}"
+
+msgid "Cache at {.path {cache}}"
+msgstr "Cache em {.path {cache}}"
+
+msgid "Listing - {.val {base_nome}}"
+msgstr "Listando - {.val {base_nome}}"
+
+msgid "Could not list {.val {pasta}} on HuggingFace."
+msgstr "Não foi possível listar {.val {pasta}} no HuggingFace."
+
+msgid "No layout found in {.val {pasta}}."
+msgstr "Nenhum layout encontrado em {.val {pasta}}."
+
+msgid "{nrow(tarefas)} file{?s} found."
+msgstr "{nrow(tarefas)} arquivo{?s} encontrado{?s}."
+
+msgid "No layout found to download."
+msgstr "Nenhum layout encontrado para download."
+
+msgid "Error reading {.path {path}}: {conditionMessage(e)}"
+msgstr "Erro ao ler {.path {path}}: {conditionMessage(e)}"
+
+msgid ""
+"Streaming failed for {.path {basename(path)}}: {conditionMessage(e)}. Trying "
+"extraction..."
+msgstr ""
+"A leitura em stream falhou em {.path {basename(path)}}: "
+"{conditionMessage(e)}. Tentando extração..."
+
+msgid "No .txt found in {.path {basename(path)}}. Skipping."
+msgstr "Nenhum .txt encontrado em {.path {basename(path)}}. Pulando."
+
+msgid "Failed to extract {.path {path}}: {conditionMessage(e)}"
+msgstr "Falha ao extrair {.path {path}}: {conditionMessage(e)}"
+
+msgid "No .txt found in {.path {path}}. Skipping."
+msgstr "Nenhum .txt encontrado em {.path {path}}. Pulando."
+
+msgid "No valid file to parse."
+msgstr "Nenhum arquivo válido para ler."
+
+msgid "Reading {length(paths)} file{?s}..."
+msgstr "Lendo {length(paths)} arquivo{?s}..."
+
+msgid "Error in {.path {basename(p)}}: {conditionMessage(e)}"
+msgstr "Erro em {.path {basename(p)}}: {conditionMessage(e)}"
+
+msgid "No data read."
+msgstr "Nenhum dado lido."
+
+msgid "The files are of different types: {.val {tipos}}."
+msgstr "Os arquivos são de tipos diferentes: {.val {tipos}}."
+
+msgid "Use {.fn caged_parse} separately for each type."
+msgstr "Use {.fn caged_parse} separadamente para cada tipo."
+
+msgid "{format(nrow(resultado), big.mark = ',')} records read"
+msgstr "{format(nrow(resultado), big.mark = ',')} registros lidos"
+
+msgid "{ncol(resultado)} column{?s}"
+msgstr "{ncol(resultado)} coluna{?s}"
+
+msgid "online"
+msgstr "online"
+
+msgid "HuggingFace repository {status_txt}"
+msgstr "Repositório HuggingFace {status_txt}"
 
 msgid "Latency: {latencia_ms} ms"
 msgstr "Latência: {latencia_ms} ms"
 
-msgid "HuggingFace repository {cli::col_red('unavailable')}"
-msgstr "Repositório HuggingFace {cli::col_red('inacessível')}"
+msgid "Dataset: {.url {repo_url}}"
+msgstr "Dataset: {.url {repo_url}}"
+
+msgid "unavailable"
+msgstr "indisponível"
 
 msgid "Tested URL: {.url {url_teste}}"
 msgstr "URL testada: {.url {url_teste}}"
@@ -222,193 +415,17 @@ msgstr "Verifique sua conexão ou tente novamente mais tarde."
 msgid "HuggingFace may be under temporary maintenance."
 msgstr "O HuggingFace pode estar em manutenção temporária."
 
-msgid "CAGED Microdata in DuckDB"
+msgid "CAGED microdata in DuckDB"
 msgstr "Microdados do CAGED em DuckDB"
 
-msgid "Check connectivity with: caged_status()"
-msgstr "Verifique a conexão com: caged_status()"
+msgid "Source:"
+msgstr "Fonte:"
 
-msgid "Quick start: caged_load(years = 2023, months = 1, db_path = \"caged.duckdb\")"
-msgstr "Uso rapido: caged_load(years = 2023, months = 1, db_path = \"caged.duckdb\")"
+msgid "Check the connection with:"
+msgstr "Verifique a conexão com:"
 
-msgid "Help   : help(package = \"datacaged\") | ?caged_load"
-msgstr "Ajuda  : help(package = \"datacaged\") | ?caged_load"
+msgid "Quick start:"
+msgstr "Uso rápido:"
 
-msgid "No .txt found in {.path {basename(path)}}. Skipping."
-msgstr "Nenhum .txt encontrado em {.path {basename(path)}}. Pulando."
-
-msgid "Stream failed"
-msgstr "Stream falhou"
-
-msgid "Downloading layouts"
-msgstr "Baixando layouts"
-
-msgid "No layout file found."
-msgstr "Nenhum arquivo de layout encontrado."
-
-# === Strings adicionadas em v0.2.1 (sem tradução por enquanto) ===
-
-msgid "  Nenhuma competencia encontrada no HuggingFace."
-msgstr "  Nenhuma competência encontrada no HuggingFace."
-
-msgid "  {cli::col_cyan(r$competencia)}  {meses_fmt[r$mes]}/{r$ano}"
-msgstr "  {cli::col_cyan(r$competencia)}  {meses_fmt[r$mes]}/{r$ano}"
-
-msgid "1/3  Download"
-msgstr "1/3  Download"
-
-msgid "Anos invalidos: {.val {years[years < 1992L | years > ano_max]}}"
-msgstr "Anos inválidos: {.val {years[years < 1992L | years > ano_max]}}"
-
-msgid "Argumento {.arg years} invalido."
-msgstr "Argumento {.arg years} inválido."
-
-msgid "Available competencies - {serie}"
-msgstr "Competências disponíveis --- {serie}"
-
-msgid "Cache em {.path {cache}}"
-msgstr "Cache em {.path {cache}}"
-
-msgid "Coluna {.col fonte_tipo} nao encontrada."
-msgstr "Coluna {.col fonte_tipo} não encontrada."
-
-msgid "Colunas presentes: {.val {names(df)}}"
-msgstr "Colunas presentes: {.val {names(df)}}"
-
-msgid "Dataset: {.url {repo_url}}"
-msgstr "Dataset: {.url {repo_url}}"
-
-msgid "Erro ao ler {.path {path}}: {conditionMessage(e)}"
-msgstr "Erro ao ler {.path {path}}: {conditionMessage(e)}"
-
-msgid "Erro em {.path {basename(p)}}: {conditionMessage(e)}"
-msgstr "Erro em {.path {basename(p)}}: {conditionMessage(e)}"
-
-msgid "Esperado: {.col competencia}, {.col competenciamov}, {.col competenciadec} ou {.col competencia_declarada}."
-msgstr "Esperado: {.col competencia}, {.col competenciamov}, {.col competenciadec} ou {.col competencia_declarada}."
-
-msgid "Exportando para Parquet"
-msgstr "Exportando para Parquet"
-
-msgid "Falha ao extrair {.path {basename(path)}}."
-msgstr "Falha ao extrair {.path {basename(path)}}."
-
-msgid "Falha ao extrair {.path {path}}: {conditionMessage(e)}"
-msgstr "Falha ao extrair {.path {path}}: {conditionMessage(e)}"
-
-msgid "Informe anos entre 1992 e {ano_max}."
-msgstr "Informe anos entre 1992 e {ano_max}."
-
-msgid "Informe inteiros entre 1 e 12."
-msgstr "Informe inteiros entre 1 e 12."
-
-msgid "Informe um vetor numerico de anos entre 1992 e {format(Sys.Date(), '%Y')}."
-msgstr "Informe um vetor numérico de anos entre 1992 e {format(Sys.Date(), '%Y')}."
-
-msgid "Informe {.arg table} manualmente."
-msgstr "Informe {.arg table} manualmente."
-
-msgid "Invalid type: {.val {type}}. Use MOV, FOR, EXC, ANTIGO or AJUSTES."
-msgstr "Tipo inválido: {.val {type}}. Use MOV, FOR, EXC, ANTIGO ou AJUSTES."
-
-msgid "Invalid {.arg months} argument. Provide integers between 1 and 12."
-msgstr "Argumento {.arg months} inválido. Informe inteiros entre 1 e 12."
-
-msgid "Lendo {length(paths)} arquivo{?s}..."
-msgstr "Lendo {length(paths)} arquivo{?s}..."
-
-msgid "Listando - {.val {base_nome}}"
-msgstr "Listando --- {.val {base_nome}}"
-
-msgid "Meses invalidos: {.val {months[months < 1L | months > 12L]}}"
-msgstr "Meses inválidos: {.val {months[months < 1L | months > 12L]}}"
-
-msgid "Nenhum .txt encontrado em {.path {path}}. Pulando."
-msgstr "Nenhum .txt encontrado em {.path {path}}. Pulando."
-
-msgid "Nenhum arquivo valido para parsear."
-msgstr "Nenhum arquivo válido para parsear."
-
-msgid "Nenhum dado lido."
-msgstr "Nenhum dado lido."
-
-msgid "Nenhum layout encontrado em {.url {url_dir}}."
-msgstr "Nenhum layout encontrado em {.url {url_dir}}."
-
-msgid "Nenhum layout encontrado para download."
-msgstr "Nenhum layout encontrado para download."
-
-msgid "Nenhuma coluna de competencia encontrada no data.frame."
-msgstr "Nenhuma coluna de competência encontrada no data.frame."
-
-msgid "O arquivo usa compressao PPMd (7-Zip avancado)."
-msgstr "O arquivo usa compressão PPMd (7-Zip avançado)."
-
-msgid "O data.frame mistura tipos de CAGED: {.val {tipos}}."
-msgstr "O data.frame mistura tipos de CAGED: {.val {tipos}}."
-
-msgid "Os arquivos sao de tipos diferentes: {.val {tipos}}."
-msgstr "Os arquivos são de tipos diferentes: {.val {tipos}}."
-
-msgid "Processe e grave separadamente cada tipo."
-msgstr "Processe e grave separadamente cada tipo."
-
-msgid "Series: {serie}"
-msgstr "Séries: {serie}"
-
-msgid "Stream falhou em {.path {basename(path)}}: {conditionMessage(e)}. Tentando extracao..."
-msgstr "Stream falhou em {.path {basename(path)}}: {conditionMessage(e)}. Tentando extração..."
-
-msgid "Tabela {.val {table}} criada."
-msgstr "Tabela {.val {table}} criada."
-
-msgid "Tipo desconhecido: {.val {tipos}}"
-msgstr "Tipo desconhecido: {.val {tipos}}"
-
-msgid "UF{?s} invalida{?s}: {.val {invalidas}}"
-msgstr "UF{?s} inválida{?s}: {.val {invalidas}}"
-
-msgid "Use `caged_parse()` individualmente para cada type."
-msgstr "Use `caged_parse()` individualmente para cada tipo."
-
-msgid "Use siglas validas: {.val {ufs_validas}}"
-msgstr "Use siglas válidas: {.val {ufs_validas}}"
-
-msgid "Use {.code overwrite_competencies = TRUE} para forcar."
-msgstr "Use {.code overwrite_competencies = TRUE} para forçar."
-
-msgid "Workers: {workers}"
-msgstr "Workers: {workers}"
-
-msgid "caged_adjustments_load"
-msgstr "caged_adjustments_load"
-
-msgid "caged_download_layouts"
-msgstr "caged_download_layouts"
-
-msgid "caged_load"
-msgstr "caged_load"
-
-msgid "caged_update"
-msgstr "caged_update"
-
-msgid "datacaged - {.path {db_path}}"
-msgstr "datacaged --- {.path {db_path}}"
-
-msgid "{.arg months} contem valores NA."
-msgstr "{.arg months} contém valores NA."
-
-msgid "{.arg n} deve ser um inteiro positivo ou {.code Inf}, nao {.val {n}}."
-msgstr "{.arg n} deve ser um inteiro positivo ou {.code Inf}, não {.val {n}}."
-
-msgid "{.arg years} contem valores NA."
-msgstr "{.arg years} contém valores NA."
-
-msgid "{icon} {s}: {cnt}"
-msgstr "{icon} {s}: {cnt}"
-
-msgid "{n_antes - nrow(df)} row{?s} with invalid competency removed (NA/Inf)."
-msgstr "{n_antes - nrow(df)} linha{?s} com competência inválida removida(s) (NA/Inf)."
-
-msgid "{ncol(resultado)} colunas"
-msgstr "{ncol(resultado)} colunas"
+msgid "Help:"
+msgstr "Ajuda:"

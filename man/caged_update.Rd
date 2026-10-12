@@ -36,6 +36,16 @@ Consulta o HuggingFace para descobrir as competências disponíveis,
 compara com o que já existe no banco e baixa apenas o que está faltando.
 É o modo mais prático de manter o banco atualizado sem re-baixar tudo.
 }
+\details{
+A comparação é feita competência a competência e tabela a tabela
+(\code{caged_mov}, \code{caged_for} e \code{caged_exc} são verificadas separadamente).
+Assim, além das competências novas, também são recuperadas lacunas
+dentro do período já presente no banco, por exemplo um arquivo FOR
+cujo download falhou em uma carga anterior. Competências anteriores à
+primeira competência já gravada não são baixadas; para ampliar o
+período para trás, use \code{\link[=caged_load]{caged_load()}}. Com o banco vazio, todas as
+competências disponíveis da série são baixadas.
+}
 \examples{
 \dontrun{
 # Atualizar Novo CAGED com as competências mais recentes

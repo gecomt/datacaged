@@ -1,8 +1,8 @@
 bibentry(
   bibtype  = "Manual",
-  title    = "datacaged: Download e Armazenamento De Microdados Do CAGED em DuckDB",
+  title    = "datacaged: CAGED Microdata Download and Storage in 'DuckDB'",
   author   = person("Alexsandro", "Prado"),
   year     = "2026",
-  note     = "R package version 0.1.0",
+  note     = paste("R package version", meta$Version),
   url      = "https://github.com/gecomt/datacaged"
 )

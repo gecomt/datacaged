@@ -1,11 +1,16 @@
 #' Baixa layouts (dicionários) do CAGED e Novo CAGED
 #'
-#' Lista dinamicamente os dicionários de variáveis do CAGED disponíveis no FTP do MTE
-#' e baixa todos os arquivos
-#' `.xls` ou `.xlsx` cujo nome contenha a palavra "layout" (case-insensitive).
+#' Lista os dicionários de variáveis disponíveis no repositório HuggingFace
+#' (`alexsandroprado/caged`), na pasta raiz de cada série, e baixa todos os
+#' arquivos `.xls` ou `.xlsx` cujo nome contenha a palavra "layout"
+#' (case-insensitive).
+#'
+#' Os arquivos são gravados com o nome original sem acentos, para evitar
+#' problemas de encoding em sistemas de arquivos e locales não-UTF-8; o nome
+#' original fica na coluna `arquivo` do resultado.
 #'
 #' @param type character. Qual base consultar: `"antigo"`, `"novo"`,
-#'   `"ajustes"` ou `"ambos"`. Default `"ambos"`.
+#'   `"ajustes"` ou `"ambos"` (todas). Default `"ambos"`.
 #' @param destdir character or NULL. Local directory to save os arquivos.
 #'   Se `NULL`, usa `tools::R_user_dir("datacaged", "cache")/layouts`.
 #' @param force logical. If `TRUE`, re-downloads files that already exist.
@@ -33,110 +38,94 @@ caged_download_layouts <- function(type    = "ambos",
                                    timeout = 120,
                                    verbose = TRUE) {
   type <- match.arg(type, c("antigo", "novo", "ajustes", "ambos"))
-  
+
   cache <- if (!is.null(destdir)) {
     file.path(destdir, "layouts")
   } else {
     file.path(tools::R_user_dir("datacaged", "cache"), "layouts")
   }
-  
+
   if (!dir.exists(cache)) {
     dir.create(cache, recursive = TRUE, showWarnings = FALSE)
   }
-  
-  ftp_dirs <- c(
-    antigo  = "ftp://ftp.mtps.gov.br/pdet/microdados/CAGED/",
-    novo    = "ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/",
-    ajustes = "ftp://ftp.mtps.gov.br/pdet/microdados/CAGED_AJUSTES/"
+
+  pastas <- c(
+    antigo  = .HF_PASTA_ANTIGO,
+    novo    = .HF_PASTA_NOVO,
+    ajustes = .HF_PASTA_AJUSTES
   )
-  
-  bases <- if (type == "ambos") names(ftp_dirs) else type
-  
+
+  bases <- if (type == "ambos") names(pastas) else type
+
   resultados <- list()
-  
+
   if (verbose) {
     cli::cli_h1("caged_download_layouts")
     cli::cli_inform(c(
-      "i" = "Bases: {.val {paste(bases, collapse = ', ')}}",
-      "i" = "Cache em {.path {cache}}"
+      "i" = gettext("Bases: {.val {paste(bases, collapse = ', ')}}"),
+      "i" = gettext("Cache at {.path {cache}}")
     ))
   }
-  
+
   for (base_nome in bases) {
-    url_dir <- ftp_dirs[[base_nome]]
-    
+    pasta <- pastas[[base_nome]]
+
     if (verbose) {
-      cli::cli_h2("Listando - {.val {base_nome}}")
-      cli::cli_inform(c("i" = "Consultando {.url {url_dir}}"))
+      cli::cli_h2(gettext("Listing - {.val {base_nome}}"))
     }
-    
-    tarefas <- .list_layout_urls(url_dir, timeout = timeout)
-    
-    if (nrow(tarefas) == 0) {
-      if (verbose) cli::cli_warn("Nenhum layout encontrado em {.url {url_dir}}.")
+
+    tarefas <- .list_layout_files(pasta, timeout = timeout)
+
+    if (is.null(tarefas)) {
+      cli::cli_warn(c(
+        gettext("Could not list {.val {pasta}} on HuggingFace."),
+        "i" = gettext("Check your connection with {.fn caged_status}.")
+      ))
       next
     }
-    
+
+    if (nrow(tarefas) == 0) {
+      if (verbose) cli::cli_warn(gettext("No layout found in {.val {pasta}}."))
+      next
+    }
+
     tarefas$base    <- base_nome
-    tarefas$destino <- file.path(cache, base_nome, tarefas$arquivo)
-    
+    tarefas$destino <- file.path(cache, base_nome, .remove_acentos(tarefas$arquivo))
+
     if (verbose) {
-      cli::cli_inform(c("v" = "{nrow(tarefas)} arquivo(s) encontrado(s)."))
+      cli::cli_inform(c("v" = gettext("{nrow(tarefas)} file{?s} found.")))
     }
-    
-    n     <- nrow(tarefas)
-    bloco <- vector("list", n)
-    
-    if (verbose) {
-      cli::cli_progress_bar(
-        name   = paste("Baixando", base_nome),
-        total  = n,
-        format = "{cli::pb_bar} {cli::pb_current}/{cli::pb_total} {cli::pb_elapsed} ETA {cli::pb_eta_str}"
-      )
-    }
-    
-    for (i in seq_len(n)) {
+
+    dir.create(file.path(cache, base_nome), recursive = TRUE, showWarnings = FALSE)
+
+    status <- vapply(seq_len(nrow(tarefas)), function(i) {
       destfile <- tarefas$destino[i]
-      
-      if (!dir.exists(dirname(destfile))) {
-        dir.create(dirname(destfile), recursive = TRUE, showWarnings = FALSE)
+      if (file.exists(destfile) && file.size(destfile) > 0 && !force) {
+        return("cache")
       }
-      
-      status <- if (file.exists(destfile) && file.size(destfile) > 0 && !force) {
-        "cache"
-      } else {
-        .try_download(
-          urls     = tarefas$url_lista[[i]],
-          destfile = destfile,
-          timeout  = timeout
-        )
-      }
-      
-      bloco[[i]] <- tibble::tibble(
-        base    = tarefas$base[i],
-        arquivo = tarefas$arquivo[i],
-        url     = tarefas$url_lista[[i]][1],
-        destino = tarefas$destino[i],
-        status  = status
-      )
-      
-      if (verbose) cli::cli_progress_update()
-    }
-    
-    if (verbose) cli::cli_progress_done()
-    resultados[[length(resultados) + 1L]] <- dplyr::bind_rows(bloco)
+      ok <- .download_file(tarefas$url[i], destfile, timeout = timeout)
+      if (is.null(ok)) "naoencontrado" else "baixado"
+    }, character(1))
+
+    resultados[[length(resultados) + 1L]] <- tibble::tibble(
+      base    = tarefas$base,
+      arquivo = tarefas$arquivo,
+      url     = tarefas$url,
+      destino = tarefas$destino,
+      status  = status
+    )
   }
-  
+
   if (length(resultados) == 0) {
-    if (verbose) cli::cli_warn("Nenhum layout encontrado para download.")
+    if (verbose) cli::cli_warn(gettext("No layout found to download."))
     return(invisible(tibble::tibble()))
   }
-  
+
   out <- dplyr::bind_rows(resultados)
-  
+
   if (verbose) {
     resumo <- dplyr::count(out, status)
-    cli::cli_h2("Summary")
+    cli::cli_h2(gettext("Summary"))
     purrr::walk2(
       resumo$status,
       resumo$n,
@@ -146,162 +135,32 @@ caged_download_layouts <- function(type    = "ambos",
           baixado       = cli::col_green("v"),
           cache         = cli::col_blue("i"),
           naoencontrado = cli::col_yellow("!"),
-          erro          = cli::col_red("x"),
           "*"
         )
         cli::cli_inform("{icon} {s}: {cnt}")
       }
     )
   }
-  
+
   invisible(out)
 }
 
-# Percent-encode byte a byte em Latin-1.
-# Necessario para nomes FTP com acentos no servidor do MTE.
-# @param s character scalar em UTF-8.
-# @return character scalar percent-encoded.
-# @noRd
-.pct_encode_latin1 <- function(s) {
-  raw_vec <- iconv(s, from = "UTF-8", to = "latin1", toRaw = TRUE)[[1]]
+#' Lista os layouts (.xls/.xlsx com "layout" no nome) de uma pasta do HF
+#' @param pasta character. Pasta raiz da serie no repositorio HuggingFace.
+#' @param timeout integer. Timeout in seconds.
+#' @return tibble com colunas `arquivo` e `url`, ou NULL se a listagem falhar.
+#' @noRd
+.list_layout_files <- function(pasta, timeout = 15) {
+  nomes <- .hf_list_dir(pasta, timeout = timeout)
+  if (is.null(nomes)) return(NULL)
 
-  # Guard: iconv returns NA when the string contains chars not representable
-  # in Latin-1 (e.g. 'EUR', '\u00A9'). FTP filenames from MTE are always Portuguese
-  # (Latin-1 safe) but we protect against unexpected server behaviour.
-  if (anyNA(raw_vec)) {
-    return(utils::URLencode(s, repeated = TRUE))
-  }
+  nomes <- unique(nomes[grepl("\\.xlsx?$", nomes, ignore.case = TRUE) &
+                          grepl("layout", nomes, ignore.case = TRUE)])
 
-  # Caracteres seguros para URLs (RFC 3986 unreserved + ponto):
-  # A-Z (65-90), a-z (97-122), 0-9 (48-57), - (45), . (46), _ (95), ~ (126)
-  safe <- c(45L, 46L, 95L, 126L,
-            48L:57L,    # 0-9
-            65L:90L,    # A-Z
-            97L:122L)   # a-z
-
-  paste0(
-    vapply(as.integer(raw_vec), function(b) {
-      if (b %in% safe) rawToChar(as.raw(b)) else sprintf("%%%02X", b)
-    }, character(1)),
-    collapse = ""
-  )
-}
-
-# Lista um diretorio FTP e retorna tibble com arquivos xls/xlsx
-# cujo nome contenha "layout" (case-insensitive).
-# @param url_dir character. URL do diretorio FTP.
-# @param timeout integer. Timeout in seconds.
-# @return tibble com colunas `arquivo` e `url_lista`.
-# @noRd
-.list_layout_urls <- function(url_dir, timeout = 15) {
-  tmp <- tempfile()
-  on.exit(unlink(tmp), add = TRUE)
-  
-  ok <- tryCatch({
-    utils::download.file(
-      url      = url_dir,
-      destfile = tmp,
-      method   = "curl",
-      extra    = paste(
-        "--connect-timeout", timeout,
-        "--max-time", timeout,
-        "--ftp-pasv", "--silent", "--list-only"
-      ),
-      quiet = TRUE
-    )
-    file.exists(tmp) && file.size(tmp) > 0
-  }, error = function(e) FALSE, warning = function(w) FALSE)
-  
-  if (!isTRUE(ok)) {
-    return(tibble::tibble(arquivo = character(), url_lista = list()))
-  }
-  
-  raw_bytes <- readBin(tmp, what = "raw", n = file.size(tmp))
-  texto <- rawToChar(raw_bytes)
-  Encoding(texto) <- "latin1"
-  texto_utf8 <- enc2utf8(texto)
-  
-  linhas <- trimws(strsplit(texto_utf8, "\r?\n", perl = TRUE)[[1]])
-  linhas <- linhas[nzchar(linhas)]
-  
-  ok_idx <- grepl("\\.xlsx?$", linhas, ignore.case = TRUE) &
-    grepl("layout", linhas, ignore.case = TRUE)
-  
-  nomes_utf8 <- unique(linhas[ok_idx])
-  
-  if (length(nomes_utf8) == 0) {
-    return(tibble::tibble(arquivo = character(), url_lista = list()))
-  }
-  
-  url_lista <- lapply(nomes_utf8, function(nome) {
-    encoded <- .pct_encode_latin1(nome)
-    c(paste0(url_dir, encoded))
-  })
-  
   tibble::tibble(
-    arquivo = nomes_utf8,
-    url_lista = url_lista
+    arquivo = nomes,
+    url     = paste0(.HF_BASE, "/", pasta, "/",
+                     vapply(nomes, function(n) utils::URLencode(enc2utf8(n), reserved = TRUE),
+                            character(1), USE.NAMES = FALSE))
   )
-}
-
-# Tenta baixar um arquivo a partir de uma lista de URLs candidatas.
-# @param urls character vector.
-# @param destfile character.
-# @param timeout integer.
-# @return character. "baixado" ou "naoencontrado".
-# @noRd
-.try_download <- function(urls, destfile, timeout = 120) {
-  for (url in urls) {
-    # Tenta com curl externo diretamente (mais confiavel para FTP binario)
-    ok <- tryCatch({
-      curl_bin <- Sys.which("curl")
-      if (nzchar(curl_bin)) {
-        ret <- system2(
-          command = curl_bin,
-          args    = c(
-            "--connect-timeout", timeout,
-            "--max-time",        timeout,
-            "--ftp-pasv",
-            "--silent",
-            "--show-error",
-            "--output", shQuote(destfile),
-            shQuote(url)
-          ),
-          stdout = FALSE,
-          stderr = FALSE
-        )
-        ret == 0L && file.exists(destfile) && file.size(destfile) > 0
-      } else {
-        FALSE
-      }
-    }, error = function(e) FALSE)
-    
-    if (isTRUE(ok)) return("baixado")
-    if (file.exists(destfile)) unlink(destfile)
-    
-    # Fallback: utils::download.file em modo binario
-    metodos <- if (.Platform$OS.type == "windows") {
-      c("libcurl", "auto")
-    } else {
-      c("libcurl", "curl", "auto")
-    }
-    
-    for (metodo in metodos) {
-      ok2 <- tryCatch({
-        utils::download.file(
-          url      = url,
-          destfile = destfile,
-          method   = metodo,
-          mode     = "wb",
-          quiet    = TRUE
-        )
-        file.exists(destfile) && file.size(destfile) > 0
-      }, error = function(e) FALSE, warning = function(w) FALSE)
-      
-      if (isTRUE(ok2)) return("baixado")
-      if (file.exists(destfile)) unlink(destfile)
-    }
-  }
-  
-  "naoencontrado"
 }

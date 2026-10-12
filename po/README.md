@@ -10,7 +10,21 @@ e *R Packages 2e* (cap. 8).
 |---|---|
 | `R-datacaged.pot` | Template — todas as strings traduzíveis extraídas do código R |
 | `R-pt_BR.po` | Tradução: Português do Brasil |
-| `R-en.po` | Tradução: Inglês |
+
+As mensagens do código-fonte estão em inglês, envolvidas em `gettext()`.
+Com o R em português, elas aparecem traduzidas automaticamente; para trocar
+o idioma na sessão, use `Sys.setLanguage("pt_BR")` ou `Sys.setLanguage("en")`.
+
+## Regra importante: não altere o conteúdo entre chaves
+
+As mensagens usam a interpolação do pacote `cli`, e o conteúdo entre `{}` é
+**código R executado**. Na tradução, traduza só o texto; copie cada bloco
+`{...}` exatamente como está no `msgid`. Um bloco diferente pode fazer a
+própria mensagem de erro falhar. O teste `test-i18n.R` verifica isso para
+todas as entradas.
+
+Pluralização do `cli` (`{?s}`, `{?y/ies}`) pode ser adaptada ao português,
+por exemplo `arquivo{?s}`.
 
 As traduções compiladas (`.mo`) ficam em `inst/po/` após `tools::update_pkg_po(".")`.
 

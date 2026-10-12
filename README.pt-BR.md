@@ -28,7 +28,7 @@ O **datacaged** é um pacote R que automatiza todo o fluxo de trabalho com os mi
 * 🧩 Suporte a múltiplas bases:
 
   * Novo CAGED (2020+)
-  * CAGED antigo (1992–2019)
+  * CAGED antigo (2007–2019)
   * CAGED Ajustes (correções históricas)
 
 ---
@@ -146,7 +146,7 @@ HuggingFace (HTTPS)
 | `caged_load()` | Pipeline completo (download → parse → DuckDB) |
 | `caged_adjustments_load()` | Pipeline de ajustes |
 | `caged_download()` | Download dos `.7z` com cache |
-| `caged_download_layouts()` | Download dos layouts oficiais do MTE |
+| `caged_download_layouts()` | Download dos layouts oficiais do MTE (via HuggingFace) |
 | `caged_parse()` | Leitura de um único arquivo `.7z` |
 | `caged_parse_batch()` | Leitura em lote |
 | `caged_to_duckdb()` | Gravação no DuckDB |
@@ -159,6 +159,17 @@ HuggingFace (HTTPS)
 
 ---
 
+## 🌐 Idioma das mensagens
+
+As mensagens do console (erros, avisos e progresso) são escritas em inglês e
+traduzidas para o português. Com o R configurado em português, elas aparecem
+em português automaticamente; para trocar o idioma na sessão:
+
+```r
+Sys.setLanguage("pt_BR")  # português
+Sys.setLanguage("en")     # inglês
+```
+
 ## 🗄️ Estrutura do banco
 
 | Tabela | Conteúdo | Período |
@@ -166,8 +177,8 @@ HuggingFace (HTTPS)
 | `caged_mov` | Movimentações | 2020+ |
 | `caged_for` | Declarações fora do prazo | 2020+ |
 | `caged_exc` | Exclusões | 2020+ |
-| `caged_antigo` | Histórico | 1992–2019 |
-| `caged_ajustes` | Ajustes retroativos | 1992–2019 |
+| `caged_antigo` | Histórico | 2007–2019 |
+| `caged_ajustes` | Ajustes retroativos | 2002–2019 |
 
 ---
 

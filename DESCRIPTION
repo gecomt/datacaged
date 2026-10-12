@@ -1,6 +1,6 @@
 Package: datacaged
 Title: CAGED Microdata Download and Storage in 'DuckDB'
-Version: 0.2.1
+Version: 0.2.3
 Authors@R: 
     person("Alexsandro", "Prado",
            email   = "alexsandro.prado@ufersa.edu.br",
@@ -19,7 +19,7 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 LazyDataCompression: bzip2
-Date: 2026-08-26
+Date: 2026-10-01
 Roxygen: list(markdown = TRUE)
 Imports:
     archive,
@@ -42,10 +42,11 @@ Suggests:
     testthat (>= 3.0.0),
     knitr,
     rmarkdown,
-    dbplyr
+    dbplyr,
+    withr
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 URL: https://github.com/gecomt/datacaged
 BugReports: https://github.com/gecomt/datacaged/issues
 Config/Needs/website: rmarkdown
-Config/roxygen2/version: 8.1.0
+Config/roxygen2/version: 8.1.1

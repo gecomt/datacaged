@@ -24,8 +24,8 @@ Ele suporta três séries:
 | Período              | Série           | Tabela no banco                         |
 |----------------------|-----------------|-----------------------------------------|
 | Jan/2020 – hoje      | Novo CAGED      | `caged_mov`, `caged_for`, `caged_exc`   |
-| Jan/1992 – Dez/2019  | CAGED antigo    | `caged_antigo`                          |
-| Jan/1992 – Dez/2019  | CAGED Ajustes   | `caged_ajustes`                         |
+| Jan/2007 – Dez/2019  | CAGED antigo    | `caged_antigo`                          |
+| 2002     – Dez/2019  | CAGED Ajustes   | `caged_ajustes`                         |
 
 ## Instalação
 
@@ -171,14 +171,20 @@ caged_to_duckdb(df_todos, db_path = "caged.duckdb")
 
 ```{r info}
 caged_info("caged.duckdb")
-#> ── caged.duckdb ────────────────────────────────────────
-#> Tamanho do arquivo: 142.3 MB
-#> ── Tabelas ──────────────────────────────────────────────
-#> * "caged_mov"   Registros: 3,665,155
-#> * "caged_for"      Registros:    91,098
-#> * "caged_exc"       Registros:     7,900
-#>   Registros   : 4.823.901
-#>   Competências: 202301 – 202312
+#> ── datacaged - 'caged.duckdb' ─────────────────────────────────
+#> File size: 142.3 MB
+#> 
+#> ── Tables ──
+#> 
+#> • "caged_mov"
+#>   Records     : 3,665,155
+#>   Periods     : 202301 - 202312
+#> • "caged_for"
+#>   Records     : 91,098
+#>   Periods     : 202301 - 202312
+#> • "caged_exc"
+#>   Records     : 7,900
+#>   Periods     : 202301 - 202312
 ```
 
 ## Exemplo: Série Histórica com CAGED Antigo

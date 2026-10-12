@@ -77,14 +77,14 @@ test_that(".detect_table erro quando df sem fonte_tipo", {
 
 test_that(".detect_table erro quando tipos misturados", {
   df <- dplyr::bind_rows(make_df_novo(), make_df_antigo())
-  expect_error(datacaged:::.detect_table(df), "mistura")
+  expect_error(datacaged:::.detect_table(df), "mixes")
 })
 
 # ── Testes de conexão ─────────────────────────────────────────────────────────
 
 test_that("caged_connect cria banco e retorna conexão DBI válida", {
   db <- tempfile(fileext = ".duckdb")
-  on.exit(unlink(db))
+  on.exit(unlink(db), add = TRUE)
 
   con <- caged_connect(db)
   on.exit(DBI::dbDisconnect(con, shutdown = TRUE), add = TRUE)
@@ -95,7 +95,7 @@ test_that("caged_connect cria banco e retorna conexão DBI válida", {
 
 test_that("caged_connect em memória funciona", {
   con <- caged_connect(":memory:")
-  on.exit(DBI::dbDisconnect(con, shutdown = TRUE))
+  on.exit(DBI::dbDisconnect(con, shutdown = TRUE), add = TRUE)
   expect_s4_class(con, "duckdb_connection")
 })
 
@@ -103,7 +103,7 @@ test_that("caged_connect em memória funciona", {
 
 test_that("caged_to_duckdb grava dados e retorna contagem correta", {
   db  <- tempfile(fileext = ".duckdb")
-  on.exit(unlink(db))
+  on.exit(unlink(db), add = TRUE)
 
   df  <- make_df_novo(competencias = 202301L, n_por_comp = 20L)
   n   <- caged_to_duckdb(df, db_path = db)
@@ -119,7 +119,7 @@ test_that("caged_to_duckdb grava dados e retorna contagem correta", {
 
 test_that("caged_to_duckdb pula competência já existente", {
   db <- tempfile(fileext = ".duckdb")
-  on.exit(unlink(db))
+  on.exit(unlink(db), add = TRUE)
 
   df <- make_df_novo(competencias = 202301L, n_por_comp = 10L)
 
@@ -137,7 +137,7 @@ test_that("caged_to_duckdb pula competência já existente", {
 
 test_that("caged_to_duckdb com overwrite_competencies = TRUE regrava", {
   db <- tempfile(fileext = ".duckdb")
-  on.exit(unlink(db))
+  on.exit(unlink(db), add = TRUE)
 
   df <- make_df_novo(competencias = 202301L, n_por_comp = 10L)
   caged_to_duckdb(df, db_path = db)
@@ -154,7 +154,7 @@ test_that("caged_to_duckdb com overwrite_competencies = TRUE regrava", {
 
 test_that("caged_to_duckdb grava antigo e novo em tabelas separadas", {
   db <- tempfile(fileext = ".duckdb")
-  on.exit(unlink(db))
+  on.exit(unlink(db), add = TRUE)
 
   caged_to_duckdb(make_df_novo(),   db_path = db)
   caged_to_duckdb(make_df_antigo(), db_path = db)
@@ -170,7 +170,7 @@ test_that("caged_to_duckdb grava antigo e novo em tabelas separadas", {
 
 test_that("caged_to_duckdb grava ajustes em table caged_ajustes", {
   db <- tempfile(fileext = ".duckdb")
-  on.exit(unlink(db))
+  on.exit(unlink(db), add = TRUE)
 
   df <- make_df_ajustes(competencias = 201901L, n_por_comp = 10L)
   n  <- caged_to_duckdb(df, db_path = db)
@@ -188,7 +188,7 @@ test_that("caged_to_duckdb grava ajustes em table caged_ajustes", {
 
 test_that("caged_to_duckdb retorna 0 para df vazio", {
   db <- tempfile(fileext = ".duckdb")
-  on.exit(unlink(db))
+  on.exit(unlink(db), add = TRUE)
   n <- caged_to_duckdb(NULL, db_path = db)
   expect_equal(n, 0L)
 })
@@ -197,7 +197,7 @@ test_that("caged_to_duckdb retorna 0 para df vazio", {
 
 test_that("caged_info retorna tibble com estatísticas corretas", {
   db <- tempfile(fileext = ".duckdb")
-  on.exit(unlink(db))
+  on.exit(unlink(db), add = TRUE)
 
   caged_to_duckdb(make_df_novo(competencias = c(202301L, 202302L), n_por_comp = 10L), db)
 
@@ -216,7 +216,7 @@ test_that("caged_info erro para banco inexistente", {
 
 test_that("caged_to_duckdb aceita .con= e não fecha a conexão", {
   db  <- tempfile(fileext = ".duckdb")
-  on.exit(unlink(db))
+  on.exit(unlink(db), add = TRUE)
 
   con <- caged_connect(db, quiet = TRUE)
   on.exit(DBI::dbDisconnect(con, shutdown = TRUE), add = TRUE)
@@ -234,7 +234,7 @@ test_that("caged_to_duckdb aceita .con= e não fecha a conexão", {
 
 test_that("caged_to_duckdb com .con= e db_path=NULL não dá erro", {
   db  <- tempfile(fileext = ".duckdb")
-  on.exit(unlink(db))
+  on.exit(unlink(db), add = TRUE)
 
   con <- caged_connect(db, quiet = TRUE)
   on.exit(DBI::dbDisconnect(con, shutdown = TRUE), add = TRUE)
@@ -250,7 +250,7 @@ test_that("caged_to_duckdb sem db_path e sem .con da erro claro", {
 
 test_that("caged_to_duckdb múltiplas gravações com mesma .con acumulam corretamente", {
   db  <- tempfile(fileext = ".duckdb")
-  on.exit(unlink(db))
+  on.exit(unlink(db), add = TRUE)
 
   con <- caged_connect(db, quiet = TRUE)
   on.exit(DBI::dbDisconnect(con, shutdown = TRUE), add = TRUE)
@@ -266,14 +266,19 @@ test_that("caged_to_duckdb múltiplas gravações com mesma .con acumulam corret
 # ── Testes de workers= (downloads paralelos) ──────────────────────────────────
 
 test_that(".run_downloads workers=1 funciona em modo sequencial", {
-  skip_on_ci()  # faz tentativa de download com timeout curto
+  ## Download mockado: sem rede, roda tambem no CRAN
+  local_mocked_bindings(
+    .download_file = function(url, destfile, timeout, ...) {
+      writeBin(raw(10L), destfile)
+      invisible(destfile)
+    },
+    .package = "datacaged"
+  )
   tasks <- datacaged:::.build_tasks(2023L, 1L)
   cache <- tempfile("cache_test_")
-  on.exit(unlink(cache, recursive = TRUE))
+  on.exit(unlink(cache, recursive = TRUE), add = TRUE)
   dir.create(cache)
 
-  # Só verificamos que a função retorna o tibble com a estrutura correta
-  # sem depender de rede — usando tarefas de cache já existente com .is_cached
   result <- datacaged:::.run_downloads(tasks, cache, force = FALSE, timeout = 5, workers = 1L)
 
   expect_s3_class(result, "data.frame")
@@ -284,12 +289,14 @@ test_that(".run_downloads workers=1 funciona em modo sequencial", {
 })
 
 test_that(".run_downloads workers=3 retorna mesma estrutura que workers=1", {
+  ## Downloads reais e paralelos (mocks nao alcancam os workers do future)
   skip_on_cran()
-  skip_on_ci()  # faz tentativa de download real
+  skip_on_ci()
+  skip_if_offline("huggingface.co")
 
   tasks <- datacaged:::.build_tasks(2023L, 1L)
   cache <- tempfile("cache_test_")
-  on.exit(unlink(cache, recursive = TRUE))
+  on.exit(unlink(cache, recursive = TRUE), add = TRUE)
   dir.create(cache)
 
   r1 <- datacaged:::.run_downloads(tasks, cache, force = FALSE, timeout = 5, workers = 1L)

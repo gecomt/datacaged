@@ -68,7 +68,7 @@ test_that(".is_cached retorna FALSE para arquivo inexistente", {
 
 test_that(".cache_dir cria diretório se não existir", {
   tmp <- file.path(tempdir(), paste0("datacaged_test_", Sys.getpid()))
-  on.exit(unlink(tmp, recursive = TRUE))
+  on.exit(unlink(tmp, recursive = TRUE), add = TRUE)
   dir_criado <- datacaged:::.cache_dir(tmp)
   expect_true(dir.exists(dir_criado))
 })
@@ -80,10 +80,42 @@ test_that(".download_file retorna NULL para URL inexistente (404)", {
     .package = "datacaged"
   )
   destfile <- tempfile(fileext = ".7z")
-  on.exit(unlink(destfile))
+  on.exit(unlink(destfile), add = TRUE)
   result <- datacaged:::.download_file(
     "https://example.com/nao_existe.7z", destfile, timeout = 5
   )
   expect_null(result)
   expect_false(file.exists(destfile))
+})
+
+test_that(".download_file grava de forma atomica, sem deixar .part", {
+  local_mocked_bindings(
+    req_perform = function(req, ...) httr2::response(status_code = 200L, body = as.raw(1:10)),
+    .package = "httr2"
+  )
+  dest <- tempfile(fileext = ".7z")
+  on.exit(unlink(dest), add = TRUE)
+  res <- datacaged:::.download_file("https://example.com/a.7z", dest, timeout = 5,
+                                    sleep_fn = function(...) NULL)
+  expect_equal(res, dest)
+  expect_equal(file.size(dest), 10)
+  expect_false(file.exists(paste0(dest, ".part")))
+})
+
+test_that(".download_file com falha na gravacao nao deixa arquivo final parcial", {
+  local_mocked_bindings(
+    req_perform = function(req, ...) httr2::response(status_code = 200L, body = as.raw(1:10)),
+    resp_body_raw = function(resp) stop("conexao interrompida"),
+    .package = "httr2"
+  )
+  dest <- tempfile(fileext = ".7z")
+  on.exit(unlink(dest), add = TRUE)
+  expect_warning(
+    res <- datacaged:::.download_file("https://example.com/a.7z", dest, timeout = 5,
+                                      sleep_fn = function(...) NULL),
+    "after 3 attempts"
+  )
+  expect_null(res)
+  expect_false(file.exists(dest))
+  expect_false(file.exists(paste0(dest, ".part")))
 })

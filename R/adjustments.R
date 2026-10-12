@@ -15,6 +15,8 @@
 #'
 #' @param years integer vector. Desired years. Maximum: 2019.
 #' @param months integer vector. Desired months (1--12). Default: `seq_len(12L)`.
+#'   Para 2002--2009 o MTE publica um arquivo anual; ele é baixado uma única
+#'   vez e apenas os meses pedidos (pela `competencia_declarada`) são gravados.
 #' @param db_path character. Path to the file `.duckdb`.
 #' @param destdir character or NULL. Cache directory for `.7z` files.
 #'   Default: `tools::R_user_dir("datacaged", "cache")`.
@@ -62,7 +64,7 @@ caged_adjustments_load <- function(years,
                                    overwrite_competencies = FALSE,
                                    timeout                = 300) {
 
-  years  <- .validate_years(years)
+  years  <- .validate_years(years, min_year = .ANO_MIN_AJUSTES)
   months <- .validate_months(months)
 
   # Ajustes só existem para o CAGED antigo (até 2019)
@@ -70,15 +72,15 @@ caged_adjustments_load <- function(years,
   invalid_years <- years[years >= .ANO_CORTE]
   if (length(invalid_years) > 0) {
     cli::cli_warn(c(
-      "!" = "CAGED Adjustments only exist for years up to {.val {ano_limite}}.",
-      "i" = "Ignored years: {.val {invalid_years}}"
+      "!" = gettext("CAGED Adjustments only exist for years up to {.val {ano_limite}}."),
+      "i" = gettext("Ignored years: {.val {invalid_years}}")
     ))
     years <- years[years < .ANO_CORTE]
   }
 
   if (length(years) == 0) {
     cli::cli_abort(
-      "No valid year. CAGED Adjustments cover up to {.val {ano_limite}}."
+      gettext("No valid year. CAGED Adjustments cover up to {.val {ano_limite}}.")
     )
   }
 
@@ -86,29 +88,33 @@ caged_adjustments_load <- function(years,
 
   cli::cli_h1("caged_adjustments_load")
   cli::cli_inform(c(
-    "i" = "Years : {years[1]}-{years[length(years)]}",
-    "i" = "Months: {months[1]}-{months[length(months)]}",
-    "i" = "DB    : {.path {db_path}}"
+    "i" = gettext("Years : {years[1]}-{years[length(years)]}"),
+    "i" = gettext("Months: {months[1]}-{months[length(months)]}"),
+    "i" = gettext("DB    : {.path {db_path}}")
   ))
 
   # 1. Download
-  cli::cli_h2("1/3  Download")
+  cli::cli_h2(gettext("1/3  Download"))
   tasks <- .build_adjustments_tasks(years, months)
 
+  ## 2002-2009: um unico arquivo anual atende aos 12 meses. Sem remover as
+  ## repeticoes, o mesmo arquivo seria baixado/parseado uma vez por mes.
+  tasks <- tasks[!duplicated(tasks$url), , drop = FALSE]
+
   if (nrow(tasks) == 0) {
-    cli::cli_warn("No download tasks generated.")
+    cli::cli_warn(gettext("No download tasks generated."))
     return(invisible(NULL))
   }
 
   cli::cli_inform(c(
-    "i" = "{nrow(tasks)} arquivo{?s} a processar",
-    "i" = "Cache: {.path {cache}}"
+    "i" = gettext("{nrow(tasks)} file{?s} to process"),
+    "i" = gettext("Cache: {.path {cache}}")
   ))
 
   manifest <- .run_downloads(tasks, cache, force_download, timeout)
 
   resumo <- dplyr::count(manifest, status)
-  cli::cli_h2("Summary")
+  cli::cli_h2(gettext("Summary"))
   purrr::walk2(resumo$status, resumo$n, function(s, cnt) {
     icon <- switch(s,
       baixado        = cli::col_green("v"),
@@ -123,16 +129,16 @@ caged_adjustments_load <- function(years,
   manifest_ok <- dplyr::filter(manifest, status %in% c("baixado", "cache"))
 
   if (nrow(manifest_ok) == 0) {
-    cli::cli_warn("No files available to process.")
+    cli::cli_warn(gettext("No files available to process."))
     return(invisible(NULL))
   }
 
   # 2. Parse e carga
-  cli::cli_h2("2/3  Parse and load into DuckDB")
+  cli::cli_h2(gettext("2/3  Parse and load into DuckDB"))
   n_inserido_total <- 0L
 
   cli::cli_progress_bar(
-    name   = "Arquivos",
+    name   = gettext("Files"),
     total  = nrow(manifest_ok),
     format = "{cli::pb_bar} {cli::pb_current}/{cli::pb_total} [{cli::pb_elapsed}]"
   )
@@ -147,10 +153,17 @@ caged_adjustments_load <- function(years,
     df <- tryCatch(
       caged_parse(arq, type = "AJUSTES"),
       error = function(e) {
-        cli::cli_warn("Error in {.path {basename(arq)}}: {conditionMessage(e)}")
+        cli::cli_warn(gettext("Error in {.path {basename(arq)}}: {conditionMessage(e)}"))
         NULL
       }
     )
+
+    ## Arquivo anual (2002-2009) traz o ano inteiro: mantem so os meses pedidos
+    if (!is.null(df) && manifest_ok$ano[i] <= 2009L &&
+        "competencia_declarada" %in% names(df)) {
+      mes_decl <- as.integer(df$competencia_declarada) %% 100L
+      df <- df[!is.na(mes_decl) & mes_decl %in% months, , drop = FALSE]
+    }
 
     if (!is.null(df) && nrow(df) > 0) {
       n <- caged_to_duckdb(
@@ -168,10 +181,13 @@ caged_adjustments_load <- function(years,
   cli::cli_progress_done()
 
   # 3. Resumo
-  cli::cli_h2("3/3  Done")
+  cli::cli_h2(gettext("3/3  Done"))
   cli::cli_inform(c(
-    "v" = "Total inserted: {format(n_inserido_total, big.mark = ',')} records"
+    "v" = gettext("Total inserted: {format(n_inserido_total, big.mark = ',')} records")
   ))
+
+  ## Fecha a conexao de escrita antes de caged_info(), que abre em read_only
+  .disconnect(con_adj)
 
   invisible(caged_info(db_path))
 }

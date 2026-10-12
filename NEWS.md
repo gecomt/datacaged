@@ -1,3 +1,117 @@
+# datacaged 0.2.3
+
+## Message language
+
+* All console messages (errors, warnings, progress) are now written in
+  English in the source code and translated to Brazilian Portuguese through
+  the standard R/gettext mechanism. Users with R set to Portuguese see them in
+  Portuguese automatically; `Sys.setLanguage("pt_BR")` or
+  `Sys.setLanguage("en")` switches the language within a session.
+  Previously the messages mixed both languages and the shipped translations
+  were never applied, because the `cli` calls did not go through `gettext()`.
+* The translation catalog now contains only `R-pt_BR.po`; `R-en.po` was
+  removed because the source language is English.
+* The tests run in English regardless of the machine's locale, and a new test
+  checks that every translation keeps the `{...}` code blocks of the original
+  message unchanged.
+
+## Bug fixes
+
+* Messages such as "20 registro inserido" now use the correct plural ("20
+  records inserted" / "20 registros inseridos"): the count was formatted as
+  text before reaching `cli`, which then always used the singular.
+
+# datacaged 0.2.2
+
+## Bug fixes
+
+* Fixed test failures on CRAN with duckdb >= 1.5, which caches database
+  instances per file and refuses `read_only = TRUE` when an instance for the
+  same path is already open (`read_only can't be applied to the database
+  instance ... which already exists`):
+  * `caged_load()` and `caged_adjustments_load()` now close their write
+    connection before calling `caged_info()`.
+  * The internal `.disconnect()` helper now also calls
+    `duckdb::duckdb_shutdown()`, since `dbDisconnect(shutdown = TRUE)` no
+    longer releases the cached instance.
+  * `caged_info()`, `caged_to_parquet()` and `caged_update()` reuse an
+    already-open instance (e.g. a user connection) instead of failing.
+* **Data loss in `caged_for` and `caged_exc`**: the deduplication key
+  `competencia` was taken from `competenciamov`, but FOR/EXC files contain
+  movements from earlier months that repeat across files, so loading month
+  *t+1* silently skipped rows whose `competenciamov` had already appeared
+  (e.g. 46% of `CAGEDFOR202303`). The key is now `competenciadec` for
+  `caged_for` and `competenciaexc` for `caged_exc` (one value per file).
+  `caged_mov`, `caged_antigo` and `caged_ajustes` are unchanged.
+  **Action required:** databases built with earlier versions should drop
+  `caged_for` and `caged_exc` and reload them with `caged_load()`. Use
+  `competenciamov` for analyses by month of movement.
+* Fixed column-name normalization when the package is installed or run in a
+  non-UTF-8 locale (e.g. `C`/`POSIX`): accented headers such as
+  `competênciamov` became `compet_nciamov`, and `caged_to_duckdb()` aborted
+  with "Nenhuma coluna de competencia encontrada". `.normalize_names()` now
+  uses `chartr()` and `read_delim()` uses `name_repair = "unique_quiet"`.
+
+## Behaviour changes
+
+* `caged_download_layouts()` now downloads the layout files from the
+  HuggingFace repository instead of the MTE FTP server, which was slow and
+  often unreachable. Local file names have accents removed; the original
+  name is kept in the `arquivo` column.
+* `caged_update()` now compares competencies table by table instead of using
+  the maximum competency. It also fills gaps inside the period already in the
+  database (e.g. a FOR file whose download failed) and calls the pipeline
+  once per year, so it no longer downloads unneeded months (requesting
+  202512 and 202601 used to also download 202501 and 202612).
+* Year validation now matches the data available on HuggingFace: legacy CAGED
+  from 2007 (`caged_load()`, `caged_download()`) and CAGED Adjustments from
+  2002 (`caged_adjustments_load()`). Earlier years now fail immediately with
+  a clear message instead of finding no files.
+
+## More bug fixes
+
+* `caged_to_duckdb(overwrite_competencies = TRUE)` now runs DELETE and INSERT
+  in a single transaction: if the insert fails, the previous data is kept.
+* Errors while checking which competencies are already stored are no longer
+  swallowed (they used to be treated as "none stored", duplicating rows).
+* `caged_to_parquet()`: `partition_by` accepts several columns, `overwrite =
+  FALSE` is respected for partitioned output, a missing partition column gives
+  a clear warning, and paths containing `'` work. Partition directories for
+  code columns (competencies, `uf`, `regiao`, `municipio`) are now named
+  `competencia=202301/uf=35` instead of `competencia=202301.0/uf=35.0`; the
+  cast to integer happens only in the export, so the database schema is
+  unchanged.
+* `caged_adjustments_load()` for 2002-2009, where the source is one annual
+  file per year: the file is now downloaded and parsed once instead of once
+  per requested month (about 6x faster for a full year), and only the
+  requested `months` are stored (previously the whole year was stored).
+* Downloads are written to a temporary `.part` file and renamed when
+  complete, so an interrupted write can no longer leave a truncated file
+  that the cache would treat as valid.
+* The internal HuggingFace listing no longer fails under a non-UTF-8 locale
+  for file names with accents.
+* `caged_hf_files(verbose = FALSE)` no longer prints the "Querying
+  HuggingFace" message.
+
+## Tests
+
+* No test accesses the network on CRAN anymore: the layouts test and the
+  sequential download test are mocked; real-network tests use
+  `skip_on_cran()` and `skip_if_offline()`.
+* Fixed mocks leaking across test files: `on.exit()` without `add = TRUE`
+  after `local_mocked_bindings()` discarded the restore handler.
+
+## Documentation
+
+* Corrected data coverage: legacy CAGED is available from 2007 and CAGED
+  Adjustments from 2002 (previously documented as 1992).
+* `caged_to_duckdb()` documentation now describes the actual deduplication
+  mechanism and the key column per table (it never used `INSERT OR IGNORE`).
+* `?datacaged` now lists `caged_update()`, `caged_to_parquet()` and
+  `caged_download_layouts()`.
+* `inst/CITATION` now reads the version from `DESCRIPTION`.
+* Updated `caged_info()` sample output in the vignettes.
+
 # datacaged 0.2.1
 
 ## Breaking changes

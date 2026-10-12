@@ -52,7 +52,7 @@ caged_hf_files <- function(type    = "novo",
 
   if (!is.numeric(n) || length(n) != 1L || (!is.infinite(n) && (is.na(n) || n < 1L))) {
     cli::cli_abort(
-      "{.arg n} deve ser um inteiro positivo ou {.code Inf}, nao {.val {n}}."
+      gettext("{.arg n} must be a positive integer or {.code Inf}, not {.val {n}}.")
     )
   }
   n <- if (is.infinite(n)) Inf else as.integer(n)
@@ -65,16 +65,16 @@ caged_hf_files <- function(type    = "novo",
   )
 
   hf_api_url <- .HF_API
-  cli::cli_inform("Querying HuggingFace repository ({.url {hf_api_url}})...")
+  if (verbose) cli::cli_inform(gettext("Querying HuggingFace repository ({.url {hf_api_url}})..."))
 
   # Obtém a lista de anos disponíveis na pasta raiz
   anos_disponiveis <- .hf_list_dir(pasta_raiz, timeout)
 
   if (is.null(anos_disponiveis)) {
     cli::cli_abort(c(
-      "Could not access the HuggingFace repository.",
-      "i" = "Check your connection with {.fn caged_status}.",
-      "i" = "Repository: {.url https://huggingface.co/datasets/alexsandroprado/caged}"
+      gettext("Could not access the HuggingFace repository."),
+      "i" = gettext("Check your connection with {.fn caged_status}."),
+      "i" = gettext("Repository: {.url https://huggingface.co/datasets/alexsandroprado/caged}")
     ))
   }
 
@@ -90,7 +90,7 @@ caged_hf_files <- function(type    = "novo",
 
   if (length(anos) == 0) {
     cli::cli_abort(
-      "No year found in the HuggingFace repository for series '{type}'."
+      gettext("No year found in the HuggingFace repository for series '{type}'.")
     )
   }
 
@@ -215,7 +215,7 @@ caged_hf_files <- function(type    = "novo",
   }
 
   if (length(competencias) == 0) {
-    cli::cli_warn("No competency found in the HuggingFace repository.")
+    cli::cli_warn(gettext("No competency found in the HuggingFace repository."))
     return(invisible(tibble::tibble()))
   }
 
@@ -232,7 +232,7 @@ caged_hf_files <- function(type    = "novo",
       antigo  = "CAGED Antigo (ate 2019)",
       ajustes = "CAGED Ajustes (serie historica)"
     )
-    cli::cli_h2("Available competencies - {serie}")
+    cli::cli_h2(gettext("Available competencies - {serie}"))
 
     meses_fmt <- c("Jan","Fev","Mar","Abr","Mai","Jun",
                    "Jul","Ago","Set","Out","Nov","Dez")
@@ -250,8 +250,8 @@ caged_hf_files <- function(type    = "novo",
     cmd <- paste0(fn, "(years = ", yr, ", months = ", mo, ")")
 
     cli::cli_inform(c(
-      "i" = "{nrow(resultado)} competenc{?y/ies} listed",
-      "i" = "Use {.code {cmd}} to download the most recent."
+      "i" = gettext("{nrow(resultado)} competenc{?y/ies} listed"),
+      "i" = gettext("Use {.code {cmd}} to download the most recent.")
     ))
   }
 
@@ -291,7 +291,9 @@ caged_hf_files <- function(type    = "novo",
   nomes <- vapply(parsed, function(item) {
     p <- item[["path"]]
     if (is.null(p) || !nzchar(p)) return(NA_character_)
-    basename(p)
+    ## sub() em vez de basename(): basename() converte para o encoding
+    ## nativo e falha em locale C com nomes acentuados (ex.: layouts)
+    sub(".*/", "", enc2utf8(p))
   }, character(1L))
 
   nomes[!is.na(nomes) & nzchar(nomes)]

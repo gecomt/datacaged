@@ -33,7 +33,7 @@
 caged_connect <- function(db_path, read_only = FALSE, quiet = FALSE) {
   drv <- duckdb::duckdb(dbdir = db_path, read_only = read_only)
   con <- DBI::dbConnect(drv)
-  if (!quiet) cli::cli_inform("Connected to {.path {db_path}}")
+  if (!quiet) cli::cli_inform(gettext("Connected to {.path {db_path}}"))
   con
 }
 
@@ -41,9 +41,17 @@ caged_connect <- function(db_path, read_only = FALSE, quiet = FALSE) {
 
 #' Grava um data.frame de microdados do CAGED em uma tabela DuckDB
 #'
-#' Usa `INSERT OR IGNORE` por competência para evitar duplicatas:
-#' se uma competência já existe na tabela, ela é pulada (útil para
-#' re-rodar o pipeline sem apagar dados anteriores).
+#' Evita duplicatas por competência: antes de inserir, verifica quais
+#' competências do data.frame já existem na tabela e insere apenas as
+#' novas via [DBI::dbAppendTable()] (útil para re-rodar o pipeline sem
+#' apagar dados anteriores). Com `overwrite_competencies = TRUE`, as
+#' competências presentes no data.frame são apagadas e regravadas.
+#'
+#' A coluna `competencia` usada como chave identifica o arquivo de origem:
+#' `competenciamov` em `caged_mov`, `competenciadec` em `caged_for`,
+#' `competenciaexc` em `caged_exc` e `competencia_declarada` em
+#' `caged_antigo` e `caged_ajustes`. Para análises pelo mês da
+#' movimentação, use a coluna `competenciamov`.
 #'
 #' As tabelas criadas são:
 #' - `caged_mov`, `caged_for`, `caged_exc` --- para dados de 2020 em diante
@@ -84,7 +92,7 @@ caged_to_duckdb <- function(df,
                             overwrite_competencies = FALSE,
                             .con     = NULL) {
   if (is.null(df) || nrow(df) == 0) {
-    cli::cli_inform("Empty data.frame - nothing to write.")
+    cli::cli_inform(gettext("Empty data.frame - nothing to write."))
     return(invisible(0L))
   }
 
@@ -95,7 +103,7 @@ caged_to_duckdb <- function(df,
     con         <- .con
     fechar_con  <- FALSE
   } else {
-    if (is.null(db_path)) cli::cli_abort("{.arg db_path} or {.arg .con} must be provided.")
+    if (is.null(db_path)) cli::cli_abort(gettext("{.arg db_path} or {.arg .con} must be provided."))
     con         <- caged_connect(db_path, quiet = TRUE)
     fechar_con  <- TRUE
     on.exit(if (fechar_con) .disconnect(con), add = TRUE)
@@ -106,12 +114,20 @@ caged_to_duckdb <- function(df,
   # CAGED antigo (CAGEDEST): "competencia_declarada" (formato AAAAMM)
   # Versoes antigas: "competencia"
   if (!"competencia" %in% names(df)) {
-    # Seleciona a coluna de competencia com prioridade explicita:
-    # competenciamov e a chave correta para deduplicacao (periodo de referencia),
-    # mesmo em arquivos FOR/EXC que tambem tem competenciadec.
-    # intersect() preserva a ordem do df, nao da lista - por isso iteramos
-    # na ordem de prioridade para garantir comportamento deterministico.
-    priority <- c("competenciamov", "competenciadec", "competencia_declarada")
+    # A coluna `competencia` e a chave de deduplicacao e precisa identificar
+    # o ARQUIVO de origem (um valor por arquivo):
+    # - MOV: competenciamov (= mes do arquivo)
+    # - FOR: competenciadec (mes da declaracao); competenciamov traz meses
+    #   anteriores, que se repetem entre arquivos e eram descartados
+    # - EXC: competenciaexc (mes da exclusao), pelo mesmo motivo
+    # - antigo/ajustes: competencia_declarada (= mes do arquivo)
+    # Iteramos na ordem de prioridade para comportamento deterministico.
+    priority <- switch(
+      table,
+      caged_for = c("competenciadec", "competenciamov"),
+      caged_exc = c("competenciaexc", "competenciadec", "competenciamov"),
+      c("competenciamov", "competenciadec", "competencia_declarada")
+    )
     col_comp  <- NA_character_
     for (nm in priority) {
       if (nm %in% names(df)) { col_comp <- nm; break }
@@ -120,10 +136,9 @@ caged_to_duckdb <- function(df,
       df$competencia <- df[[col_comp]]
     } else {
       cli::cli_abort(c(
-        "Nenhuma coluna de competencia encontrada no data.frame.",
-        "i" = "Colunas presentes: {.val {names(df)}}",
-        "i" = "Esperado: {.col competencia}, {.col competenciamov},
-               {.col competenciadec} ou {.col competencia_declarada}."
+        gettext("No competency column found in the data.frame."),
+        "i" = gettext("Columns present: {.val {names(df)}}"),
+        "i" = gettext("Expected: {.col competencia}, {.col competenciamov}, {.col competenciadec} or {.col competencia_declarada}.")
       ))
     }
   }
@@ -134,11 +149,11 @@ caged_to_duckdb <- function(df,
   n_antes <- nrow(df)
   df <- df[is.finite(df$competencia), ]
   if (nrow(df) < n_antes) {
-    cli::cli_warn("{n_antes - nrow(df)} row{?s} with invalid competency removed (NA/Inf).")
+    cli::cli_warn(gettext("{n_antes - nrow(df)} row{?s} with invalid competency removed (NA/Inf)."))
   }
 
   if (nrow(df) == 0) {
-    cli::cli_inform("Empty data.frame after cleaning - nothing to write.")
+    cli::cli_inform(gettext("Empty data.frame after cleaning - nothing to write."))
     return(invisible(0L))
   }
 
@@ -149,8 +164,12 @@ caged_to_duckdb <- function(df,
   competencias <- unique(df$competencia)
 
   if (overwrite_competencies) {
-    .delete_competencies(con, table, competencias)
-    n_inserido <- .insert_rows(con, table, df)
+    ## DELETE + INSERT na mesma transacao: se a insercao falhar, o DELETE
+    ## e desfeito e as competencias antigas continuam no banco
+    n_inserido <- DBI::dbWithTransaction(con, {
+      .delete_competencies(con, table, competencias)
+      .insert_rows(con, table, df)
+    })
   } else {
     # Filtra competencias ja gravadas
     ja_gravadas <- .existing_competencies(con, table, competencias)
@@ -158,22 +177,23 @@ caged_to_duckdb <- function(df,
 
     if (length(ja_gravadas) > 0) {
       cli::cli_inform(c(
-        "i" = "{length(ja_gravadas)} competencia{?s} ja no banco - pulando.",
-        "i" = "Use {.code overwrite_competencies = TRUE} para forcar."
+        "i" = gettext("{length(ja_gravadas)} competenc{?y/ies} already in the database - skipping."),
+        "i" = gettext("Use {.code overwrite_competencies = TRUE} to force.")
       ))
     }
 
     if (length(novas) == 0) {
-      cli::cli_inform("No new data to insert.")
+      cli::cli_inform(gettext("No new data to insert."))
       return(invisible(0L))
     }
 
     df_novo    <- dplyr::filter(df, competencia %in% novas)
-    n_inserido <- .insert_rows(con, table, df_novo)
+    ## Transacao: ALTER TABLE (schema evolution) e INSERT juntos ou nada
+    n_inserido <- DBI::dbWithTransaction(con, .insert_rows(con, table, df_novo))
   }
 
   cli::cli_inform(c(
-    "v" = "{format(n_inserido, big.mark = ',')} registro{?s} inserido{?s} em {.val {table}}"
+    "v" = gettext("{format(n_inserido, big.mark = ',')} {cli::qty(n_inserido)}record{?s} inserted into {.val {table}}")
   ))
 
   invisible(n_inserido)
@@ -199,10 +219,10 @@ caged_to_duckdb <- function(df,
 #' @export
 caged_info <- function(db_path) {
   if (db_path != ":memory:" && !file.exists(db_path)) {
-    cli::cli_abort("Database not found: {.path {db_path}}")
+    cli::cli_abort(gettext("Database not found: {.path {db_path}}"))
   }
 
-  con <- caged_connect(db_path, read_only = TRUE, quiet = TRUE)
+  con <- .connect_read(db_path)
   on.exit(.disconnect(con), add = TRUE)
 
   tabelas_caged <- intersect(
@@ -211,7 +231,7 @@ caged_info <- function(db_path) {
   )
 
   if (length(tabelas_caged) == 0) {
-    cli::cli_inform("No CAGED table found in {.path {db_path}}.")
+    cli::cli_inform(gettext("No CAGED table found in {.path {db_path}}."))
     return(invisible(tibble::tibble()))
   }
 
@@ -247,15 +267,15 @@ caged_info <- function(db_path) {
   tamanho_str <- if (is.na(tamanho_mb)) "(em memoria)" else paste0(tamanho_mb, " MB")
 
   cli::cli_h1("datacaged - {.path {db_path}}")
-  cli::cli_inform("File size: {tamanho_str}")
-  cli::cli_h2("Tables")
+  cli::cli_inform(gettext("File size: {tamanho_str}"))
+  cli::cli_h2(gettext("Tables"))
 
   for (i in seq_len(nrow(stats))) {
     s <- stats[i, ]
     cli::cli_inform(c(
       "*" = "{.val {s$table}}",
-      " " = "Records     : {format(s$registros, big.mark = ',')}",
-      " " = "Periods     : {s$competencias}"
+      " " = gettext("Records     : {format(s$registros, big.mark = ',')}"),
+      " " = gettext("Periods     : {s$competencias}")
     ))
   }
 
@@ -338,13 +358,13 @@ caged_load <- function(years,
 
   cli::cli_h1("caged_load")
   cli::cli_inform(c(
-    "i" = "Years : {years[1]}-{years[length(years)]}",
-    "i" = "Months: {months[1]}-{months[length(months)]}",
-    "i" = "DB    : {.path {db_path}}"
+    "i" = gettext("Years : {years[1]}-{years[length(years)]}"),
+    "i" = gettext("Months: {months[1]}-{months[length(months)]}"),
+    "i" = gettext("DB    : {.path {db_path}}")
   ))
 
   # 1. Download
-  cli::cli_h2("1/3  Download")
+  cli::cli_h2(gettext("1/3  Download"))
   manifest <- caged_download(
     years   = years,
     months  = months,
@@ -361,13 +381,13 @@ caged_load <- function(years,
     dplyr::pull(arquivo)
 
   if (length(arquivos_ok) == 0) {
-    cli::cli_warn("No files available to process.")
+    cli::cli_warn(gettext("No files available to process."))
     return(invisible(NULL))
   }
 
   # 2. Parse - processa cada arquivo individualmente (um tipo por vez)
   # MOV, FOR e EXC vao para tabelas separadas: caged_mov, caged_for, caged_exc
-  cli::cli_h2("2/3  Parse and load into DuckDB")
+  cli::cli_h2(gettext("2/3  Parse and load into DuckDB"))
 
   manifest_ok <- dplyr::filter(manifest, status %in% c("baixado", "cache"))
   n_inserido_total <- 0L
@@ -377,7 +397,7 @@ caged_load <- function(years,
   on.exit(.disconnect(con_load), add = TRUE)
 
   cli::cli_progress_bar(
-    name   = "Arquivos",
+    name   = gettext("Files"),
     total  = nrow(manifest_ok),
     format = "{cli::pb_bar} {cli::pb_current}/{cli::pb_total} [{cli::pb_elapsed}]"
   )
@@ -389,7 +409,7 @@ caged_load <- function(years,
     df <- tryCatch(
       caged_parse(arq, type = type),
       error = function(e) {
-        cli::cli_warn("Error in {.path {basename(arq)}}: {conditionMessage(e)}")
+        cli::cli_warn(gettext("Error in {.path {basename(arq)}}: {conditionMessage(e)}"))
         NULL
       }
     )
@@ -410,10 +430,13 @@ caged_load <- function(years,
   cli::cli_progress_done()
 
   # 3. Resumo final
-  cli::cli_h2("3/3  Done")
+  cli::cli_h2(gettext("3/3  Done"))
   cli::cli_inform(c(
-    "v" = "Total inserted: {format(n_inserido_total, big.mark = ',')} records"
+    "v" = gettext("Total inserted: {format(n_inserido_total, big.mark = ',')} records")
   ))
+
+  ## Fecha a conexao de escrita antes de caged_info(), que abre em read_only
+  .disconnect(con_load)
 
   info <- caged_info(db_path)
   invisible(info)
@@ -432,15 +455,15 @@ caged_load <- function(years,
 .detect_table <- function(df) {
   if (!"fonte_tipo" %in% names(df)) {
     cli::cli_abort(
-      c("Coluna {.col fonte_tipo} nao encontrada.",
-        "i" = "Informe {.arg table} manualmente.")
+      c(gettext("Column {.col fonte_tipo} not found."),
+        "i" = gettext("Provide {.arg table} manually."))
     )
   }
   tipos <- unique(df$fonte_tipo)
   if (length(tipos) > 1) {
     cli::cli_abort(
-      c("O data.frame mistura tipos de CAGED: {.val {tipos}}.",
-        "i" = "Processe e grave separadamente cada tipo.")
+      c(gettext("The data.frame mixes CAGED types: {.val {tipos}}."),
+        "i" = gettext("Process and write each type separately."))
     )
   }
   switch(tipos,
@@ -449,7 +472,7 @@ caged_load <- function(years,
     EXC     = "caged_exc",
     ANTIGO  = "caged_antigo",
     AJUSTES = "caged_ajustes",
-    cli::cli_abort("Tipo desconhecido: {.val {tipos}}")
+    cli::cli_abort(gettext("Unknown type: {.val {tipos}}"))
   )
 }
 
@@ -458,7 +481,7 @@ caged_load <- function(years,
 .create_table_if_needed <- function(con, table, df) {
   if (!DBI::dbExistsTable(con, table)) {
     DBI::dbWriteTable(con, table, df[0, ], overwrite = FALSE)
-    cli::cli_inform("Tabela {.val {table}} criada.")
+    cli::cli_inform(gettext("Table {.val {table}} created."))
   }
 }
 
@@ -480,13 +503,10 @@ caged_load <- function(years,
     "SELECT DISTINCT competencia FROM %s WHERE competencia IN (%s)",
     table, placeholders
   )
-  tryCatch({
-    rs  <- DBI::dbSendQuery(con, sql)
-    DBI::dbBind(rs, as.list(as.numeric(competencies)))
-    res <- DBI::dbFetch(rs)
-    DBI::dbClearResult(rs)
-    res$competencia
-  }, error = function(e) numeric(0))
+  ## Sem tryCatch: um erro aqui nao pode virar "nenhuma competencia
+  ## existente", pois isso reinseriria tudo e duplicaria registros
+  res <- DBI::dbGetQuery(con, sql, params = as.list(as.numeric(competencies)))
+  res$competencia
 }
 
 #' Deleta registros de competências específicas
@@ -545,9 +565,38 @@ caged_load <- function(years,
 #' Fecha conexão silenciosamente
 #' @noRd
 .disconnect <- function(con) {
+  if (is.null(con) || !DBI::dbIsValid(con)) return(invisible(NULL))
+  drv <- tryCatch(con@driver, error = function(e) NULL)
   tryCatch(
     DBI::dbDisconnect(con, shutdown = TRUE),
     error = function(e) invisible(NULL)
+  )
+  ## duckdb >= 1.5 mantem a instancia em cache por caminho; dbDisconnect()
+  ## nao a libera. Sem duckdb_shutdown(), uma nova conexao read_only ao
+  ## mesmo arquivo falha com "read_only can't be applied ...".
+  if (!is.null(drv)) {
+    tryCatch(
+      duckdb::duckdb_shutdown(drv),
+      error = function(e) invisible(NULL)
+    )
+  }
+  invisible(NULL)
+}
+
+#' Abre conexao somente leitura, reaproveitando instancia ja aberta
+#'
+#' No duckdb >= 1.5, se o processo ja tem uma instancia aberta para o
+#' arquivo (por exemplo, uma conexao do usuario), `read_only = TRUE` gera
+#' erro. Nesse caso reutiliza a instancia existente; as funcoes internas
+#' que chamam este helper apenas leem.
+#' @noRd
+.connect_read <- function(db_path) {
+  tryCatch(
+    caged_connect(db_path, read_only = TRUE, quiet = TRUE),
+    error = function(e) {
+      if (!grepl("already exists", conditionMessage(e), fixed = TRUE)) stop(e)
+      caged_connect(db_path, read_only = FALSE, quiet = TRUE)
+    }
   )
 }
 
@@ -559,6 +608,15 @@ caged_load <- function(years,
 #' Consulta o HuggingFace para descobrir as competências disponíveis,
 #' compara com o que já existe no banco e baixa apenas o que está faltando.
 #' É o modo mais prático de manter o banco atualizado sem re-baixar tudo.
+#'
+#' A comparação é feita competência a competência e tabela a tabela
+#' (`caged_mov`, `caged_for` e `caged_exc` são verificadas separadamente).
+#' Assim, além das competências novas, também são recuperadas lacunas
+#' dentro do período já presente no banco, por exemplo um arquivo FOR
+#' cujo download falhou em uma carga anterior. Competências anteriores à
+#' primeira competência já gravada não são baixadas; para ampliar o
+#' período para trás, use [caged_load()]. Com o banco vazio, todas as
+#' competências disponíveis da série são baixadas.
 #'
 #' @param db_path character. Path to the file `.duckdb`.
 #' @param series character vector. Series to update: `"novo"`, `"antigo"`,
@@ -606,46 +664,39 @@ caged_update <- function(db_path,
     ajustes = "caged_ajustes"
   )
 
-  # Descobre max(competencia) de cada tabela no banco
-  max_no_banco <- .max_competencias(db_path)
+  # Competencias ja gravadas, por tabela
+  no_banco <- .competencias_no_banco(db_path)
 
   resultados <- list()
 
   for (serie in series) {
-    if (verbose) cli::cli_h2("Series: {serie}")
+    if (verbose) cli::cli_h2(gettext("Series: {serie}"))
 
     # Competências disponíveis no HuggingFace
     disponiveis <- tryCatch(
       caged_hf_files(type = serie, n = Inf, verbose = FALSE, timeout = timeout),
       error = function(e) {
-        cli::cli_warn("Failed to query HuggingFace for '{serie}': {conditionMessage(e)}")
+        cli::cli_warn(gettext("Failed to query HuggingFace for '{serie}': {conditionMessage(e)}"))
         NULL
       }
     )
 
     if (is.null(disponiveis) || nrow(disponiveis) == 0) {
-      if (verbose) cli::cli_inform("  Nenhuma competencia encontrada no HuggingFace.")
+      if (verbose) cli::cli_inform(gettext("  No competency found on HuggingFace."))
       next
     }
 
-    # Determina a competência máxima já no banco para esta série
-    tabs <- tabelas_por_serie[[serie]]
-    tabs_presentes <- tabs[tabs %in% names(max_no_banco)]
-    max_banco <- if (length(tabs_presentes) == 0) {
-      0L
-    } else {
-      max(unlist(max_no_banco[tabs_presentes]), na.rm = TRUE)
-    }
-    if (is.infinite(max_banco) || is.na(max_banco)) max_banco <- 0L
+    faltantes <- .competencias_faltantes(
+      disponiveis = as.integer(disponiveis$competencia),
+      no_banco    = no_banco,
+      tabelas     = tabelas_por_serie[[serie]]
+    )
 
-    # Filtra apenas competências novas (> max no banco)
-    novas <- disponiveis[as.integer(disponiveis$competencia) > max_banco, ]
-
-    if (nrow(novas) == 0) {
+    if (length(faltantes) == 0) {
       if (verbose) {
         cli::cli_inform(c(
-          "v" = "Database already up to date.",
-          "i" = "Max in DB: {max_banco} | Available: {max(as.integer(disponiveis$competencia))}"
+          "v" = gettext("Database already up to date."),
+          "i" = gettext("Available up to: {max(as.integer(disponiveis$competencia))}")
         ))
       }
       next
@@ -653,36 +704,40 @@ caged_update <- function(db_path,
 
     if (verbose) {
       cli::cli_inform(c(
-        "i" = "{nrow(novas)} new competenc{?y/ies} found",
-        "i" = "Period: {min(novas$competencia)} - {max(novas$competencia)}"
+        "i" = gettext("{length(faltantes)} competenc{?y/ies} to download"),
+        "i" = gettext("Period: {min(faltantes)} - {max(faltantes)}")
       ))
     }
 
-    years  <- sort(unique(novas$ano))
-    months <- sort(unique(novas$mes))
+    ## Uma chamada por ano, so com os meses faltantes daquele ano. Passar
+    ## anos e meses de uma vez geraria o produto cartesiano anos x meses
+    ## (ex.: 202512 + 202601 baixaria tambem 202501 e 202612).
+    anos <- sort(unique(faltantes %/% 100L))
 
-    # Chama o pipeline adequado para cada série
     res <- tryCatch({
-      if (serie == "ajustes") {
-        caged_adjustments_load(
-          years   = years,
-          months  = months,
-          db_path = db_path,
-          destdir = destdir,
-          timeout = timeout
-        )
-      } else {
-        caged_load(
-          years   = years,
-          months  = months,
-          db_path = db_path,
-          destdir = destdir,
-          timeout = timeout,
-          workers = workers
-        )
-      }
+      purrr::map(anos, function(ano) {
+        meses <- sort(unique(faltantes[faltantes %/% 100L == ano] %% 100L))
+        if (serie == "ajustes") {
+          caged_adjustments_load(
+            years   = ano,
+            months  = meses,
+            db_path = db_path,
+            destdir = destdir,
+            timeout = timeout
+          )
+        } else {
+          caged_load(
+            years   = ano,
+            months  = meses,
+            db_path = db_path,
+            destdir = destdir,
+            timeout = timeout,
+            workers = workers
+          )
+        }
+      })
     }, error = function(e) {
-      cli::cli_warn("Error updating '{serie}': {conditionMessage(e)}")
+      cli::cli_warn(gettext("Error updating '{serie}': {conditionMessage(e)}"))
       NULL
     })
 
@@ -690,23 +745,20 @@ caged_update <- function(db_path,
   }
 
   if (length(resultados) == 0) {
-    if (verbose) cli::cli_inform("Database already up to date for all series.")
+    if (verbose) cli::cli_inform(gettext("Database already up to date for all series."))
     return(invisible(NULL))
   }
 
   invisible(caged_info(db_path))
 }
 
-#' Retorna a competência máxima por tabela no banco
+#' Retorna as competências gravadas em cada tabela CAGED do banco
+#' @return lista nomeada (tabela -> vetor inteiro de competências)
 #' @noRd
-.max_competencias <- function(db_path) {
+.competencias_no_banco <- function(db_path) {
   if (!file.exists(db_path)) return(list())
 
-  con <- tryCatch(
-    caged_connect(db_path, read_only = TRUE, quiet = TRUE),
-    error = function(e) NULL
-  )
-  if (is.null(con)) return(list())
+  con <- .connect_read(db_path)
   on.exit(.disconnect(con), add = TRUE)
 
   tabelas <- intersect(
@@ -714,22 +766,54 @@ caged_update <- function(db_path,
     c("caged_mov", "caged_for", "caged_exc", "caged_antigo", "caged_ajustes")
   )
 
-  if (length(tabelas) == 0) return(list())
-
   result <- list()
   for (tab in tabelas) {
-    colunas <- DBI::dbListFields(con, tab)
-    col_comp <- if ("competencia" %in% colunas) "competencia" else NA_character_
-    if (is.na(col_comp)) next
-
-    max_val <- tryCatch(
-      DBI::dbGetQuery(con, glue::glue("SELECT MAX(competencia) AS m FROM {tab}"))$m,
-      error = function(e) NA_real_
-    )
-    result[[tab]] <- if (is.na(max_val)) 0L else as.integer(max_val)
+    if (!"competencia" %in% DBI::dbListFields(con, tab)) next
+    comps <- DBI::dbGetQuery(
+      con,
+      glue::glue("SELECT DISTINCT competencia FROM {tab} WHERE competencia IS NOT NULL")
+    )$competencia
+    result[[tab]] <- sort(as.integer(comps))
   }
 
   result
+}
+
+#' Retorna a competência máxima por tabela no banco
+#' @noRd
+.max_competencias <- function(db_path) {
+  purrr::map(.competencias_no_banco(db_path), function(x) {
+    if (length(x) == 0L) 0L else max(x)
+  })
+}
+
+#' Competências que faltam em alguma tabela de uma série
+#'
+#' Considera apenas competências a partir da primeira já gravada na série
+#' (lacunas e competências novas). Com a série vazia no banco, devolve
+#' todas as disponíveis.
+#' @param disponiveis vetor inteiro de competências no HuggingFace.
+#' @param no_banco lista retornada por `.competencias_no_banco()`.
+#' @param tabelas tabelas da série (ex.: caged_mov, caged_for, caged_exc).
+#' @noRd
+.competencias_faltantes <- function(disponiveis, no_banco, tabelas) {
+  disponiveis <- sort(unique(as.integer(disponiveis)))
+  presentes   <- no_banco[intersect(tabelas, names(no_banco))]
+  presentes   <- presentes[lengths(presentes) > 0L]
+
+  if (length(presentes) == 0L) return(disponiveis)
+
+  ## Inicio do periodo: tabela principal da serie (a primeira listada), que
+  ## nao sofre com chaves antigas de versoes anteriores em FOR/EXC
+  principal <- if (tabelas[1] %in% names(presentes)) presentes[[tabelas[1]]] else unlist(presentes)
+  inicio    <- min(principal)
+  alvo      <- disponiveis[disponiveis >= inicio]
+
+  faltantes <- unlist(lapply(tabelas, function(tab) {
+    setdiff(alvo, no_banco[[tab]] %||% integer())
+  }))
+
+  sort(unique(as.integer(faltantes)))
 }
 
 # -- Exportação para Parquet ---------------------------------------------------
@@ -745,11 +829,18 @@ caged_update <- function(db_path,
 #'   Criado automaticamente se não existir.
 #' @param tables character vector or NULL. Tables to export. If NULL,
 #'   exporta todas as tabelas CAGED presentes no banco.
-#' @param partition_by character or NULL. Column for partitioning
-#'   (ex: `"uf"` ou `"competencia"`). If NULL, generates one file per table.
-#' @param overwrite logical. Overwrite existing files. Default: FALSE.
+#' @param partition_by character vector or NULL. Column(s) for Hive-style
+#'   partitioning (ex: `"uf"` ou `c("competencia", "uf")`). Cada tabela é
+#'   gravada em um diretório `<output_dir>/<tabela>/`. As colunas de código
+#'   (competências, `uf`, `regiao`, `municipio`) são convertidas para inteiro
+#'   apenas na exportação, gerando diretórios como `competencia=202301/uf=35`;
+#'   o banco não é alterado. If NULL, generates one file per table.
+#' @param overwrite logical. Overwrite existing files or partition
+#'   directories. Se `FALSE`, tabelas cujo destino já existe são puladas.
+#'   Default: FALSE.
 #'
-#' @return invisível: tibble com `tabela`, `arquivo` e `registros` exportados.
+#' @return invisível: tibble com `tabela`, `arquivo`, `registros` e `status`
+#'   (`"exportado"`, `"pulado"` ou `"erro"`).
 #'
 #' @examples
 #' \dontrun{
@@ -766,6 +857,15 @@ caged_update <- function(db_path,
 #'   tables       = "caged_mov",
 #'   partition_by = "uf"
 #' )
+#'
+#' # Particionar por mais de uma coluna
+#' caged_to_parquet(
+#'   db,
+#'   output_dir   = tempdir(),
+#'   tables       = "caged_mov",
+#'   partition_by = c("competencia", "uf"),
+#'   overwrite    = TRUE
+#' )
 #' }
 #'
 #' @seealso [caged_info()] para listar tabelas disponíveis.
@@ -777,15 +877,20 @@ caged_to_parquet <- function(db_path,
                               overwrite    = FALSE) {
 
   if (!file.exists(db_path)) {
-    cli::cli_abort("Database not found: {.path {db_path}}")
+    cli::cli_abort(gettext("Database not found: {.path {db_path}}"))
   }
 
   if (!dir.exists(output_dir)) {
     dir.create(output_dir, recursive = TRUE)
-    cli::cli_inform("Directory created: {.path {output_dir}}")
+    cli::cli_inform(gettext("Directory created: {.path {output_dir}}"))
   }
 
-  con <- caged_connect(db_path, read_only = TRUE, quiet = TRUE)
+  if (!is.null(partition_by) &&
+      (!is.character(partition_by) || length(partition_by) == 0L || anyNA(partition_by))) {
+    cli::cli_abort(gettext("{.arg partition_by} must be NULL or a character vector of column names."))
+  }
+
+  con <- .connect_read(db_path)
   on.exit(.disconnect(con), add = TRUE)
 
   tabelas_disponiveis <- intersect(
@@ -794,7 +899,12 @@ caged_to_parquet <- function(db_path,
   )
 
   if (length(tabelas_disponiveis) == 0) {
-    cli::cli_abort("No CAGED table found in {.path {db_path}}")
+    cli::cli_abort(gettext("No CAGED table found in {.path {db_path}}"))
+  }
+
+  ## Caminho literal em SQL: barras normais e aspas simples escapadas
+  .sql_path <- function(path) {
+    gsub("'", "''", normalizePath(path, winslash = "/", mustWork = FALSE), fixed = TRUE)
   }
 
   tabelas_exportar <- if (is.null(tables)) {
@@ -803,17 +913,17 @@ caged_to_parquet <- function(db_path,
     invalidas <- setdiff(tables, tabelas_disponiveis)
     if (length(invalidas) > 0) {
       cli::cli_abort(c(
-        "Table{?s} not found: {.val {invalidas}}",
-        "i" = "Available: {.val {tabelas_disponiveis}}"
+        gettext("Table{?s} not found: {.val {invalidas}}"),
+        "i" = gettext("Available: {.val {tabelas_disponiveis}}")
       ))
     }
     tables
   }
 
-  cli::cli_h1("Exportando para Parquet")
+  cli::cli_h1(gettext("Exporting to Parquet"))
   cli::cli_inform(c(
-    "i" = "{length(tabelas_exportar)} table{?s} to export",
-    "i" = "Output: {.path {output_dir}}"
+    "i" = gettext("{length(tabelas_exportar)} table{?s} to export"),
+    "i" = gettext("Output: {.path {output_dir}}")
   ))
 
   resultados <- purrr::map(tabelas_exportar, function(tab) {
@@ -821,38 +931,62 @@ caged_to_parquet <- function(db_path,
       con, glue::glue("SELECT COUNT(*) AS n FROM {tab}")
     )$n
 
+    pular <- function(destino) {
+      cli::cli_inform(c("i" = gettext("{tab}: already exists, skipping. Use {.code overwrite = TRUE}.")))
+      tibble::tibble(tabela = tab, arquivo = destino, registros = NA_integer_,
+                     status = "pulado")
+    }
+
     if (!is.null(partition_by)) {
-      # Exportação particionada: cria subpastas por valor da coluna
       destino <- file.path(output_dir, tab)
 
-      if (overwrite && dir.exists(destino)) {
+      ausentes <- setdiff(partition_by, DBI::dbListFields(con, tab))
+      if (length(ausentes) > 0) {
+        cli::cli_warn(gettext("{tab}: column{?s} {.val {ausentes}} not found; table not exported."))
+        return(tibble::tibble(tabela = tab, arquivo = destino, registros = NA_integer_,
+                              status = "erro"))
+      }
+
+      if (dir.exists(destino) && length(list.files(destino, recursive = TRUE)) > 0) {
+        if (!overwrite) return(pular(destino))
         unlink(destino, recursive = TRUE)
       }
       if (!dir.exists(destino)) dir.create(destino, recursive = TRUE)
 
-      sql <- glue::glue(
-        "COPY (SELECT * FROM {tab}) TO '{destino}' ",
-        "(FORMAT PARQUET, PARTITION_BY ({partition_by}), OVERWRITE_OR_IGNORE TRUE)"
-      )
-    } else {
-      # Exportação simples: um arquivo por tabela
-      destino <- file.path(output_dir, paste0(tab, ".parquet"))
+      colunas <- paste(DBI::dbQuoteIdentifier(con, partition_by), collapse = ", ")
 
-      if (file.exists(destino) && !overwrite) {
-        cli::cli_inform(c("i" = "{tab}: already exists, skipping. Use {.code overwrite = TRUE}."))
-        return(tibble::tibble(tabela = tab, arquivo = destino, registros = NA_integer_,
-                              status = "pulado"))
+      ## Colunas de codigo sao gravadas como DOUBLE no banco; sem o cast os
+      ## diretorios saem como "competencia=202301.0/uf=35.0". O cast vale so
+      ## na exportacao e so para codigos inteiros por definicao; demais
+      ## colunas de particao (ex.: salario) sao exportadas como estao.
+      a_converter <- intersect(partition_by, .COLS_CODIGO_INTEIRO)
+      selecao <- if (length(a_converter) == 0L) {
+        "*"
+      } else {
+        q <- DBI::dbQuoteIdentifier(con, a_converter)
+        paste0("* REPLACE (",
+               paste0("CAST(", q, " AS INTEGER) AS ", q, collapse = ", "),
+               ")")
       }
 
       sql <- glue::glue(
-        "COPY (SELECT * FROM {tab}) TO '{destino}' (FORMAT PARQUET)"
+        "COPY (SELECT {selecao} FROM {tab}) TO '{.sql_path(destino)}' ",
+        "(FORMAT PARQUET, PARTITION_BY ({colunas}), OVERWRITE_OR_IGNORE TRUE)"
+      )
+    } else {
+      destino <- file.path(output_dir, paste0(tab, ".parquet"))
+
+      if (file.exists(destino) && !overwrite) return(pular(destino))
+
+      sql <- glue::glue(
+        "COPY (SELECT * FROM {tab}) TO '{.sql_path(destino)}' (FORMAT PARQUET)"
       )
     }
 
     tryCatch({
       DBI::dbExecute(con, sql)
       cli::cli_inform(c(
-        "v" = "{tab}: {format(n_registros, big.mark = ',')} registros \u2192 {.path {basename(destino)}}"
+        "v" = gettext("{tab}: {format(n_registros, big.mark = ',')} records -> {.path {basename(destino)}}")
       ))
       tibble::tibble(
         tabela    = tab,
@@ -861,16 +995,16 @@ caged_to_parquet <- function(db_path,
         status    = "exportado"
       )
     }, error = function(e) {
-      cli::cli_warn("Error exporting {tab}: {conditionMessage(e)}")
+      cli::cli_warn(gettext("Error exporting {tab}: {conditionMessage(e)}"))
       tibble::tibble(tabela = tab, arquivo = destino, registros = NA_integer_,
                      status = "erro")
     })
   }) |> dplyr::bind_rows()
 
-  cli::cli_h2("Done")
+  cli::cli_h2(gettext("Done"))
   cli::cli_inform(c(
-    "v" = "{sum(resultados$status == 'exportado')} table{?s} exported",
-    "i" = "Output: {.path {output_dir}}"
+    "v" = gettext("{sum(resultados$status == 'exportado')} table{?s} exported"),
+    "i" = gettext("Output: {.path {output_dir}}")
   ))
 
   invisible(resultados)

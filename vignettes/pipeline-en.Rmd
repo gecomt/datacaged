@@ -166,14 +166,26 @@ caged_adjustments_load(
 
 # ── Check the resulting database ─────────────────────────────────────────────
 caged_info("caged.duckdb")
-#> ── caged.duckdb ──────────────────────────────────────────────────────────
-#> Tamanho do arquivo: 4.2 GB
-#> ── Tabelas ───────────────────────────────────────────────────────────────
-#> * "caged_mov"     Registros: 43,981,860   Competências: 202201 – 202312
-#> * "caged_for"     Registros:  1,093,176   Competências: 202201 – 202312
-#> * "caged_exc"     Registros:     94,800   Competências: 202201 – 202312
-#> * "caged_antigo"  Registros: 28,450,000   Competências: 201501 – 201912
-#> * "caged_ajustes" Registros:    342,000   Competências: 201501 – 201912
+#> ── datacaged - 'caged.duckdb' ─────────────────────────────────
+#> File size: 4300.5 MB
+#> 
+#> ── Tables ──
+#> 
+#> • "caged_mov"
+#>   Records     : 43,981,860
+#>   Periods     : 202201 - 202312
+#> • "caged_for"
+#>   Records     : 1,093,176
+#>   Periods     : 202201 - 202312
+#> • "caged_exc"
+#>   Records     : 94,800
+#>   Periods     : 202201 - 202312
+#> • "caged_antigo"
+#>   Records     : 28,450,000
+#>   Periods     : 201501 - 201912
+#> • "caged_ajustes"
+#>   Records     : 342,000
+#>   Periods     : 201501 - 201912
 ```
 
 ## 6. Queries with dplyr
@@ -337,8 +349,10 @@ DBI::dbDisconnect(con, shutdown = TRUE)
 ## 10. Incremental update
 
 Use `caged_update()` to keep the database up to date without re-downloading everything.
-The function queries the database to find the maximum competency and downloads only
-what is more recent on HuggingFace.
+The function compares, table by table, the competencies already in the database
+with those available on HuggingFace and downloads only what is missing: new months
+and gaps within the period already loaded (for example, a FOR file whose download
+failed earlier).
 
 ```{r update}
 # Update Novo CAGED with months not yet in the database

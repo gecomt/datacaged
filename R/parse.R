@@ -95,12 +95,14 @@
       col_types        = readr::cols(.default = readr::col_character()),
       show_col_types   = FALSE,
       progress         = FALSE,
-      name_repair      = "universal_quiet",
+      ## "unique_quiet" nao depende do locale; "universal" troca letras
+      ## acentuadas por "." em locale C (competenciamov -> compet.nciamov)
+      name_repair      = "unique_quiet",
       skip_empty_rows  = TRUE,
       trim_ws          = TRUE
     ),
     error = function(e) {
-      cli::cli_warn("Erro ao ler {.path {path}}: {conditionMessage(e)}")
+      cli::cli_warn(gettext("Error reading {.path {path}}: {conditionMessage(e)}"))
       return(NULL)
     }
   )
@@ -112,15 +114,17 @@
   names(df)[1] <- gsub("^\uFEFF", "", names(df)[1])
   names(df)[1] <- trimws(names(df)[1])
 
+  # Remove colunas geradas por semicolons finais no cabecalho do MTE:
+  # readr name_repair cria "...N" para campos vazios (ex: "col1;col2;").
+  # Precisa ocorrer ANTES de .normalize_names(), que transformaria "...N" em "N".
+  df <- df[, !grepl("^\\.\\.\\.\\d+$", names(df)), drop = FALSE]
+
   # Padroniza nomes (minusculo sem acentos)
   names(df) <- .normalize_names(names(df))
 
-  # Remove colunas geradas por semicolons finais no cabecalho do MTE:
-  # readr name_repair cria "...N" para campos vazios (ex: "col1;col2;").
-  # .normalize_names() pode gerar "" para colunas com apenas chars especiais.
-  # Ambos os casos causariam falha em DBI::dbAppendTable.
-  df <- df[, nchar(names(df)) > 0L & !grepl("^\\.\\.\\.\\d+$", names(df)),
-           drop = FALSE]
+  # .normalize_names() pode gerar "" para colunas com apenas chars especiais,
+  # o que causaria falha em DBI::dbAppendTable.
+  df <- df[, nchar(names(df)) > 0L, drop = FALSE]
 
   # Coerce colunas numericas conhecidas
   cols_num <- if (eh_novo) .cols_numericas_novo else .cols_numericas_antigo  # ajustes usa mesmo schema do antigo
@@ -135,17 +139,10 @@
 #' Normaliza nomes de colunas: minúsculo, sem espaços, sem acentos
 #' @noRd
 .normalize_names <- function(nomes) {
+  ## .remove_acentos() usa chartr() e independe do locale (ver utils.R)
   nomes |>
-    tolower() |>
-    # Remove diacríticos via escapes Unicode --- evita dependência de locale
-    stringr::str_replace_all(
-      c("\u00e1|\u00e0|\u00e3|\u00e2|\u00e4" = "a",
-        "\u00e9|\u00e8|\u00ea|\u00eb"         = "e",
-        "\u00ed|\u00ec|\u00ee|\u00ef"         = "i",
-        "\u00f3|\u00f2|\u00f5|\u00f4|\u00f6" = "o",
-        "\u00fa|\u00f9|\u00fb|\u00fc"         = "u",
-        "\u00e7"                               = "c")
-    ) |>
+    .remove_acentos() |>
+    stringr::str_to_lower(locale = "en") |>
     stringr::str_replace_all("[^a-z0-9_]", "_") |>
     stringr::str_replace_all("_+", "_") |>
     stringr::str_remove("^_+") |>
@@ -185,7 +182,7 @@
 #' @export
 caged_parse <- function(path, type = NULL) {
   if (!file.exists(path)) {
-    cli::cli_abort("File not found: {.path {path}}")
+    cli::cli_abort(gettext("File not found: {.path {path}}"))
   }
 
   type <- type %||% .detect_type(path)
@@ -197,7 +194,7 @@ caged_parse <- function(path, type = NULL) {
     .parse_via_stream(path, type)
   }, error = function(e) {
     cli::cli_warn(
-      "Stream falhou em {.path {basename(path)}}: {conditionMessage(e)}. Tentando extra\u00e7\u00e3o..."
+      gettext("Streaming failed for {.path {basename(path)}}: {conditionMessage(e)}. Trying extraction...")
     )
     .parse_via_extract(path, type)
   })
@@ -215,7 +212,7 @@ caged_parse <- function(path, type = NULL) {
   txts    <- entries$path[grepl("\\.(txt|csv)$", entries$path, ignore.case = TRUE)]
 
   if (length(txts) == 0) {
-    cli::cli_warn("No .txt found in {.path {basename(path)}}. Skipping.")
+    cli::cli_warn(gettext("No .txt found in {.path {basename(path)}}. Skipping."))
     return(NULL)
   }
 
@@ -236,12 +233,12 @@ caged_parse <- function(path, type = NULL) {
   txts <- tryCatch(
     .extract_7z(path, exdir = tmp),
     error = function(e) {
-      cli::cli_abort("Falha ao extrair {.path {path}}: {conditionMessage(e)}")
+      cli::cli_abort(gettext("Failed to extract {.path {path}}: {conditionMessage(e)}"))
     }
   )
 
   if (length(txts) == 0) {
-    cli::cli_warn("Nenhum .txt encontrado em {.path {path}}. Pulando.")
+    cli::cli_warn(gettext("No .txt found in {.path {path}}. Skipping."))
     return(NULL)
   }
 
@@ -287,11 +284,11 @@ caged_parse_batch <- function(paths, .progress = TRUE) {
   paths <- paths[file.exists(paths) & file.size(paths) > 0]
 
   if (length(paths) == 0) {
-    cli::cli_inform("Nenhum arquivo valido para parsear.")
+    cli::cli_inform(gettext("No valid file to parse."))
     return(invisible(NULL))
   }
 
-  cli::cli_h2("Lendo {length(paths)} arquivo{?s}...")
+  cli::cli_h2(gettext("Reading {length(paths)} file{?s}..."))
 
   dfs <- purrr::map(
     paths,
@@ -299,7 +296,7 @@ caged_parse_batch <- function(paths, .progress = TRUE) {
       tryCatch(
         caged_parse(p),
         error = function(e) {
-          cli::cli_warn("Erro em {.path {basename(p)}}: {conditionMessage(e)}")
+          cli::cli_warn(gettext("Error in {.path {basename(p)}}: {conditionMessage(e)}"))
           NULL
         }
       )
@@ -310,7 +307,7 @@ caged_parse_batch <- function(paths, .progress = TRUE) {
   dfs <- purrr::compact(dfs)
 
   if (length(dfs) == 0) {
-    cli::cli_warn("Nenhum dado lido.")
+    cli::cli_warn(gettext("No data read."))
     return(invisible(NULL))
   }
 
@@ -318,15 +315,15 @@ caged_parse_batch <- function(paths, .progress = TRUE) {
   tipos <- unique(vapply(dfs, \(d) unique(d$fonte_tipo)[1L], character(1L)))
   if (length(tipos) > 1) {
     cli::cli_abort(c(
-      "Os arquivos sao de tipos diferentes: {.val {tipos}}.",
-      "i" = "Use `caged_parse()` individualmente para cada type."
+      gettext("The files are of different types: {.val {tipos}}."),
+      "i" = gettext("Use {.fn caged_parse} separately for each type.")
     ))
   }
 
   resultado <- dplyr::bind_rows(dfs)
   cli::cli_inform(c(
-    "v" = "{format(nrow(resultado), big.mark = ',')} registros lidos",
-    "i" = "{ncol(resultado)} colunas"
+    "v" = gettext("{format(nrow(resultado), big.mark = ',')} records read"),
+    "i" = gettext("{ncol(resultado)} column{?s}")
   ))
 
   resultado

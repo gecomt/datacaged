@@ -20,6 +20,7 @@ test_that("caged_status retorna lista com campos corretos", {
 
 test_that("caged_status online = TRUE quando HuggingFace acessivel", {
   skip_on_cran()
+  skip_if_offline("huggingface.co")
   skip_on_ci()  # teste de integracao real — verifica conectividade real
   result <- caged_status(verbose = FALSE, timeout = 15)
   # Pular se HF estiver fora (teste de conectividade, nao de logica)
@@ -41,6 +42,7 @@ test_that("caged_status verbose = FALSE nao imprime nada", {
 
 test_that("caged_status verbose = TRUE nao da erro", {
   skip_on_cran()
+  skip_if_offline("huggingface.co")
   skip_on_ci()  # teste de integracao real
   expect_no_error(caged_status(verbose = TRUE, timeout = 15))
 })

@@ -21,13 +21,20 @@ Criado automaticamente se não existir.}
 \item{tables}{character vector or NULL. Tables to export. If NULL,
 exporta todas as tabelas CAGED presentes no banco.}
 
-\item{partition_by}{character or NULL. Column for partitioning
-(ex: \code{"uf"} ou \code{"competencia"}). If NULL, generates one file per table.}
+\item{partition_by}{character vector or NULL. Column(s) for Hive-style
+partitioning (ex: \code{"uf"} ou \code{c("competencia", "uf")}). Cada tabela é
+gravada em um diretório \verb{<output_dir>/<tabela>/}. As colunas de código
+(competências, \code{uf}, \code{regiao}, \code{municipio}) são convertidas para inteiro
+apenas na exportação, gerando diretórios como \code{competencia=202301/uf=35};
+o banco não é alterado. If NULL, generates one file per table.}
 
-\item{overwrite}{logical. Overwrite existing files. Default: FALSE.}
+\item{overwrite}{logical. Overwrite existing files or partition
+directories. Se \code{FALSE}, tabelas cujo destino já existe são puladas.
+Default: FALSE.}
 }
 \value{
-invisível: tibble com \code{tabela}, \code{arquivo} e \code{registros} exportados.
+invisível: tibble com \code{tabela}, \code{arquivo}, \code{registros} e \code{status}
+(\code{"exportado"}, \code{"pulado"} ou \code{"erro"}).
 }
 \description{
 Usa o mecanismo nativo \verb{COPY TO ... (FORMAT PARQUET)} do DuckDB para
@@ -48,6 +55,15 @@ caged_to_parquet(
   output_dir   = tempdir(),
   tables       = "caged_mov",
   partition_by = "uf"
+)
+
+# Particionar por mais de uma coluna
+caged_to_parquet(
+  db,
+  output_dir   = tempdir(),
+  tables       = "caged_mov",
+  partition_by = c("competencia", "uf"),
+  overwrite    = TRUE
 )
 }
 

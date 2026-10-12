@@ -28,6 +28,7 @@
 
 test_that(".hf_list_dir retorna NULL para path inexistente no HF", {
   skip_on_cran()
+  skip_if_offline("huggingface.co")
   skip_on_ci()  # teste de integracao real
   result <- datacaged:::.hf_list_dir("caminho_inexistente_xyz123abc", timeout = 10)
   expect_null(result)
@@ -73,8 +74,8 @@ test_that("caged_hf_files retorna tibble com colunas corretas (ajustes)", {
 
 test_that("caged_hf_files valida argumento n", {
   # Validacao de argumentos — sem rede, erro ocorre antes da conexao
-  expect_error(caged_hf_files(n = 0),  "inteiro positivo")
-  expect_error(caged_hf_files(n = -1), "inteiro positivo")
-  expect_error(caged_hf_files(n = NA), "inteiro positivo")
+  expect_error(caged_hf_files(n = 0),  "positive integer")
+  expect_error(caged_hf_files(n = -1), "positive integer")
+  expect_error(caged_hf_files(n = NA), "positive integer")
 })
 

@@ -60,11 +60,26 @@ dplyr::tbl(con, "caged_mov") |>
 \item \code{caged_adjustments_load()}: pipeline completo para o CAGED Ajustes
 }
 
+\strong{Manutenção e exportação do banco:}
+\itemize{
+\item \code{caged_update()}: baixa apenas as competências que faltam no banco
+\item \code{caged_to_parquet()}: exporta as tabelas do banco para Parquet
+}
+
 \strong{Utilitários:}
 \itemize{
 \item \code{caged_status()}: verifica se o repositório HuggingFace está acessível
 \item \code{caged_hf_files()}: lista competências disponíveis no repositório HuggingFace
+\item \code{caged_download_layouts()}: baixa os dicionários de variáveis do MTE
 }
+}
+
+\section{Idioma das mensagens}{
+
+As mensagens do console (erros, avisos e progresso) são escritas em inglês
+e traduzidas para o português. Com o R configurado em português, elas
+aparecem em português automaticamente. Para trocar o idioma na sessão, use
+\code{Sys.setLanguage("pt_BR")} ou \code{Sys.setLanguage("en")}.
 }
 
 \section{Tabelas no DuckDB}{
@@ -73,8 +88,8 @@ dplyr::tbl(con, "caged_mov") |>
    \code{caged_mov} \tab \verb{CAGEDMOV*.7z} \tab Jan/2020+ \cr
    \code{caged_for} \tab \verb{CAGEDFOR*.7z} \tab Jan/2020+ \cr
    \code{caged_exc} \tab \verb{CAGEDEXC*.7z} \tab Jan/2020+ \cr
-   \code{caged_antigo} \tab \verb{CAGEDEST_*.7z} \tab 1992--Dez/2019 \cr
-   \code{caged_ajustes} \tab \verb{CAGEDEST_AJUSTES_*.7z} \tab 1992--Dez/2019 \cr
+   \code{caged_antigo} \tab \verb{CAGEDEST_*.7z} \tab Jan/2007--Dez/2019 \cr
+   \code{caged_ajustes} \tab \verb{CAGEDEST_AJUSTES_*.7z} \tab 2002--Dez/2019 \cr
 }
 }
 

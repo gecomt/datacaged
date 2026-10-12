@@ -17,7 +17,9 @@ caged_adjustments_load(
 \arguments{
 \item{years}{integer vector. Desired years. Maximum: 2019.}
 
-\item{months}{integer vector. Desired months (1--12). Default: \code{seq_len(12L)}.}
+\item{months}{integer vector. Desired months (1--12). Default: \code{seq_len(12L)}.
+Para 2002--2009 o MTE publica um arquivo anual; ele é baixado uma única
+vez e apenas os meses pedidos (pela \code{competencia_declarada}) são gravados.}
 
 \item{db_path}{character. Path to the file \code{.duckdb}.}
 

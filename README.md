@@ -29,7 +29,7 @@
 * 🧩 Support for multiple datasets:
 
   * Novo CAGED (2020+)
-  * Legacy CAGED (1992–2019)
+  * Legacy CAGED (2007–2019)
   * CAGED Adjustments (historical corrections)
 
 ---
@@ -147,7 +147,7 @@ HuggingFace (HTTPS)
 | `caged_load()` | Full pipeline (download → parse → DuckDB) |
 | `caged_adjustments_load()` | Adjustments pipeline |
 | `caged_download()` | Download `.7z` files with cache |
-| `caged_download_layouts()` | Download official MTE layouts |
+| `caged_download_layouts()` | Download official MTE layouts (from HuggingFace) |
 | `caged_parse()` | Parse a single `.7z` file |
 | `caged_parse_batch()` | Batch parse |
 | `caged_to_duckdb()` | Write to DuckDB |
@@ -160,6 +160,17 @@ HuggingFace (HTTPS)
 
 ---
 
+## 🌐 Message language
+
+Console messages (errors, warnings and progress) are written in English and
+translated to Portuguese. With R set to Portuguese they appear in Portuguese
+automatically; to switch within a session:
+
+```r
+Sys.setLanguage("pt_BR")  # Portuguese
+Sys.setLanguage("en")     # English
+```
+
 ## 🗄️ Database tables
 
 | Table | Content | Period |
@@ -167,8 +178,8 @@ HuggingFace (HTTPS)
 | `caged_mov` | Movements | 2020+ |
 | `caged_for` | Late declarations | 2020+ |
 | `caged_exc` | Exclusions | 2020+ |
-| `caged_antigo` | Historical data | 1992–2019 |
-| `caged_ajustes` | Retroactive adjustments | 1992–2019 |
+| `caged_antigo` | Historical data | 2007–2019 |
+| `caged_ajustes` | Retroactive adjustments | 2002–2019 |
 
 ---
 

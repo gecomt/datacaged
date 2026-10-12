@@ -14,7 +14,7 @@ caged_download_layouts(
 }
 \arguments{
 \item{type}{character. Qual base consultar: \code{"antigo"}, \code{"novo"},
-\code{"ajustes"} ou \code{"ambos"}. Default \code{"ambos"}.}
+\code{"ajustes"} ou \code{"ambos"} (todas). Default \code{"ambos"}.}
 
 \item{destdir}{character or NULL. Local directory to save os arquivos.
 Se \code{NULL}, usa \code{tools::R_user_dir("datacaged", "cache")/layouts}.}
@@ -31,9 +31,15 @@ tibble invisível com colunas \code{base}, \code{arquivo}, \code{url}, \code{des
 e \code{status} (\code{"baixado"}, \code{"cache"} ou \code{"naoencontrado"}).
 }
 \description{
-Lista dinamicamente os dicionários de variáveis do CAGED disponíveis no FTP do MTE
-e baixa todos os arquivos
-\code{.xls} ou \code{.xlsx} cujo nome contenha a palavra "layout" (case-insensitive).
+Lista os dicionários de variáveis disponíveis no repositório HuggingFace
+(\code{alexsandroprado/caged}), na pasta raiz de cada série, e baixa todos os
+arquivos \code{.xls} ou \code{.xlsx} cujo nome contenha a palavra "layout"
+(case-insensitive).
+}
+\details{
+Os arquivos são gravados com o nome original sem acentos, para evitar
+problemas de encoding em sistemas de arquivos e locales não-UTF-8; o nome
+original fica na coluna \code{arquivo} do resultado.
 }
 \examples{
 \dontrun{

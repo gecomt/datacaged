@@ -21,11 +21,9 @@ importFrom(DBI,
   dbDisconnect,
   dbExecute,
   dbExistsTable,
-  dbFetch,
   dbGetQuery,
   dbListFields,
   dbListTables,
-  dbSendQuery,
   dbSendStatement,
   dbWriteTable
 )
@@ -60,17 +58,10 @@ importFrom(cli,
 importFrom(dplyr,
   arrange,
   bind_rows,
-  collect,
   count,
   desc,
   filter,
-  full_join,
-  group_by,
-  left_join,
-  mutate,
-  pull,
-  summarise,
-  tbl
+  pull
 )
 importFrom(duckdb,duckdb)
 importFrom(furrr,
@@ -115,7 +106,6 @@ importFrom(stringr,
 importFrom(tibble,tibble)
 importFrom(tools,R_user_dir)
 importFrom(utils,
-  download.file,
   globalVariables,
   head,
   packageVersion,

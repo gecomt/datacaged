@@ -71,7 +71,7 @@ test_that(".normalize_names remove acentos e padroniza", {
 
 test_that(".read_text_file lê Novo CAGED MOV corretamente", {
   tmp <- tempfile(fileext = ".txt")
-  on.exit(unlink(tmp))
+  on.exit(unlink(tmp), add = TRUE)
   make_txt_novo_mov(tmp, n = 10)
 
   df <- datacaged:::.read_text_file(tmp, type = "MOV")
@@ -87,7 +87,7 @@ test_that(".read_text_file lê Novo CAGED MOV corretamente", {
 
 test_that(".read_text_file lê CAGED antigo corretamente", {
   tmp <- tempfile(fileext = ".txt")
-  on.exit(unlink(tmp))
+  on.exit(unlink(tmp), add = TRUE)
   make_txt_antigo(tmp, n = 7)
 
   df <- datacaged:::.read_text_file(tmp, type = "ANTIGO")
@@ -105,14 +105,14 @@ test_that(".read_text_file retorna NULL para arquivo inexistente", {
   on.exit(unlink(tmp_inexistente), add = TRUE)
   expect_warning(
     df <- datacaged:::.read_text_file(tmp_inexistente, type = "MOV"),
-    regexp = "Erro ao ler"
+    regexp = "Error reading"
   )
   expect_null(df)
 })
 
 test_that("salario é lido como numérico (decimal vírgula)", {
   tmp <- tempfile(fileext = ".txt")
-  on.exit(unlink(tmp))
+  on.exit(unlink(tmp), add = TRUE)
   make_txt_novo_mov(tmp, n = 3)
 
   df <- datacaged:::.read_text_file(tmp, type = "MOV")

@@ -33,11 +33,19 @@ for closing the connection.}
 invisible: number of rows inserted.
 }
 \description{
-Usa \verb{INSERT OR IGNORE} por competência para evitar duplicatas:
-se uma competência já existe na tabela, ela é pulada (útil para
-re-rodar o pipeline sem apagar dados anteriores).
+Evita duplicatas por competência: antes de inserir, verifica quais
+competências do data.frame já existem na tabela e insere apenas as
+novas via \code{\link[DBI:dbAppendTable]{DBI::dbAppendTable()}} (útil para re-rodar o pipeline sem
+apagar dados anteriores). Com \code{overwrite_competencies = TRUE}, as
+competências presentes no data.frame são apagadas e regravadas.
 }
 \details{
+A coluna \code{competencia} usada como chave identifica o arquivo de origem:
+\code{competenciamov} em \code{caged_mov}, \code{competenciadec} em \code{caged_for},
+\code{competenciaexc} em \code{caged_exc} e \code{competencia_declarada} em
+\code{caged_antigo} e \code{caged_ajustes}. Para análises pelo mês da
+movimentação, use a coluna \code{competenciamov}.
+
 As tabelas criadas são:
 \itemize{
 \item \code{caged_mov}, \code{caged_for}, \code{caged_exc} --- para dados de 2020 em diante

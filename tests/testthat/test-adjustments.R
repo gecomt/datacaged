@@ -74,3 +74,35 @@ test_that("caged_hf_files type = 'ajustes' retorna tibble correto", {
   expect_true(all(result$ano < 2020L))
   expect_true(all(grepl("ajustes", result$url, ignore.case = TRUE)))
 })
+
+test_that("caged_adjustments_load processa arquivo anual uma vez e respeita months", {
+  chamadas_download <- 0L
+  chamadas_parse    <- 0L
+  local_mocked_bindings(
+    .run_downloads = function(tasks, ...) {
+      chamadas_download <<- nrow(tasks)
+      tibble::tibble(arquivo = "CAGEDEST_AJUSTES_2005.7z", competencia = tasks$competencia,
+                     type = "AJUSTES", ano = tasks$ano, mes = tasks$mes,
+                     uf = NA_character_, status = "cache")
+    },
+    caged_parse = function(path, type = NULL) {
+      chamadas_parse <<- chamadas_parse + 1L
+      tibble::tibble(competencia_declarada = 200500 + rep(1:12, each = 2),
+                     saldo = 1, fonte_tipo = "AJUSTES")
+    },
+    caged_info = function(...) invisible(tibble::tibble()),
+    .package = "datacaged"
+  )
+
+  db <- tempfile(fileext = ".duckdb")
+  on.exit(unlink(db), add = TRUE)
+  suppressMessages(caged_adjustments_load(years = 2005, months = c(3L, 4L), db_path = db))
+
+  expect_equal(chamadas_download, 1L)   # uma tarefa, nao uma por mes
+  expect_equal(chamadas_parse, 1L)      # arquivo anual parseado uma vez
+
+  con <- caged_connect(db, read_only = TRUE, quiet = TRUE)
+  on.exit(DBI::dbDisconnect(con, shutdown = TRUE), add = TRUE)
+  comps <- DBI::dbGetQuery(con, "SELECT DISTINCT competencia FROM caged_ajustes ORDER BY 1")$competencia
+  expect_equal(comps, c(200503, 200504))  # so os meses pedidos
+})

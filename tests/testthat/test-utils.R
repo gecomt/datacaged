@@ -8,8 +8,8 @@ test_that(".validate_states aceita siglas válidas", {
 })
 
 test_that(".validate_states rejeita siglas inválidas", {
-  expect_error(datacaged:::.validate_states("XX"), "invalida")
-  expect_error(datacaged:::.validate_states(c("SP", "ZZ")), "invalida")
+  expect_error(datacaged:::.validate_states("XX"), "Invalid UF")
+  expect_error(datacaged:::.validate_states(c("SP", "ZZ")), "Invalid UF")
 })
 
 test_that(".validate_years aceita years válidos", {
@@ -18,8 +18,14 @@ test_that(".validate_years aceita years válidos", {
 })
 
 test_that(".validate_years rejeita years fora do intervalo", {
-  expect_error(datacaged:::.validate_years(1991), "invalidos")
-  expect_error(datacaged:::.validate_years(as.integer(format(Sys.Date(), "%Y")) + 1), "invalidos")
+  expect_error(datacaged:::.validate_years(1991), "Invalid")
+  ## CAGED antigo comeca em 2007 no HuggingFace
+  expect_error(datacaged:::.validate_years(2006), "Invalid")
+  expect_equal(datacaged:::.validate_years(2007), 2007L)
+  ## Ajustes comecam em 2002
+  expect_equal(datacaged:::.validate_years(2002, min_year = 2002L), 2002L)
+  expect_error(datacaged:::.validate_years(2001, min_year = 2002L), "Invalid")
+  expect_error(datacaged:::.validate_years(as.integer(format(Sys.Date(), "%Y")) + 1), "Invalid")
 })
 
 test_that(".validate_months aceita months de 1 a 12", {
@@ -28,8 +34,8 @@ test_that(".validate_months aceita months de 1 a 12", {
 })
 
 test_that(".validate_months rejeita valores inválidos", {
-  expect_error(datacaged:::.validate_months(0), "invalidos")
-  expect_error(datacaged:::.validate_months(13), "invalidos")
+  expect_error(datacaged:::.validate_months(0), "Invalid")
+  expect_error(datacaged:::.validate_months(13), "Invalid")
 })
 
 test_that(".format_period formata corretamente", {
@@ -59,4 +65,17 @@ test_that(".normalize_names remove acentos corretamente", {
   # Espaços e chars especiais viram _
   expect_equal(fn("nome coluna"),              "nome_coluna")
   expect_equal(fn("_borda_"),                  "borda")
+})
+
+test_that(".remove_acentos remove acentos minusculos e maiusculos", {
+  fn <- datacaged:::.remove_acentos
+  expect_equal(fn("Movimenta\u00e7\u00e3o"), "Movimentacao")
+  expect_equal(fn("SAL\u00c1RIO \u00c9 N\u00c3O"), "SALARIO E NAO")
+  expect_equal(fn("sem acento"), "sem acento")
+})
+
+test_that(".normalize_names independe de acentos maiusculos", {
+  fn <- datacaged:::.normalize_names
+  expect_equal(fn("SAL\u00c1RIO"), "salario")
+  expect_equal(fn("Se\u00e7\u00e3o"), "secao")
 })

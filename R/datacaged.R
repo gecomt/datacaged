@@ -46,9 +46,20 @@
 #' **CAGED Ajustes (correções retroativas até 2019):**
 #' - `caged_adjustments_load()`: pipeline completo para o CAGED Ajustes
 #'
+#' **Manutenção e exportação do banco:**
+#' - `caged_update()`: baixa apenas as competências que faltam no banco
+#' - `caged_to_parquet()`: exporta as tabelas do banco para Parquet
+#'
 #' **Utilitários:**
 #' - `caged_status()`: verifica se o repositório HuggingFace está acessível
 #' - `caged_hf_files()`: lista competências disponíveis no repositório HuggingFace
+#' - `caged_download_layouts()`: baixa os dicionários de variáveis do MTE
+#'
+#' @section Idioma das mensagens:
+#' As mensagens do console (erros, avisos e progresso) são escritas em inglês
+#' e traduzidas para o português. Com o R configurado em português, elas
+#' aparecem em português automaticamente. Para trocar o idioma na sessão, use
+#' `Sys.setLanguage("pt_BR")` ou `Sys.setLanguage("en")`.
 #'
 #' @section Tabelas no DuckDB:
 #' | Tabela | Fonte | Período |
@@ -56,16 +67,16 @@
 #' | `caged_mov` | `CAGEDMOV*.7z` | Jan/2020+ |
 #' | `caged_for` | `CAGEDFOR*.7z` | Jan/2020+ |
 #' | `caged_exc` | `CAGEDEXC*.7z` | Jan/2020+ |
-#' | `caged_antigo` | `CAGEDEST_*.7z` | 1992--Dez/2019 |
-#' | `caged_ajustes` | `CAGEDEST_AJUSTES_*.7z` | 1992--Dez/2019 |
+#' | `caged_antigo` | `CAGEDEST_*.7z` | Jan/2007--Dez/2019 |
+#' | `caged_ajustes` | `CAGEDEST_AJUSTES_*.7z` | 2002--Dez/2019 |
 #'
 #' @docType package
 #' @name datacaged-package
 #' @aliases datacaged
 #'
 #' @importFrom cli cli_abort cli_inform cli_warn cli_h1 cli_h2 cli_progress_bar cli_progress_done cli_progress_update col_blue col_cyan col_green col_red col_silver col_yellow pb_bar pb_current pb_elapsed pb_eta_str pb_total style_bold num_ansi_colors
-#' @importFrom DBI dbConnect dbDisconnect dbGetQuery dbExecute dbListTables dbListFields dbExistsTable dbWriteTable dbAppendTable dbSendQuery dbSendStatement dbBind dbFetch dbClearResult
-#' @importFrom dplyr bind_rows filter pull count arrange collect group_by summarise mutate full_join left_join desc tbl
+#' @importFrom DBI dbConnect dbDisconnect dbGetQuery dbExecute dbListTables dbListFields dbExistsTable dbWriteTable dbAppendTable dbSendStatement dbBind dbClearResult
+#' @importFrom dplyr bind_rows filter pull count arrange desc
 #' @importFrom glue glue
 #' @importFrom httr2 request req_perform req_error req_timeout req_retry resp_status resp_body_json resp_body_raw
 #' @importFrom furrr future_map furrr_options
@@ -76,7 +87,7 @@
 #' @importFrom stringr str_replace_all str_remove
 #' @importFrom tibble tibble
 #' @importFrom tools R_user_dir
-#' @importFrom utils download.file unzip packageVersion head globalVariables
+#' @importFrom utils unzip packageVersion head globalVariables
 #' @importFrom archive archive archive_extract archive_read
 #' @importFrom duckdb duckdb
 "_PACKAGE"
@@ -106,6 +117,20 @@
 #' @noRd
 .ANO_CORTE <- 2020
 
+#' Primeiro ano disponivel no repositorio HuggingFace por serie
+#' (CAGED antigo: pasta CAGED/2007; Ajustes: pasta CAGED_AJUSTES/2002a2009)
+#' @noRd
+.ANO_MIN_ANTIGO  <- 2007L
+
+#' Colunas de codigo inteiro: convertidas para INTEGER ao particionar o
+#' Parquet, para que os diretorios nao saiam como "uf=35.0"
+#' @noRd
+.COLS_CODIGO_INTEIRO <- c(
+  "competencia", "competenciamov", "competenciadec", "competenciaexc",
+  "competencia_declarada", "uf", "regiao", "municipio"
+)
+.ANO_MIN_AJUSTES <- 2002L
+
 #' Mapa de siglas de UF para código numérico do IBGE
 #' @noRd
 .UF_CODIGOS <- c(
@@ -128,30 +153,31 @@
   if (length(invalidas) > 0) {
     ufs_validas <- names(.UF_CODIGOS)
     cli::cli_abort(
-      c("UF{?s} invalida{?s}: {.val {invalidas}}",
-        "i" = "Use siglas validas: {.val {ufs_validas}}")
+      c(gettext("Invalid UF{?s}: {.val {invalidas}}"),
+        "i" = gettext("Use valid abbreviations: {.val {ufs_validas}}"))
     )
   }
   states
 }
 
 #' Valida anos
+#' @param min_year primeiro ano com dados na serie consultada.
 #' @noRd
-.validate_years <- function(years) {
+.validate_years <- function(years, min_year = .ANO_MIN_ANTIGO) {
+  ano_max <- as.integer(format(Sys.Date(), "%Y"))
   if (!is.numeric(years) || length(years) == 0L) {
     cli::cli_abort(
-      c("Argumento {.arg years} invalido.",
-        "i" = "Informe um vetor numerico de anos entre 1992 e {format(Sys.Date(), '%Y')}.")
+      c(gettext("Invalid {.arg years} argument."),
+        "i" = gettext("Provide a numeric vector of years between {min_year} and {ano_max}."))
     )
   }
   if (anyNA(years)) {
-    cli::cli_abort("{.arg years} contem valores NA.")
+    cli::cli_abort(gettext("{.arg years} contains NA values."))
   }
-  ano_max <- as.integer(format(Sys.Date(), "%Y"))
-  if (any(years < 1992L) || any(years > ano_max)) {
+  if (any(years < min_year) || any(years > ano_max)) {
     cli::cli_abort(
-      c("Anos invalidos: {.val {years[years < 1992L | years > ano_max]}}",
-        "i" = "Informe anos entre 1992 e {ano_max}.")
+      c(gettext("Invalid years: {.val {years[years < min_year | years > ano_max]}}"),
+        "i" = gettext("Provide years between {min_year} and {ano_max}."))
     )
   }
   as.integer(years)
@@ -161,15 +187,15 @@
 #' @noRd
 .validate_months <- function(months) {
   if (!is.numeric(months) || length(months) == 0L) {
-    cli::cli_abort("Invalid {.arg months} argument. Provide integers between 1 and 12.")
+    cli::cli_abort(gettext("Invalid {.arg months} argument. Provide integers between 1 and 12."))
   }
   if (anyNA(months)) {
-    cli::cli_abort("{.arg months} contem valores NA.")
+    cli::cli_abort(gettext("{.arg months} contains NA values."))
   }
   if (any(months < 1L) || any(months > 12L)) {
     cli::cli_abort(
-      c("Meses invalidos: {.val {months[months < 1L | months > 12L]}}",
-        "i" = "Informe inteiros entre 1 e 12.")
+      c(gettext("Invalid months: {.val {months[months < 1L | months > 12L]}}"),
+        "i" = gettext("Provide integers between 1 and 12."))
     )
   }
   as.integer(months)

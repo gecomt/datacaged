@@ -57,17 +57,19 @@ caged_status <- function(timeout = 10, verbose = TRUE) {
   if (verbose) {
     repo_url <- paste0("https://huggingface.co/datasets/", .HF_REPO)
     if (ok) {
+      status_txt <- cli::col_green(gettext("online"))
       cli::cli_inform(c(
-        "v" = "HuggingFace repository {cli::col_green('online')}",
-        "i" = "Latency: {latencia_ms} ms",
-        "i" = "Dataset: {.url {repo_url}}"
+        "v" = gettext("HuggingFace repository {status_txt}"),
+        "i" = gettext("Latency: {latencia_ms} ms"),
+        "i" = gettext("Dataset: {.url {repo_url}}")
       ))
     } else {
+      status_txt <- cli::col_red(gettext("unavailable"))
       cli::cli_inform(c(
-        "x" = "HuggingFace repository {cli::col_red('unavailable')}",
-        "i" = "Tested URL: {.url {url_teste}}",
-        "i" = "Check your connection or try again later.",
-        "i" = "HuggingFace may be under temporary maintenance."
+        "x" = gettext("HuggingFace repository {status_txt}"),
+        "i" = gettext("Tested URL: {.url {url_teste}}"),
+        "i" = gettext("Check your connection or try again later."),
+        "i" = gettext("HuggingFace may be under temporary maintenance.")
       ))
     }
   }
@@ -80,28 +82,24 @@ caged_status <- function(timeout = 10, verbose = TRUE) {
 #' Exibida automaticamente ao carregar o pacote com library(datacaged)
 #' @noRd
 .onAttach <- function(libname, pkgname) {
-  ver <- utils::packageVersion("datacaged")
-
+  ver  <- utils::packageVersion("datacaged")
   repo <- paste0("https://huggingface.co/datasets/", .HF_REPO)
 
+  subtitulo <- gettext("CAGED microdata in DuckDB")
+  fonte     <- paste(gettext("Source:"), repo)
+  dicas     <- paste0(
+    "  ", gettext("Check the connection with:"), " caged_status()\n",
+    "  ", gettext("Quick start:"), " caged_load(years = 2023, months = 1, db_path = \"caged.duckdb\")\n",
+    "  ", gettext("Help:"), " help(package = \"datacaged\") | ?caged_load"
+  )
+
   if (cli::num_ansi_colors(stdout()) > 1L) {
-    titulo <- paste0(cli::col_cyan(cli::style_bold("datacaged")), " ", ver,
-                     " - Microdados do CAGED em DuckDB")
-    src    <- cli::col_silver(paste0("Fonte: ", repo))
-    dicas  <- cli::col_silver(paste0(
-      "  Verifique a conex\u00E3o com: caged_status()\n",
-      "  Uso r\u00E1pido: caged_load(years = 2023, months = 1, db_path = \"caged.duckdb\")\n",
-      "  Ajuda  : help(package = \"datacaged\") | ?caged_load"
-    ))
+    titulo <- paste0(cli::col_cyan(cli::style_bold("datacaged")), " ", ver, " - ", subtitulo)
+    fonte  <- cli::col_silver(fonte)
+    dicas  <- cli::col_silver(dicas)
   } else {
-    titulo <- paste0("datacaged ", ver, " - Microdados do CAGED em DuckDB")
-    src    <- paste0("Fonte: ", repo)
-    dicas  <- paste0(
-      "  Verifique a conex\u00E3o com: caged_status()\n",
-      "  Uso r\u00E1pido: caged_load(years = 2023, months = 1, db_path = \"caged.duckdb\")\n",
-      "  Ajuda  : help(package = \"datacaged\") | ?caged_load"
-    )
+    titulo <- paste0("datacaged ", ver, " - ", subtitulo)
   }
 
-  packageStartupMessage("\n", titulo, "\n", src, "\n", dicas, "\n")
+  packageStartupMessage("\n", titulo, "\n", fonte, "\n", dicas, "\n")
 }

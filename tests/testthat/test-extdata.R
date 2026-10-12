@@ -54,7 +54,7 @@ test_that("pipeline parse -> duckdb funciona com extdata Novo CAGED", {
   skip_if(is.null(df), "arquivo .7z de exemplo nao e legivel neste sistema")
 
   db <- tempfile(fileext = ".duckdb")
-  on.exit(unlink(db))
+  on.exit(unlink(db), add = TRUE)
 
   n <- caged_to_duckdb(df, db_path = db)
   expect_true(file.exists(db))
