@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">datacaged</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3</span>
       </span>
     </div>
 
@@ -132,12 +132,12 @@ análise eficiente.</p>
 </td>
 </tr>
 <tr class="even">
-<td>Jan/1992 – Dez/2019</td>
+<td>Jan/2007 – Dez/2019</td>
 <td>CAGED antigo</td>
 <td><code>caged_antigo</code></td>
 </tr>
 <tr class="odd">
-<td>Jan/1992 – Dez/2019</td>
+<td>2002 – Dez/2019</td>
 <td>CAGED Ajustes</td>
 <td><code>caged_ajustes</code></td>
 </tr>
@@ -330,14 +330,20 @@ SQL puro:</p>
 </h2>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/caged_info.html">caged_info</a></span><span class="op">(</span><span class="st">"caged.duckdb"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; ── caged.duckdb ────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; Tamanho do arquivo: 142.3 MB</span></span>
-<span><span class="co">#&gt; ── Tabelas ──────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; * "caged_mov"   Registros: 3,665,155</span></span>
-<span><span class="co">#&gt; * "caged_for"      Registros:    91,098</span></span>
-<span><span class="co">#&gt; * "caged_exc"       Registros:     7,900</span></span>
-<span><span class="co">#&gt;   Registros   : 4.823.901</span></span>
-<span><span class="co">#&gt;   Competências: 202301 – 202312</span></span></code></pre></div>
+<span><span class="co">#&gt; ── datacaged - 'caged.duckdb' ─────────────────────────────────</span></span>
+<span><span class="co">#&gt; File size: 142.3 MB</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Tables ──</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; • "caged_mov"</span></span>
+<span><span class="co">#&gt;   Records     : 3,665,155</span></span>
+<span><span class="co">#&gt;   Periods     : 202301 - 202312</span></span>
+<span><span class="co">#&gt; • "caged_for"</span></span>
+<span><span class="co">#&gt;   Records     : 91,098</span></span>
+<span><span class="co">#&gt;   Periods     : 202301 - 202312</span></span>
+<span><span class="co">#&gt; • "caged_exc"</span></span>
+<span><span class="co">#&gt;   Records     : 7,900</span></span>
+<span><span class="co">#&gt;   Periods     : 202301 - 202312</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="exemplo-série-histórica-com-caged-antigo">Exemplo: Série Histórica com CAGED Antigo<a class="anchor" aria-label="anchor" href="#exemplo-s%C3%A9rie-hist%C3%B3rica-com-caged-antigo"></a>

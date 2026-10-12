@@ -19,7 +19,7 @@ arrow::write_parquet() para grandes volumes."><meta property="og:image" content=
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">datacaged</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3</span>
       </span>
     </div>
 
@@ -110,17 +110,24 @@ exporta todas as tabelas CAGED presentes no banco.</p></dd>
 
 
 <dt id="arg-partition-by">partition_by<a class="anchor" aria-label="anchor" href="#arg-partition-by"></a></dt>
-<dd><p>character or NULL. Column for partitioning
-(ex: <code>"uf"</code> ou <code>"competencia"</code>). If NULL, generates one file per table.</p></dd>
+<dd><p>character vector or NULL. Column(s) for Hive-style
+partitioning (ex: <code>"uf"</code> ou <code>c("competencia", "uf")</code>). Cada tabela é
+gravada em um diretório <code>&lt;output_dir&gt;/&lt;tabela&gt;/</code>. As colunas de código
+(competências, <code>uf</code>, <code>regiao</code>, <code>municipio</code>) são convertidas para inteiro
+apenas na exportação, gerando diretórios como <code>competencia=202301/uf=35</code>;
+o banco não é alterado. If NULL, generates one file per table.</p></dd>
 
 
 <dt id="arg-overwrite">overwrite<a class="anchor" aria-label="anchor" href="#arg-overwrite"></a></dt>
-<dd><p>logical. Overwrite existing files. Default: FALSE.</p></dd>
+<dd><p>logical. Overwrite existing files or partition
+directories. Se <code>FALSE</code>, tabelas cujo destino já existe são puladas.
+Default: FALSE.</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>invisível: tibble com <code>tabela</code>, <code>arquivo</code> e <code>registros</code> exportados.</p>
+    <p>invisível: tibble com <code>tabela</code>, <code>arquivo</code>, <code>registros</code> e <code>status</code>
+(<code>"exportado"</code>, <code>"pulado"</code> ou <code>"erro"</code>).</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -142,6 +149,15 @@ exporta todas as tabelas CAGED presentes no banco.</p></dd>
 <span class="r-in"><span>  output_dir   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  tables       <span class="op">=</span> <span class="st">"caged_mov"</span>,</span></span>
 <span class="r-in"><span>  partition_by <span class="op">=</span> <span class="st">"uf"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Particionar por mais de uma coluna</span></span></span>
+<span class="r-in"><span><span class="fu">caged_to_parquet</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">db</span>,</span></span>
+<span class="r-in"><span>  output_dir   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  tables       <span class="op">=</span> <span class="st">"caged_mov"</span>,</span></span>
+<span class="r-in"><span>  partition_by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"competencia"</span>, <span class="st">"uf"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  overwrite    <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>

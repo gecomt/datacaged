@@ -27,7 +27,7 @@ para consultas rápidas com SQL ou dplyr."><meta property="og:image" content="/l
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">datacaged</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3</span>
       </span>
     </div>
 
@@ -131,13 +131,25 @@ para consultas rápidas com SQL ou dplyr.</p>
 <li><p><code><a href="caged_connect.html">caged_connect()</a></code>: abre conexão com o banco DuckDB</p></li>
 <li><p><code><a href="caged_info.html">caged_info()</a></code>: lista tabelas e registros disponíveis no banco</p></li>
 </ul><p><strong>CAGED Ajustes (correções retroativas até 2019):</strong></p><ul><li><p><code><a href="caged_adjustments_load.html">caged_adjustments_load()</a></code>: pipeline completo para o CAGED Ajustes</p></li>
+</ul><p><strong>Manutenção e exportação do banco:</strong></p><ul><li><p><code><a href="caged_update.html">caged_update()</a></code>: baixa apenas as competências que faltam no banco</p></li>
+<li><p><code><a href="caged_to_parquet.html">caged_to_parquet()</a></code>: exporta as tabelas do banco para Parquet</p></li>
 </ul><p><strong>Utilitários:</strong></p><ul><li><p><code><a href="caged_status.html">caged_status()</a></code>: verifica se o repositório HuggingFace está acessível</p></li>
 <li><p><code><a href="caged_hf_files.html">caged_hf_files()</a></code>: lista competências disponíveis no repositório HuggingFace</p></li>
+<li><p><code><a href="caged_download_layouts.html">caged_download_layouts()</a></code>: baixa os dicionários de variáveis do MTE</p></li>
 </ul></div>
+    <div id="idioma-das-mensagens">
+    <h2>Idioma das mensagens</h2>
+
+
+<p>As mensagens do console (erros, avisos e progresso) são escritas em inglês
+e traduzidas para o português. Com o R configurado em português, elas
+aparecem em português automaticamente. Para trocar o idioma na sessão, use
+<code>Sys.setLanguage("pt_BR")</code> ou <code>Sys.setLanguage("en")</code>.</p>
+    </div>
     <div id="tabelas-no-duckdb">
     <h2>Tabelas no DuckDB</h2>
 
-<table class="table table"><tr><td>Tabela</td><td>Fonte</td><td>Período</td></tr><tr><td><code>caged_mov</code></td><td><code>CAGEDMOV*.7z</code></td><td>Jan/2020+</td></tr><tr><td><code>caged_for</code></td><td><code>CAGEDFOR*.7z</code></td><td>Jan/2020+</td></tr><tr><td><code>caged_exc</code></td><td><code>CAGEDEXC*.7z</code></td><td>Jan/2020+</td></tr><tr><td><code>caged_antigo</code></td><td><code>CAGEDEST_*.7z</code></td><td>1992–Dez/2019</td></tr><tr><td><code>caged_ajustes</code></td><td><code>CAGEDEST_AJUSTES_*.7z</code></td><td>1992–Dez/2019</td></tr></table></div>
+<table class="table table"><tr><td>Tabela</td><td>Fonte</td><td>Período</td></tr><tr><td><code>caged_mov</code></td><td><code>CAGEDMOV*.7z</code></td><td>Jan/2020+</td></tr><tr><td><code>caged_for</code></td><td><code>CAGEDFOR*.7z</code></td><td>Jan/2020+</td></tr><tr><td><code>caged_exc</code></td><td><code>CAGEDEXC*.7z</code></td><td>Jan/2020+</td></tr><tr><td><code>caged_antigo</code></td><td><code>CAGEDEST_*.7z</code></td><td>Jan/2007–Dez/2019</td></tr><tr><td><code>caged_ajustes</code></td><td><code>CAGEDEST_AJUSTES_*.7z</code></td><td>2002–Dez/2019</td></tr></table></div>
     <div id="see-also">
     <h2>See also</h2>
     <div class="dont-index"><p>Useful links:</p><ul><li><p><a href="https://github.com/gecomt/datacaged" class="external-link">https://github.com/gecomt/datacaged</a></p></li>

@@ -34,7 +34,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">datacaged</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3</span>
       </span>
     </div>
 
@@ -118,7 +118,7 @@
 <p>🧩 Support for multiple datasets:</p>
 <ul>
 <li>Novo CAGED (2020+)</li>
-<li>Legacy CAGED (1992–2019)</li>
+<li>Legacy CAGED (2007–2019)</li>
 <li>CAGED Adjustments (historical corrections)</li>
 </ul>
 </li>
@@ -250,6 +250,10 @@
 <h2 id="books-main-functions">📚 Main functions<a class="anchor" aria-label="anchor" href="#books-main-functions"></a>
 </h2>
 <table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
 <thead><tr>
 <th>Function</th>
 <th>Description</th>
@@ -269,7 +273,7 @@
 </tr>
 <tr>
 <td><code><a href="reference/caged_download_layouts.html">caged_download_layouts()</a></code></td>
-<td>Download official MTE layouts</td>
+<td>Download official MTE layouts (from HuggingFace)</td>
 </tr>
 <tr>
 <td><code><a href="reference/caged_parse.html">caged_parse()</a></code></td>
@@ -312,6 +316,14 @@
 <hr>
 </div>
 <div class="section level2">
+<h2 id="globe_with_meridians-message-language">🌐 Message language<a class="anchor" aria-label="anchor" href="#globe_with_meridians-message-language"></a>
+</h2>
+<p>Console messages (errors, warnings and progress) are written in English and translated to Portuguese. With R set to Portuguese they appear in Portuguese automatically; to switch within a session:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/gettext.html" class="external-link">Sys.setLanguage</a></span><span class="op">(</span><span class="st">"pt_BR"</span><span class="op">)</span>  <span class="co"># Portuguese</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/gettext.html" class="external-link">Sys.setLanguage</a></span><span class="op">(</span><span class="st">"en"</span><span class="op">)</span>     <span class="co"># English</span></span></code></pre></div>
+</div>
+<div class="section level2">
 <h2 id="file_cabinet-database-tables">🗄️ Database tables<a class="anchor" aria-label="anchor" href="#file_cabinet-database-tables"></a>
 </h2>
 <table class="table">
@@ -339,12 +351,12 @@
 <tr>
 <td><code>caged_antigo</code></td>
 <td>Historical data</td>
-<td>1992–2019</td>
+<td>2007–2019</td>
 </tr>
 <tr>
 <td><code>caged_ajustes</code></td>
 <td>Retroactive adjustments</td>
-<td>1992–2019</td>
+<td>2002–2019</td>
 </tr>
 </tbody>
 </table>

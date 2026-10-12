@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">datacaged</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3</span>
       </span>
     </div>
 
@@ -91,7 +91,7 @@
 <li>
 <p>🧩 Suporte a múltiplas bases:</p>
 <ul><li>Novo CAGED (2020+)</li>
-<li>CAGED antigo (1992–2019)</li>
+<li>CAGED antigo (2007–2019)</li>
 <li>CAGED Ajustes (correções históricas)</li>
 </ul></li>
 </ul><hr></div>
@@ -191,7 +191,7 @@
 <hr></div>
 <div class="section level2">
 <h2 id="books-funções-principais">📚 Funções principais<a class="anchor" aria-label="anchor" href="#books-fun%C3%A7%C3%B5es-principais"></a></h2>
-<table class="table"><thead><tr><th>Função</th>
+<table class="table"><colgroup><col width="50%"><col width="50%"></colgroup><thead><tr><th>Função</th>
 <th>Descrição</th>
 </tr></thead><tbody><tr><td><code><a href="reference/caged_load.html">caged_load()</a></code></td>
 <td>Pipeline completo (download → parse → DuckDB)</td>
@@ -200,7 +200,7 @@
 </tr><tr><td><code><a href="reference/caged_download.html">caged_download()</a></code></td>
 <td>Download dos <code>.7z</code> com cache</td>
 </tr><tr><td><code><a href="reference/caged_download_layouts.html">caged_download_layouts()</a></code></td>
-<td>Download dos layouts oficiais do MTE</td>
+<td>Download dos layouts oficiais do MTE (via HuggingFace)</td>
 </tr><tr><td><code><a href="reference/caged_parse.html">caged_parse()</a></code></td>
 <td>Leitura de um único arquivo <code>.7z</code>
 </td>
@@ -222,6 +222,13 @@
 <td>Exporta tabelas para Parquet</td>
 </tr></tbody></table><hr></div>
 <div class="section level2">
+<h2 id="globe_with_meridians-idioma-das-mensagens">🌐 Idioma das mensagens<a class="anchor" aria-label="anchor" href="#globe_with_meridians-idioma-das-mensagens"></a></h2>
+<p>As mensagens do console (erros, avisos e progresso) são escritas em inglês e traduzidas para o português. Com o R configurado em português, elas aparecem em português automaticamente; para trocar o idioma na sessão:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/gettext.html" class="external-link">Sys.setLanguage</a></span><span class="op">(</span><span class="st">"pt_BR"</span><span class="op">)</span>  <span class="co"># português</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/gettext.html" class="external-link">Sys.setLanguage</a></span><span class="op">(</span><span class="st">"en"</span><span class="op">)</span>     <span class="co"># inglês</span></span></code></pre></div>
+</div>
+<div class="section level2">
 <h2 id="file_cabinet-estrutura-do-banco">🗄️ Estrutura do banco<a class="anchor" aria-label="anchor" href="#file_cabinet-estrutura-do-banco"></a></h2>
 <table class="table"><thead><tr><th>Tabela</th>
 <th>Conteúdo</th>
@@ -237,10 +244,10 @@
 <td>2020+</td>
 </tr><tr><td><code>caged_antigo</code></td>
 <td>Histórico</td>
-<td>1992–2019</td>
+<td>2007–2019</td>
 </tr><tr><td><code>caged_ajustes</code></td>
 <td>Ajustes retroativos</td>
-<td>1992–2019</td>
+<td>2002–2019</td>
 </tr></tbody></table><hr></div>
 <div class="section level2">
 <h2 id="receipt-requisitos">🧾 Requisitos<a class="anchor" aria-label="anchor" href="#receipt-requisitos"></a></h2>

@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">datacaged</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3</span>
       </span>
     </div>
 
@@ -249,14 +249,26 @@ database — use <code><a href="../reference/caged_load.html">caged_load()</a></
 <span></span>
 <span><span class="co"># ── Check the resulting database ─────────────────────────────────────────────</span></span>
 <span><span class="fu"><a href="../reference/caged_info.html">caged_info</a></span><span class="op">(</span><span class="st">"caged.duckdb"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; ── caged.duckdb ──────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; Tamanho do arquivo: 4.2 GB</span></span>
-<span><span class="co">#&gt; ── Tabelas ───────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; * "caged_mov"     Registros: 43,981,860   Competências: 202201 – 202312</span></span>
-<span><span class="co">#&gt; * "caged_for"     Registros:  1,093,176   Competências: 202201 – 202312</span></span>
-<span><span class="co">#&gt; * "caged_exc"     Registros:     94,800   Competências: 202201 – 202312</span></span>
-<span><span class="co">#&gt; * "caged_antigo"  Registros: 28,450,000   Competências: 201501 – 201912</span></span>
-<span><span class="co">#&gt; * "caged_ajustes" Registros:    342,000   Competências: 201501 – 201912</span></span></code></pre></div>
+<span><span class="co">#&gt; ── datacaged - 'caged.duckdb' ─────────────────────────────────</span></span>
+<span><span class="co">#&gt; File size: 4300.5 MB</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Tables ──</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; • "caged_mov"</span></span>
+<span><span class="co">#&gt;   Records     : 43,981,860</span></span>
+<span><span class="co">#&gt;   Periods     : 202201 - 202312</span></span>
+<span><span class="co">#&gt; • "caged_for"</span></span>
+<span><span class="co">#&gt;   Records     : 1,093,176</span></span>
+<span><span class="co">#&gt;   Periods     : 202201 - 202312</span></span>
+<span><span class="co">#&gt; • "caged_exc"</span></span>
+<span><span class="co">#&gt;   Records     : 94,800</span></span>
+<span><span class="co">#&gt;   Periods     : 202201 - 202312</span></span>
+<span><span class="co">#&gt; • "caged_antigo"</span></span>
+<span><span class="co">#&gt;   Records     : 28,450,000</span></span>
+<span><span class="co">#&gt;   Periods     : 201501 - 201912</span></span>
+<span><span class="co">#&gt; • "caged_ajustes"</span></span>
+<span><span class="co">#&gt;   Records     : 342,000</span></span>
+<span><span class="co">#&gt;   Periods     : 201501 - 201912</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="queries-with-dplyr">6. Queries with dplyr<a class="anchor" aria-label="anchor" href="#queries-with-dplyr"></a>
@@ -417,9 +429,11 @@ columns before stacking.</p>
 <h2 id="incremental-update">10. Incremental update<a class="anchor" aria-label="anchor" href="#incremental-update"></a>
 </h2>
 <p>Use <code><a href="../reference/caged_update.html">caged_update()</a></code> to keep the database up to date
-without re-downloading everything. The function queries the database to
-find the maximum competency and downloads only what is more recent on
-HuggingFace.</p>
+without re-downloading everything. The function compares, table by
+table, the competencies already in the database with those available on
+HuggingFace and downloads only what is missing: new months and gaps
+within the period already loaded (for example, a FOR file whose download
+failed earlier).</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Update Novo CAGED with months not yet in the database</span></span>
 <span><span class="fu"><a href="../reference/caged_update.html">caged_update</a></span><span class="op">(</span>db_path <span class="op">=</span> <span class="st">"caged.duckdb"</span><span class="op">)</span></span>

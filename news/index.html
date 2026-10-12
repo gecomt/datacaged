@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">datacaged</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3</span>
       </span>
     </div>
 
@@ -72,6 +72,73 @@
       <small>Source: <a href="https://github.com/gecomt/datacaged/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.2.3" id="datacaged-023">datacaged 0.2.3<a class="anchor" aria-label="anchor" href="#datacaged-023"></a></h2>
+<div class="section level3">
+<h3 id="message-language-0-2-3">Message language<a class="anchor" aria-label="anchor" href="#message-language-0-2-3"></a></h3>
+<ul><li>All console messages (errors, warnings, progress) are now written in English in the source code and translated to Brazilian Portuguese through the standard R/gettext mechanism. Users with R set to Portuguese see them in Portuguese automatically; <code>Sys.setLanguage("pt_BR")</code> or <code>Sys.setLanguage("en")</code> switches the language within a session. Previously the messages mixed both languages and the shipped translations were never applied, because the <code>cli</code> calls did not go through <code><a href="https://rdrr.io/r/base/gettext.html" class="external-link">gettext()</a></code>.</li>
+<li>The translation catalog now contains only <code>R-pt_BR.po</code>; <code>R-en.po</code> was removed because the source language is English.</li>
+<li>The tests run in English regardless of the machine’s locale, and a new test checks that every translation keeps the <code>{...}</code> code blocks of the original message unchanged.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-0-2-3">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-2-3"></a></h3>
+<ul><li>Messages such as “20 registro inserido” now use the correct plural (“20 records inserted” / “20 registros inseridos”): the count was formatted as text before reaching <code>cli</code>, which then always used the singular.</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.2.2" id="datacaged-022">datacaged 0.2.2<a class="anchor" aria-label="anchor" href="#datacaged-022"></a></h2>
+<div class="section level3">
+<h3 id="bug-fixes-0-2-2">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-2-2"></a></h3>
+<ul><li>Fixed test failures on CRAN with duckdb &gt;= 1.5, which caches database instances per file and refuses <code>read_only = TRUE</code> when an instance for the same path is already open (<code>read_only can't be applied to the database instance ... which already exists</code>):
+<ul><li>
+<code><a href="../reference/caged_load.html">caged_load()</a></code> and <code><a href="../reference/caged_adjustments_load.html">caged_adjustments_load()</a></code> now close their write connection before calling <code><a href="../reference/caged_info.html">caged_info()</a></code>.</li>
+<li>The internal <code>.disconnect()</code> helper now also calls <code><a href="https://r.duckdb.org/reference/duckdb.html" class="external-link">duckdb::duckdb_shutdown()</a></code>, since <code>dbDisconnect(shutdown = TRUE)</code> no longer releases the cached instance.</li>
+<li>
+<code><a href="../reference/caged_info.html">caged_info()</a></code>, <code><a href="../reference/caged_to_parquet.html">caged_to_parquet()</a></code> and <code><a href="../reference/caged_update.html">caged_update()</a></code> reuse an already-open instance (e.g. a user connection) instead of failing.</li>
+</ul></li>
+<li>
+<strong>Data loss in <code>caged_for</code> and <code>caged_exc</code></strong>: the deduplication key <code>competencia</code> was taken from <code>competenciamov</code>, but FOR/EXC files contain movements from earlier months that repeat across files, so loading month <em>t+1</em> silently skipped rows whose <code>competenciamov</code> had already appeared (e.g. 46% of <code>CAGEDFOR202303</code>). The key is now <code>competenciadec</code> for <code>caged_for</code> and <code>competenciaexc</code> for <code>caged_exc</code> (one value per file). <code>caged_mov</code>, <code>caged_antigo</code> and <code>caged_ajustes</code> are unchanged. <strong>Action required:</strong> databases built with earlier versions should drop <code>caged_for</code> and <code>caged_exc</code> and reload them with <code><a href="../reference/caged_load.html">caged_load()</a></code>. Use <code>competenciamov</code> for analyses by month of movement.</li>
+<li>Fixed column-name normalization when the package is installed or run in a non-UTF-8 locale (e.g. <code>C</code>/<code>POSIX</code>): accented headers such as <code>competênciamov</code> became <code>compet_nciamov</code>, and <code><a href="../reference/caged_to_duckdb.html">caged_to_duckdb()</a></code> aborted with “Nenhuma coluna de competencia encontrada”. <code>.normalize_names()</code> now uses <code><a href="https://rdrr.io/r/base/chartr.html" class="external-link">chartr()</a></code> and <code>read_delim()</code> uses <code>name_repair = "unique_quiet"</code>.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="behaviour-changes-0-2-2">Behaviour changes<a class="anchor" aria-label="anchor" href="#behaviour-changes-0-2-2"></a></h3>
+<ul><li>
+<code><a href="../reference/caged_download_layouts.html">caged_download_layouts()</a></code> now downloads the layout files from the HuggingFace repository instead of the MTE FTP server, which was slow and often unreachable. Local file names have accents removed; the original name is kept in the <code>arquivo</code> column.</li>
+<li>
+<code><a href="../reference/caged_update.html">caged_update()</a></code> now compares competencies table by table instead of using the maximum competency. It also fills gaps inside the period already in the database (e.g. a FOR file whose download failed) and calls the pipeline once per year, so it no longer downloads unneeded months (requesting 202512 and 202601 used to also download 202501 and 202612).</li>
+<li>Year validation now matches the data available on HuggingFace: legacy CAGED from 2007 (<code><a href="../reference/caged_load.html">caged_load()</a></code>, <code><a href="../reference/caged_download.html">caged_download()</a></code>) and CAGED Adjustments from 2002 (<code><a href="../reference/caged_adjustments_load.html">caged_adjustments_load()</a></code>). Earlier years now fail immediately with a clear message instead of finding no files.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="more-bug-fixes-0-2-2">More bug fixes<a class="anchor" aria-label="anchor" href="#more-bug-fixes-0-2-2"></a></h3>
+<ul><li>
+<code>caged_to_duckdb(overwrite_competencies = TRUE)</code> now runs DELETE and INSERT in a single transaction: if the insert fails, the previous data is kept.</li>
+<li>Errors while checking which competencies are already stored are no longer swallowed (they used to be treated as “none stored”, duplicating rows).</li>
+<li>
+<code><a href="../reference/caged_to_parquet.html">caged_to_parquet()</a></code>: <code>partition_by</code> accepts several columns, <code>overwrite = FALSE</code> is respected for partitioned output, a missing partition column gives a clear warning, and paths containing <code>'</code> work. Partition directories for code columns (competencies, <code>uf</code>, <code>regiao</code>, <code>municipio</code>) are now named <code>competencia=202301/uf=35</code> instead of <code>competencia=202301.0/uf=35.0</code>; the cast to integer happens only in the export, so the database schema is unchanged.</li>
+<li>
+<code><a href="../reference/caged_adjustments_load.html">caged_adjustments_load()</a></code> for 2002-2009, where the source is one annual file per year: the file is now downloaded and parsed once instead of once per requested month (about 6x faster for a full year), and only the requested <code>months</code> are stored (previously the whole year was stored).</li>
+<li>Downloads are written to a temporary <code>.part</code> file and renamed when complete, so an interrupted write can no longer leave a truncated file that the cache would treat as valid.</li>
+<li>The internal HuggingFace listing no longer fails under a non-UTF-8 locale for file names with accents.</li>
+<li>
+<code>caged_hf_files(verbose = FALSE)</code> no longer prints the “Querying HuggingFace” message.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="tests-0-2-2">Tests<a class="anchor" aria-label="anchor" href="#tests-0-2-2"></a></h3>
+<ul><li>No test accesses the network on CRAN anymore: the layouts test and the sequential download test are mocked; real-network tests use <code>skip_on_cran()</code> and <code>skip_if_offline()</code>.</li>
+<li>Fixed mocks leaking across test files: <code><a href="https://rdrr.io/r/base/on.exit.html" class="external-link">on.exit()</a></code> without <code>add = TRUE</code> after <code>local_mocked_bindings()</code> discarded the restore handler.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="documentation-0-2-2">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-2-2"></a></h3>
+<ul><li>Corrected data coverage: legacy CAGED is available from 2007 and CAGED Adjustments from 2002 (previously documented as 1992).</li>
+<li>
+<code><a href="../reference/caged_to_duckdb.html">caged_to_duckdb()</a></code> documentation now describes the actual deduplication mechanism and the key column per table (it never used <code>INSERT OR IGNORE</code>).</li>
+<li>
+<code><a href="../reference/datacaged-package.html">?datacaged</a></code> now lists <code><a href="../reference/caged_update.html">caged_update()</a></code>, <code><a href="../reference/caged_to_parquet.html">caged_to_parquet()</a></code> and <code><a href="../reference/caged_download_layouts.html">caged_download_layouts()</a></code>.</li>
+<li>
+<code>inst/CITATION</code> now reads the version from <code>DESCRIPTION</code>.</li>
+<li>Updated <code><a href="../reference/caged_info.html">caged_info()</a></code> sample output in the vignettes.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.2.1" id="datacaged-021">datacaged 0.2.1<small>2026-09-09</small><a class="anchor" aria-label="anchor" href="#datacaged-021"></a></h2>
 <div class="section level3">

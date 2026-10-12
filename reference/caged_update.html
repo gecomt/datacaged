@@ -19,7 +19,7 @@ compara com o que já existe no banco e baixa apenas o que está faltando.
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">datacaged</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3</span>
       </span>
     </div>
 
@@ -125,6 +125,17 @@ compara com o que já existe no banco e baixa apenas o que está faltando.
     <h2>Value</h2>
     <p>invisível: tibble com estatísticas do banco após a atualização,
 ou NULL se o banco já estiver atualizado.</p>
+    </div>
+    <div id="details">
+    <h2>Details</h2>
+    <p>A comparação é feita competência a competência e tabela a tabela
+(<code>caged_mov</code>, <code>caged_for</code> e <code>caged_exc</code> são verificadas separadamente).
+Assim, além das competências novas, também são recuperadas lacunas
+dentro do período já presente no banco, por exemplo um arquivo FOR
+cujo download falhou em uma carga anterior. Competências anteriores à
+primeira competência já gravada não são baixadas; para ampliar o
+período para trás, use <code><a href="caged_load.html">caged_load()</a></code>. Com o banco vazio, todas as
+competências disponíveis da série são baixadas.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
