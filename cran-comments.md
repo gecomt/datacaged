@@ -59,20 +59,24 @@ partitioning) are listed in NEWS.md.
 
 ## Test environments
 
-* Windows 11 x64 (R 4.6.0, local)
-* win-builder R-devel (Windows Server 2022 x64)
-* GitHub Actions: Ubuntu 24.04 (R release, devel, oldrel-1)
-* GitHub Actions: macOS Sonoma arm64 (R release)
+* Local: Windows 11 x64, R 4.6.1 (ucrt), `--as-cran --run-donttest`
+* win-builder: R-devel (2026-10-10 r90659 ucrt), Windows Server 2022 x64
+* GitHub Actions: macos-latest (R release), windows-latest (R release),
+  ubuntu-latest (R devel, release and oldrel-1)
+* Test suite also run under the pt_BR.UTF-8, en_US.UTF-8 and C locales (Linux)
 
 ## R CMD check results
 
 ```
-0 errors | 0 warnings | 1 note
+0 errors | 0 warnings | 0 notes
 ```
 
-### NOTE: Possibly misspelled words in DESCRIPTION
+All environments above returned no ERRORs, WARNINGs or NOTEs.
 
-The following words flagged by the spell checker are intentional:
+### Possible NOTE: misspelled words in DESCRIPTION
+
+Where a spell checker is available, the following words may be flagged; they
+are intentional:
 
 - **Cadastro, Geral, Empregados, Desempregados, de, Novo**: parts of the
   official Brazilian government acronym CAGED (Cadastro Geral de Empregados
