@@ -14,43 +14,45 @@
 
 O **datacaged** é um pacote R que automatiza todo o fluxo de trabalho com os microdados do CAGED (Cadastro Geral de Empregados e Desempregados). Os dados são baixados de um [repositório HuggingFace](https://huggingface.co/datasets/alexsandroprado/caged) via HTTPS, lidos com descompressão em stream e armazenados em banco analítico local ('DuckDB') para consultas rápidas com `dplyr` ou SQL.
 
----
+## Principais funcionalidades
 
-## ✨ Principais funcionalidades
-
-* 📥 Download automatizado do HuggingFace (HTTPS — sem FTP)
-* ⚡ Downloads paralelos (`workers = 3` por padrão)
-* 📦 Descompressão em stream dos `.7z` — sem extração para disco temporário
-* 🗄️ Armazenamento eficiente em banco **'DuckDB'** local
-* 🔄 Pipeline completo em uma única função
-* 📊 Integração com `dplyr` para análise de dados
-* 🖥️ **Compatível com Windows, macOS e Linux**
-* 🧩 Suporte a múltiplas bases:
+* Download automatizado do HuggingFace (HTTPS — sem FTP)
+* Downloads paralelos (`workers = 3` por padrão)
+* Descompressão em stream dos `.7z` — sem extração para disco temporário
+* Armazenamento eficiente em banco **'DuckDB'** local
+* Pipeline completo em uma única função
+* Integração com `dplyr` para análise de dados
+* **Compatível com Windows, macOS e Linux**
+* Suporte a múltiplas bases:
 
   * Novo CAGED (2020+)
   * CAGED antigo (2007–2019)
   * CAGED Ajustes (correções históricas)
 
----
+## Instalação
 
-## 🚀 Instalação
+Versão estável, do CRAN:
 
 ```r
-# install.packages("remotes")
-remotes::install_github("gecomt/datacaged")
+install.packages("datacaged")
 ```
 
----
+Versão de desenvolvimento, do GitHub:
 
-## 🖥️ Compatibilidade entre plataformas
+```r
+# install.packages("pak")
+pak::pak("gecomt/datacaged")
+```
+
+## Compatibilidade entre plataformas
 
 | Recurso | Windows | macOS | Linux |
 |---|---|---|---|
-| Download (HTTPS) | ✅ | ✅ | ✅ |
-| Downloads paralelos | ✅ | ✅ | ✅ |
-| Novo CAGED (2020+, LZMA) | ✅ | ✅ | ✅ |
-| CAGED antigo (pré-2020, PPMd) | ⚠️ | ⚠️ | ⚠️ |
-| DuckDB | ✅ | ✅ | ✅ |
+| Download (HTTPS) | Sim | Sim | Sim |
+| Downloads paralelos | Sim | Sim | Sim |
+| Novo CAGED (2020+, LZMA) | Sim | Sim | Sim |
+| CAGED antigo (pré-2020, PPMd) | Requer 7-Zip | Requer 7-Zip | Requer 7-Zip |
+| DuckDB | Sim | Sim | Sim |
 
 O **CAGED antigo (pré-2020)** usa compressão PPMd, que requer o 7-Zip instalado. **O Novo CAGED (2020+) funciona em todas as plataformas sem software adicional.**
 
@@ -76,9 +78,7 @@ sudo apt install 7zip
 sudo dnf install 7zip
 ```
 
----
-
-## ⚡ Uso rápido
+## Uso rápido
 
 ```r
 library(datacaged)
@@ -104,9 +104,7 @@ tbl(con, "caged_mov") |>
 DBI::dbDisconnect(con, shutdown = TRUE)
 ```
 
----
-
-## ⚙️ Performance
+## Performance
 
 ```r
 # Downloads paralelos (padrão: 3 workers)
@@ -121,9 +119,7 @@ options(datacaged.workers = 4)
 
 Os downloads paralelos processam os arquivos MOV, FOR e EXC simultaneamente por mês — aproximadamente **3× mais rápido** que o modo sequencial para o Novo CAGED.
 
----
-
-## 🧠 Pipeline
+## Pipeline
 
 ```
 HuggingFace (HTTPS)
@@ -137,9 +133,7 @@ HuggingFace (HTTPS)
   caged_connect()    ← dplyr / SQL / DBI
 ```
 
----
-
-## 📚 Funções principais
+## Funções principais
 
 | Função | Descrição |
 |---|---|
@@ -157,9 +151,7 @@ HuggingFace (HTTPS)
 | `caged_update()` | Baixa apenas competências novas |
 | `caged_to_parquet()` | Exporta tabelas para Parquet |
 
----
-
-## 🌐 Idioma das mensagens
+## Idioma das mensagens
 
 As mensagens do console (erros, avisos e progresso) são escritas em inglês e
 traduzidas para o português. Com o R configurado em português, elas aparecem
@@ -170,7 +162,7 @@ Sys.setLanguage("pt_BR")  # português
 Sys.setLanguage("en")     # inglês
 ```
 
-## 🗄️ Estrutura do banco
+## Estrutura do banco
 
 | Tabela | Conteúdo | Período |
 |---|---|---|
@@ -180,16 +172,12 @@ Sys.setLanguage("en")     # inglês
 | `caged_antigo` | Histórico | 2007–2019 |
 | `caged_ajustes` | Ajustes retroativos | 2002–2019 |
 
----
-
-## 🧾 Requisitos
+## Requisitos
 
 * R ≥ 4.2.0
 * 7-Zip *(opcional — necessário apenas para CAGED pré-2020 com compressão PPMd)*
 
----
-
-## 📊 Casos de uso
+## Casos de uso
 
 * Análise do mercado de trabalho
 * Indicadores econômicos
@@ -197,15 +185,11 @@ Sys.setLanguage("en")     # inglês
 * Monitoramento do emprego formal
 * Modelagem econométrica
 
----
-
-## 📄 Licença
+## Licença
 
 MIT © Alexsandro Prado
 
----
-
-## 📬 Contato
+## Contato
 
 **Autor:** Alexsandro Prado  
 **E-mail:** [alexsandro.prado@ufersa.edu.br](mailto:alexsandro.prado@ufersa.edu.br)  
