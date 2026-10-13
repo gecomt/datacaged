@@ -79,69 +79,73 @@
 <p>Microdados do CAGED direto no seu ‘DuckDB’, com pipeline completo e pronto para análise.</p>
 </blockquote>
 <p>O <strong>datacaged</strong> é um pacote R que automatiza todo o fluxo de trabalho com os microdados do CAGED (Cadastro Geral de Empregados e Desempregados). Os dados são baixados de um <a href="https://huggingface.co/datasets/alexsandroprado/caged" class="external-link">repositório HuggingFace</a> via HTTPS, lidos com descompressão em stream e armazenados em banco analítico local (‘DuckDB’) para consultas rápidas com <code>dplyr</code> ou SQL.</p>
-<hr><div class="section level2">
-<h2 id="sparkles-principais-funcionalidades">✨ Principais funcionalidades<a class="anchor" aria-label="anchor" href="#sparkles-principais-funcionalidades"></a></h2>
-<ul><li><p>📥 Download automatizado do HuggingFace (HTTPS — sem FTP)</p></li>
-<li><p>⚡ Downloads paralelos (<code>workers = 3</code> por padrão)</p></li>
-<li><p>📦 Descompressão em stream dos <code>.7z</code> — sem extração para disco temporário</p></li>
-<li><p>🗄️ Armazenamento eficiente em banco <strong>‘DuckDB’</strong> local</p></li>
-<li><p>🔄 Pipeline completo em uma única função</p></li>
-<li><p>📊 Integração com <code>dplyr</code> para análise de dados</p></li>
-<li><p>🖥️ <strong>Compatível com Windows, macOS e Linux</strong></p></li>
+<div class="section level2">
+<h2 id="principais-funcionalidades">Principais funcionalidades<a class="anchor" aria-label="anchor" href="#principais-funcionalidades"></a></h2>
+<ul><li><p>Download automatizado do HuggingFace (HTTPS — sem FTP)</p></li>
+<li><p>Downloads paralelos (<code>workers = 3</code> por padrão)</p></li>
+<li><p>Descompressão em stream dos <code>.7z</code> — sem extração para disco temporário</p></li>
+<li><p>Armazenamento eficiente em banco <strong>‘DuckDB’</strong> local</p></li>
+<li><p>Pipeline completo em uma única função</p></li>
+<li><p>Integração com <code>dplyr</code> para análise de dados</p></li>
+<li><p><strong>Compatível com Windows, macOS e Linux</strong></p></li>
 <li>
-<p>🧩 Suporte a múltiplas bases:</p>
+<p>Suporte a múltiplas bases:</p>
 <ul><li>Novo CAGED (2020+)</li>
 <li>CAGED antigo (2007–2019)</li>
 <li>CAGED Ajustes (correções históricas)</li>
 </ul></li>
-</ul><hr></div>
+</ul></div>
 <div class="section level2">
-<h2 id="rocket-instalação">🚀 Instalação<a class="anchor" aria-label="anchor" href="#rocket-instala%C3%A7%C3%A3o"></a></h2>
+<h2 id="instalação">Instalação<a class="anchor" aria-label="anchor" href="#instala%C3%A7%C3%A3o"></a></h2>
+<p>Versão estável, do CRAN:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"gecomt/datacaged"</span><span class="op">)</span></span></code></pre></div>
-<hr></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"datacaged"</span><span class="op">)</span></span></code></pre></div>
+<p>Versão de desenvolvimento, do GitHub:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"gecomt/datacaged"</span><span class="op">)</span></span></code></pre></div>
+</div>
 <div class="section level2">
-<h2 id="desktop_computer-compatibilidade-entre-plataformas">🖥️ Compatibilidade entre plataformas<a class="anchor" aria-label="anchor" href="#desktop_computer-compatibilidade-entre-plataformas"></a></h2>
-<table class="table"><thead><tr><th>Recurso</th>
+<h2 id="compatibilidade-entre-plataformas">Compatibilidade entre plataformas<a class="anchor" aria-label="anchor" href="#compatibilidade-entre-plataformas"></a></h2>
+<table class="table"><colgroup><col width="25%"><col width="25%"><col width="25%"><col width="25%"></colgroup><thead><tr><th>Recurso</th>
 <th>Windows</th>
 <th>macOS</th>
 <th>Linux</th>
 </tr></thead><tbody><tr><td>Download (HTTPS)</td>
-<td>✅</td>
-<td>✅</td>
-<td>✅</td>
+<td>Sim</td>
+<td>Sim</td>
+<td>Sim</td>
 </tr><tr><td>Downloads paralelos</td>
-<td>✅</td>
-<td>✅</td>
-<td>✅</td>
+<td>Sim</td>
+<td>Sim</td>
+<td>Sim</td>
 </tr><tr><td>Novo CAGED (2020+, LZMA)</td>
-<td>✅</td>
-<td>✅</td>
-<td>✅</td>
+<td>Sim</td>
+<td>Sim</td>
+<td>Sim</td>
 </tr><tr><td>CAGED antigo (pré-2020, PPMd)</td>
-<td>⚠️</td>
-<td>⚠️</td>
-<td>⚠️</td>
+<td>Requer 7-Zip</td>
+<td>Requer 7-Zip</td>
+<td>Requer 7-Zip</td>
 </tr><tr><td>DuckDB</td>
-<td>✅</td>
-<td>✅</td>
-<td>✅</td>
+<td>Sim</td>
+<td>Sim</td>
+<td>Sim</td>
 </tr></tbody></table><p>O <strong>CAGED antigo (pré-2020)</strong> usa compressão PPMd, que requer o 7-Zip instalado. <strong>O Novo CAGED (2020+) funciona em todas as plataformas sem software adicional.</strong></p>
 <div class="section level3">
 <h3 id="instalando-o-7-zip-necessário-apenas-para-dados-pré-2020">Instalando o 7-Zip (necessário apenas para dados pré-2020)<a class="anchor" aria-label="anchor" href="#instalando-o-7-zip-necess%C3%A1rio-apenas-para-dados-pr%C3%A9-2020"></a></h3>
 <p><strong>Windows</strong> — instale o <a href="https://www.7-zip.org/download.html" class="external-link">instalador oficial do 7-Zip</a> (a instalação padrão em <code>C:\Program Files\7-Zip</code> é detectada automaticamente pelo pacote).</p>
 <p><strong>macOS</strong></p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="ex">brew</span> install 7-zip</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="ex">brew</span> install 7-zip</span></code></pre></div>
 <p><strong>Linux (Debian/Ubuntu)</strong></p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">sudo</span> apt install 7zip</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">sudo</span> apt install 7zip</span></code></pre></div>
 <p><strong>Linux (Fedora/RHEL)</strong></p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">sudo</span> dnf install 7zip</span></code></pre></div>
-<hr></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">sudo</span> dnf install 7zip</span></code></pre></div>
+</div>
 </div>
 <div class="section level2">
-<h2 id="zap-uso-rápido">⚡ Uso rápido<a class="anchor" aria-label="anchor" href="#zap-uso-r%C3%A1pido"></a></h2>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<h2 id="uso-rápido">Uso rápido<a class="anchor" aria-label="anchor" href="#uso-r%C3%A1pido"></a></h2>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/gecomt/datacaged" class="external-link">datacaged</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Pipeline completo — baixa, parseia e grava no DuckDB</span></span>
@@ -163,10 +167,10 @@
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html" class="external-link">collect</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html" class="external-link">dbDisconnect</a></span><span class="op">(</span><span class="va">con</span>, shutdown <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<hr></div>
+</div>
 <div class="section level2">
-<h2 id="gear-performance">⚙️ Performance<a class="anchor" aria-label="anchor" href="#gear-performance"></a></h2>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<h2 id="performance">Performance<a class="anchor" aria-label="anchor" href="#performance"></a></h2>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Downloads paralelos (padrão: 3 workers)</span></span>
 <span><span class="fu"><a href="reference/caged_download.html">caged_download</a></span><span class="op">(</span>years <span class="op">=</span> <span class="fl">2023</span>, months <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">12</span>, workers <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
 <span></span>
@@ -176,9 +180,9 @@
 <span><span class="co"># Configurar globalmente</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>datacaged.workers <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div>
 <p>Os downloads paralelos processam os arquivos MOV, FOR e EXC simultaneamente por mês — aproximadamente <strong>3× mais rápido</strong> que o modo sequencial para o Novo CAGED.</p>
-<hr></div>
+</div>
 <div class="section level2">
-<h2 id="brain-pipeline">🧠 Pipeline<a class="anchor" aria-label="anchor" href="#brain-pipeline"></a></h2>
+<h2 id="pipeline">Pipeline<a class="anchor" aria-label="anchor" href="#pipeline"></a></h2>
 <pre><code>HuggingFace (HTTPS)
       ↓
   caged_download()   ← paralelo, com cache local
@@ -188,9 +192,9 @@
   caged_to_duckdb()  ← inserção bulk, deduplicação por competência
       ↓
   caged_connect()    ← dplyr / SQL / DBI</code></pre>
-<hr></div>
+</div>
 <div class="section level2">
-<h2 id="books-funções-principais">📚 Funções principais<a class="anchor" aria-label="anchor" href="#books-fun%C3%A7%C3%B5es-principais"></a></h2>
+<h2 id="funções-principais">Funções principais<a class="anchor" aria-label="anchor" href="#fun%C3%A7%C3%B5es-principais"></a></h2>
 <table class="table"><colgroup><col width="50%"><col width="50%"></colgroup><thead><tr><th>Função</th>
 <th>Descrição</th>
 </tr></thead><tbody><tr><td><code><a href="reference/caged_load.html">caged_load()</a></code></td>
@@ -220,16 +224,16 @@
 <td>Baixa apenas competências novas</td>
 </tr><tr><td><code><a href="reference/caged_to_parquet.html">caged_to_parquet()</a></code></td>
 <td>Exporta tabelas para Parquet</td>
-</tr></tbody></table><hr></div>
+</tr></tbody></table></div>
 <div class="section level2">
-<h2 id="globe_with_meridians-idioma-das-mensagens">🌐 Idioma das mensagens<a class="anchor" aria-label="anchor" href="#globe_with_meridians-idioma-das-mensagens"></a></h2>
+<h2 id="idioma-das-mensagens">Idioma das mensagens<a class="anchor" aria-label="anchor" href="#idioma-das-mensagens"></a></h2>
 <p>As mensagens do console (erros, avisos e progresso) são escritas em inglês e traduzidas para o português. Com o R configurado em português, elas aparecem em português automaticamente; para trocar o idioma na sessão:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/gettext.html" class="external-link">Sys.setLanguage</a></span><span class="op">(</span><span class="st">"pt_BR"</span><span class="op">)</span>  <span class="co"># português</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/gettext.html" class="external-link">Sys.setLanguage</a></span><span class="op">(</span><span class="st">"en"</span><span class="op">)</span>     <span class="co"># inglês</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="file_cabinet-estrutura-do-banco">🗄️ Estrutura do banco<a class="anchor" aria-label="anchor" href="#file_cabinet-estrutura-do-banco"></a></h2>
+<h2 id="estrutura-do-banco">Estrutura do banco<a class="anchor" aria-label="anchor" href="#estrutura-do-banco"></a></h2>
 <table class="table"><thead><tr><th>Tabela</th>
 <th>Conteúdo</th>
 <th>Período</th>
@@ -248,27 +252,27 @@
 </tr><tr><td><code>caged_ajustes</code></td>
 <td>Ajustes retroativos</td>
 <td>2002–2019</td>
-</tr></tbody></table><hr></div>
+</tr></tbody></table></div>
 <div class="section level2">
-<h2 id="receipt-requisitos">🧾 Requisitos<a class="anchor" aria-label="anchor" href="#receipt-requisitos"></a></h2>
+<h2 id="requisitos">Requisitos<a class="anchor" aria-label="anchor" href="#requisitos"></a></h2>
 <ul><li>R ≥ 4.2.0</li>
 <li>7-Zip <em>(opcional — necessário apenas para CAGED pré-2020 com compressão PPMd)</em>
 </li>
-</ul><hr></div>
+</ul></div>
 <div class="section level2">
-<h2 id="bar_chart-casos-de-uso">📊 Casos de uso<a class="anchor" aria-label="anchor" href="#bar_chart-casos-de-uso"></a></h2>
+<h2 id="casos-de-uso">Casos de uso<a class="anchor" aria-label="anchor" href="#casos-de-uso"></a></h2>
 <ul><li>Análise do mercado de trabalho</li>
 <li>Indicadores econômicos</li>
 <li>Pesquisa acadêmica</li>
 <li>Monitoramento do emprego formal</li>
 <li>Modelagem econométrica</li>
-</ul><hr></div>
+</ul></div>
 <div class="section level2">
-<h2 id="page_facing_up-licença">📄 Licença<a class="anchor" aria-label="anchor" href="#page_facing_up-licen%C3%A7a"></a></h2>
+<h2 id="licença">Licença<a class="anchor" aria-label="anchor" href="#licen%C3%A7a"></a></h2>
 <p>MIT © Alexsandro Prado</p>
-<hr></div>
+</div>
 <div class="section level2">
-<h2 id="mailbox_with_mail-contato">📬 Contato<a class="anchor" aria-label="anchor" href="#mailbox_with_mail-contato"></a></h2>
+<h2 id="contato">Contato<a class="anchor" aria-label="anchor" href="#contato"></a></h2>
 <p><strong>Autor:</strong> Alexsandro Prado<br><strong>E-mail:</strong> <a href="mailto:alexsandro.prado@ufersa.edu.br">alexsandro.prado@ufersa.edu.br</a><br><strong>GitHub:</strong> <a href="https://github.com/gecomt/datacaged" class="external-link uri">https://github.com/gecomt/datacaged</a></p>
 </div>
 </div>

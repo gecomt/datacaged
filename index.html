@@ -102,20 +102,19 @@
 <p>CAGED microdata straight into your ‘DuckDB’, with a complete pipeline ready for analysis.</p>
 </blockquote>
 <p><strong>datacaged</strong> is an R package that automates the entire workflow with CAGED (Cadastro Geral de Empregados e Desempregados — Brazil’s General Register of Employed and Unemployed Workers) microdata. Data is downloaded from a <a href="https://huggingface.co/datasets/alexsandroprado/caged" class="external-link">HuggingFace repository</a> via HTTPS, parsed with streaming decompression, and stored in a local ‘DuckDB’ database for fast, scalable queries with <code>dplyr</code> or SQL.</p>
-<hr>
 <div class="section level2">
-<h2 id="sparkles-key-features">✨ Key features<a class="anchor" aria-label="anchor" href="#sparkles-key-features"></a>
+<h2 id="key-features">Key features<a class="anchor" aria-label="anchor" href="#key-features"></a>
 </h2>
 <ul>
-<li><p>📥 Automated download from HuggingFace (HTTPS — no FTP required)</p></li>
-<li><p>⚡ Parallel downloads (<code>workers = 3</code> by default)</p></li>
-<li><p>📦 Stream decompression of <code>.7z</code> files — no temporary disk extraction</p></li>
-<li><p>🗄️ Efficient storage in a local <strong>‘DuckDB’</strong> database</p></li>
-<li><p>🔄 Full pipeline in a single function call</p></li>
-<li><p>📊 Integration with <code>dplyr</code> for data analysis</p></li>
-<li><p>🖥️ <strong>Compatible with Windows, macOS and Linux</strong></p></li>
+<li><p>Automated download from HuggingFace (HTTPS — no FTP required)</p></li>
+<li><p>Parallel downloads (<code>workers = 3</code> by default)</p></li>
+<li><p>Stream decompression of <code>.7z</code> files — no temporary disk extraction</p></li>
+<li><p>Efficient storage in a local <strong>‘DuckDB’</strong> database</p></li>
+<li><p>Full pipeline in a single function call</p></li>
+<li><p>Integration with <code>dplyr</code> for data analysis</p></li>
+<li><p><strong>Compatible with Windows, macOS and Linux</strong></p></li>
 <li>
-<p>🧩 Support for multiple datasets:</p>
+<p>Support for multiple datasets:</p>
 <ul>
 <li>Novo CAGED (2020+)</li>
 <li>Legacy CAGED (2007–2019)</li>
@@ -123,20 +122,28 @@
 </ul>
 </li>
 </ul>
-<hr>
 </div>
 <div class="section level2">
-<h2 id="rocket-installation">🚀 Installation<a class="anchor" aria-label="anchor" href="#rocket-installation"></a>
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
+<p>Stable version from CRAN:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"gecomt/datacaged"</span><span class="op">)</span></span></code></pre></div>
-<hr>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"datacaged"</span><span class="op">)</span></span></code></pre></div>
+<p>Development version from GitHub:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"gecomt/datacaged"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="desktop_computer-platform-compatibility">🖥️ Platform compatibility<a class="anchor" aria-label="anchor" href="#desktop_computer-platform-compatibility"></a>
+<h2 id="platform-compatibility">Platform compatibility<a class="anchor" aria-label="anchor" href="#platform-compatibility"></a>
 </h2>
 <table class="table">
+<colgroup>
+<col width="25%">
+<col width="25%">
+<col width="25%">
+<col width="25%">
+</colgroup>
 <thead><tr>
 <th>Feature</th>
 <th>Windows</th>
@@ -146,33 +153,33 @@
 <tbody>
 <tr>
 <td>Download (HTTPS)</td>
-<td>✅</td>
-<td>✅</td>
-<td>✅</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
 </tr>
 <tr>
 <td>Parallel downloads</td>
-<td>✅</td>
-<td>✅</td>
-<td>✅</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
 </tr>
 <tr>
 <td>Novo CAGED (2020+, LZMA)</td>
-<td>✅</td>
-<td>✅</td>
-<td>✅</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
 </tr>
 <tr>
 <td>Legacy CAGED (pre-2020, PPMd)</td>
-<td>⚠️</td>
-<td>⚠️</td>
-<td>⚠️</td>
+<td>Requires 7-Zip</td>
+<td>Requires 7-Zip</td>
+<td>Requires 7-Zip</td>
 </tr>
 <tr>
 <td>DuckDB</td>
-<td>✅</td>
-<td>✅</td>
-<td>✅</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
 </tr>
 </tbody>
 </table>
@@ -182,18 +189,17 @@
 </h3>
 <p><strong>Windows</strong> — install the <a href="https://www.7-zip.org/download.html" class="external-link">7-Zip installer</a> (standard installation to <code>C:\Program Files\7-Zip</code> is automatically detected).</p>
 <p><strong>macOS</strong></p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="ex">brew</span> install 7-zip</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="ex">brew</span> install 7-zip</span></code></pre></div>
 <p><strong>Linux (Debian/Ubuntu)</strong></p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">sudo</span> apt install 7zip</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">sudo</span> apt install 7zip</span></code></pre></div>
 <p><strong>Linux (Fedora/RHEL)</strong></p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">sudo</span> dnf install 7zip</span></code></pre></div>
-<hr>
+<div class="sourceCode" id="cb5"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">sudo</span> dnf install 7zip</span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
-<h2 id="zap-quick-start">⚡ Quick start<a class="anchor" aria-label="anchor" href="#zap-quick-start"></a>
+<h2 id="quick-start">Quick start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
 </h2>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/gecomt/datacaged" class="external-link">datacaged</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Full pipeline — downloads, parses and writes to DuckDB</span></span>
@@ -215,12 +221,11 @@
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html" class="external-link">collect</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html" class="external-link">dbDisconnect</a></span><span class="op">(</span><span class="va">con</span>, shutdown <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<hr>
 </div>
 <div class="section level2">
-<h2 id="gear-performance">⚙️ Performance<a class="anchor" aria-label="anchor" href="#gear-performance"></a>
+<h2 id="performance">Performance<a class="anchor" aria-label="anchor" href="#performance"></a>
 </h2>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Parallel downloads (default: 3 workers)</span></span>
 <span><span class="fu"><a href="reference/caged_download.html">caged_download</a></span><span class="op">(</span>years <span class="op">=</span> <span class="fl">2023</span>, months <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">12</span>, workers <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
 <span></span>
@@ -230,10 +235,9 @@
 <span><span class="co"># Set globally</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>datacaged.workers <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div>
 <p>Parallel downloads process MOV, FOR and EXC files simultaneously per month — approximately <strong>3× faster</strong> than sequential for Novo CAGED.</p>
-<hr>
 </div>
 <div class="section level2">
-<h2 id="brain-pipeline">🧠 Pipeline<a class="anchor" aria-label="anchor" href="#brain-pipeline"></a>
+<h2 id="pipeline">Pipeline<a class="anchor" aria-label="anchor" href="#pipeline"></a>
 </h2>
 <pre><code>HuggingFace (HTTPS)
       ↓
@@ -244,10 +248,9 @@
   caged_to_duckdb()  ← bulk insert, deduplication by period
       ↓
   caged_connect()    ← dplyr / SQL / DBI</code></pre>
-<hr>
 </div>
 <div class="section level2">
-<h2 id="books-main-functions">📚 Main functions<a class="anchor" aria-label="anchor" href="#books-main-functions"></a>
+<h2 id="main-functions">Main functions<a class="anchor" aria-label="anchor" href="#main-functions"></a>
 </h2>
 <table class="table">
 <colgroup>
@@ -313,18 +316,17 @@
 </tr>
 </tbody>
 </table>
-<hr>
 </div>
 <div class="section level2">
-<h2 id="globe_with_meridians-message-language">🌐 Message language<a class="anchor" aria-label="anchor" href="#globe_with_meridians-message-language"></a>
+<h2 id="message-language">Message language<a class="anchor" aria-label="anchor" href="#message-language"></a>
 </h2>
 <p>Console messages (errors, warnings and progress) are written in English and translated to Portuguese. With R set to Portuguese they appear in Portuguese automatically; to switch within a session:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/gettext.html" class="external-link">Sys.setLanguage</a></span><span class="op">(</span><span class="st">"pt_BR"</span><span class="op">)</span>  <span class="co"># Portuguese</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/gettext.html" class="external-link">Sys.setLanguage</a></span><span class="op">(</span><span class="st">"en"</span><span class="op">)</span>     <span class="co"># English</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="file_cabinet-database-tables">🗄️ Database tables<a class="anchor" aria-label="anchor" href="#file_cabinet-database-tables"></a>
+<h2 id="database-tables">Database tables<a class="anchor" aria-label="anchor" href="#database-tables"></a>
 </h2>
 <table class="table">
 <thead><tr>
@@ -360,20 +362,18 @@
 </tr>
 </tbody>
 </table>
-<hr>
 </div>
 <div class="section level2">
-<h2 id="receipt-requirements">🧾 Requirements<a class="anchor" aria-label="anchor" href="#receipt-requirements"></a>
+<h2 id="requirements">Requirements<a class="anchor" aria-label="anchor" href="#requirements"></a>
 </h2>
 <ul>
 <li>R ≥ 4.2.0</li>
 <li>7-Zip <em>(optional — only required for CAGED pre-2020 with PPMd compression)</em>
 </li>
 </ul>
-<hr>
 </div>
 <div class="section level2">
-<h2 id="bar_chart-use-cases">📊 Use cases<a class="anchor" aria-label="anchor" href="#bar_chart-use-cases"></a>
+<h2 id="use-cases">Use cases<a class="anchor" aria-label="anchor" href="#use-cases"></a>
 </h2>
 <ul>
 <li>Labour market analysis</li>
@@ -382,16 +382,14 @@
 <li>Formal employment monitoring</li>
 <li>Econometric modelling</li>
 </ul>
-<hr>
 </div>
 <div class="section level2">
-<h2 id="page_facing_up-licence">📄 Licence<a class="anchor" aria-label="anchor" href="#page_facing_up-licence"></a>
+<h2 id="licence">Licence<a class="anchor" aria-label="anchor" href="#licence"></a>
 </h2>
 <p>MIT © Alexsandro Prado</p>
-<hr>
 </div>
 <div class="section level2">
-<h2 id="mailbox_with_mail-contact">📬 Contact<a class="anchor" aria-label="anchor" href="#mailbox_with_mail-contact"></a>
+<h2 id="contact">Contact<a class="anchor" aria-label="anchor" href="#contact"></a>
 </h2>
 <p><strong>Author:</strong> Alexsandro Prado<br><strong>Email:</strong> <a href="mailto:alexsandro.prado@ufersa.edu.br">alexsandro.prado@ufersa.edu.br</a><br><strong>GitHub:</strong> <a href="https://github.com/gecomt/datacaged" class="external-link uri">https://github.com/gecomt/datacaged</a></p>
 </div>
