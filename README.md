@@ -10,48 +10,49 @@
 [![CRAN checks](https://badges.cranchecks.info/summary/datacaged.svg)](https://cran.r-project.org/web/checks/check_results_datacaged.html)
 [![Downloads](https://cranlogs.r-pkg.org/badges/grand-total/datacaged)](https://cran.r-project.org/package=datacaged)
 
-
 > CAGED microdata straight into your 'DuckDB', with a complete pipeline ready for analysis.
 
 **datacaged** is an R package that automates the entire workflow with CAGED (Cadastro Geral de Empregados e Desempregados — Brazil's General Register of Employed and Unemployed Workers) microdata. Data is downloaded from a [HuggingFace repository](https://huggingface.co/datasets/alexsandroprado/caged) via HTTPS, parsed with streaming decompression, and stored in a local 'DuckDB' database for fast, scalable queries with `dplyr` or SQL.
 
----
+## Key features
 
-## ✨ Key features
-
-* 📥 Automated download from HuggingFace (HTTPS — no FTP required)
-* ⚡ Parallel downloads (`workers = 3` by default)
-* 📦 Stream decompression of `.7z` files — no temporary disk extraction
-* 🗄️ Efficient storage in a local **'DuckDB'** database
-* 🔄 Full pipeline in a single function call
-* 📊 Integration with `dplyr` for data analysis
-* 🖥️ **Compatible with Windows, macOS and Linux**
-* 🧩 Support for multiple datasets:
+* Automated download from HuggingFace (HTTPS — no FTP required)
+* Parallel downloads (`workers = 3` by default)
+* Stream decompression of `.7z` files — no temporary disk extraction
+* Efficient storage in a local **'DuckDB'** database
+* Full pipeline in a single function call
+* Integration with `dplyr` for data analysis
+* **Compatible with Windows, macOS and Linux**
+* Support for multiple datasets:
 
   * Novo CAGED (2020+)
   * Legacy CAGED (2007–2019)
   * CAGED Adjustments (historical corrections)
 
----
+## Installation
 
-## 🚀 Installation
+Stable version from CRAN:
 
 ```r
-# install.packages("remotes")
-remotes::install_github("gecomt/datacaged")
+install.packages("datacaged")
 ```
 
----
+Development version from GitHub:
 
-## 🖥️ Platform compatibility
+```r
+# install.packages("pak")
+pak::pak("gecomt/datacaged")
+```
+
+## Platform compatibility
 
 | Feature | Windows | macOS | Linux |
 |---|---|---|---|
-| Download (HTTPS) | ✅ | ✅ | ✅ |
-| Parallel downloads | ✅ | ✅ | ✅ |
-| Novo CAGED (2020+, LZMA) | ✅ | ✅ | ✅ |
-| Legacy CAGED (pre-2020, PPMd) | ⚠️ | ⚠️ | ⚠️ |
-| DuckDB | ✅ | ✅ | ✅ |
+| Download (HTTPS) | Yes | Yes | Yes |
+| Parallel downloads | Yes | Yes | Yes |
+| Novo CAGED (2020+, LZMA) | Yes | Yes | Yes |
+| Legacy CAGED (pre-2020, PPMd) | Requires 7-Zip | Requires 7-Zip | Requires 7-Zip |
+| DuckDB | Yes | Yes | Yes |
 
 **Legacy CAGED (pre-2020)** uses PPMd compression which requires 7-Zip. **Novo CAGED (2020+) works on all platforms without any extra software.**
 
@@ -77,9 +78,7 @@ sudo apt install 7zip
 sudo dnf install 7zip
 ```
 
----
-
-## ⚡ Quick start
+## Quick start
 
 ```r
 library(datacaged)
@@ -105,9 +104,7 @@ tbl(con, "caged_mov") |>
 DBI::dbDisconnect(con, shutdown = TRUE)
 ```
 
----
-
-## ⚙️ Performance
+## Performance
 
 ```r
 # Parallel downloads (default: 3 workers)
@@ -122,9 +119,7 @@ options(datacaged.workers = 4)
 
 Parallel downloads process MOV, FOR and EXC files simultaneously per month — approximately **3× faster** than sequential for Novo CAGED.
 
----
-
-## 🧠 Pipeline
+## Pipeline
 
 ```
 HuggingFace (HTTPS)
@@ -138,9 +133,7 @@ HuggingFace (HTTPS)
   caged_connect()    ← dplyr / SQL / DBI
 ```
 
----
-
-## 📚 Main functions
+## Main functions
 
 | Function | Description |
 |---|---|
@@ -158,9 +151,7 @@ HuggingFace (HTTPS)
 | `caged_update()` | Download only new competencies |
 | `caged_to_parquet()` | Export tables to Parquet files |
 
----
-
-## 🌐 Message language
+## Message language
 
 Console messages (errors, warnings and progress) are written in English and
 translated to Portuguese. With R set to Portuguese they appear in Portuguese
@@ -171,7 +162,7 @@ Sys.setLanguage("pt_BR")  # Portuguese
 Sys.setLanguage("en")     # English
 ```
 
-## 🗄️ Database tables
+## Database tables
 
 | Table | Content | Period |
 |---|---|---|
@@ -181,16 +172,12 @@ Sys.setLanguage("en")     # English
 | `caged_antigo` | Historical data | 2007–2019 |
 | `caged_ajustes` | Retroactive adjustments | 2002–2019 |
 
----
-
-## 🧾 Requirements
+## Requirements
 
 * R ≥ 4.2.0
 * 7-Zip *(optional — only required for CAGED pre-2020 with PPMd compression)*
 
----
-
-## 📊 Use cases
+## Use cases
 
 * Labour market analysis
 * Economic indicators
@@ -198,16 +185,13 @@ Sys.setLanguage("en")     # English
 * Formal employment monitoring
 * Econometric modelling
 
----
-
-## 📄 Licence
+## Licence
 
 MIT © Alexsandro Prado
 
----
-
-## 📬 Contact
+## Contact
 
 **Author:** Alexsandro Prado  
 **Email:** [alexsandro.prado@ufersa.edu.br](mailto:alexsandro.prado@ufersa.edu.br)  
 **GitHub:** <https://github.com/gecomt/datacaged>
+
