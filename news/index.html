@@ -73,7 +73,7 @@
     </div>
 
     <div class="section level2">
-<h2 class="page-header" data-toc-text="0.2.3" id="datacaged-023">datacaged 0.2.3<a class="anchor" aria-label="anchor" href="#datacaged-023"></a></h2>
+<h2 class="page-header" data-toc-text="0.2.3" id="datacaged-023">datacaged 0.2.3<small>2026-10-12</small><a class="anchor" aria-label="anchor" href="#datacaged-023"></a></h2>
 <div class="section level3">
 <h3 id="message-language-0-2-3">Message language<a class="anchor" aria-label="anchor" href="#message-language-0-2-3"></a></h3>
 <ul><li>All console messages (errors, warnings, progress) are now written in English in the source code and translated to Brazilian Portuguese through the standard R/gettext mechanism. Users with R set to Portuguese see them in Portuguese automatically; <code>Sys.setLanguage("pt_BR")</code> or <code>Sys.setLanguage("en")</code> switches the language within a session. Previously the messages mixed both languages and the shipped translations were never applied, because the <code>cli</code> calls did not go through <code><a href="https://rdrr.io/r/base/gettext.html" class="external-link">gettext()</a></code>.</li>
